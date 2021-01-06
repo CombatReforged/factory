@@ -5,15 +5,28 @@ plugins {
 group 'com.combatreforged.factory'
 version '0.1.0'
 
-repositories {
-    mavenCentral()
-}
+allprojects {
+    apply plugin: 'java'
 
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-}
+    repositories {
+        mavenCentral()
+        maven {
+            name = 'sonatype-oss'
+            url = 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
+    }
 
-test {
-    useJUnitPlatform()
+    dependencies {
+        implementation "org.apache.logging.log4j:log4j-api:2.14.0"
+        implementation "org.apache.logging.log4j:log4j-core:2.14.0"
+        implementation 'net.kyori:adventure-api:4.3.0'
+
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+    }
+
+    test {
+        useJUnitPlatform()
+    }
 }
