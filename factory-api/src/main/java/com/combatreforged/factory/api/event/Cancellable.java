@@ -1,4 +1,4 @@
-package com.combatreforged.factory.factoryapi.event;
+package com.combatreforged.factory.api.event;
 
 /**
  * Represents an Event that is cancellable

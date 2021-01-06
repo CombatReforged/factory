@@ -22,6 +22,8 @@ dependencies {
 	minecraft "com.mojang:minecraft:1.16_combat-6"
 	mappings minecraft.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:0.10.8"
+
+	implementation project(":factory-api")
 }
 
 minecraft {

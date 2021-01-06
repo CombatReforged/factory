@@ -1,4 +1,4 @@
-package com.combatreforged.factory.factoryapi.world;
+package com.combatreforged.factory.api.world;
 
 /**
  * Represents a world on the server.

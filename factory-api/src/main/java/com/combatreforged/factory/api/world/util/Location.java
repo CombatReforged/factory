@@ -1,6 +1,6 @@
-package com.combatreforged.factory.factoryapi.world.util;
+package com.combatreforged.factory.api.world.util;
 
-import com.combatreforged.factory.factoryapi.world.World;
+import com.combatreforged.factory.api.world.World;
 
 /**
  * A util that represents a specific location in a world that includes a position
@@ -143,9 +143,9 @@ public class Location {
      * @return the distance
      */
     public double distanceTo(Location other) {
-        double xDif = other.getX() - this.getX();
-        double yDif = other.getY() - this.getY();
-        double zDif = other.getZ() - this.getZ();
+        double xDif = other.x - this.x;
+        double yDif = other.y - this.y;
+        double zDif = other.z - this.z;
         return Math.sqrt(xDif * xDif + yDif * yDif + zDif * zDif);
     }
 }

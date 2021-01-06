@@ -10,7 +10,7 @@
   ],
   "contact": {
     "homepage": "https://combatreforged.com/factory",
-    "sources": "https://github.com/CombatReforged/factory/tree/main/factory-builder"
+    "sources": "https://github.com/CombatReforged/factory"
   },
 
   "license": "CC0-1.0",
@@ -19,7 +19,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.combatreforged.factory.factorybuilder.FactoryBuilder"
+      "com.combatreforged.factory.builder.FactoryBuilder"
     ]
   },
   "mixins": [

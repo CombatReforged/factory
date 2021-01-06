@@ -1,9 +1,12 @@
-package com.combatreforged.factory.factoryapi.event;
+package com.combatreforged.factory.api.event;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** An Event Backend for a special event
  * @param <T> the Event this backend is representing

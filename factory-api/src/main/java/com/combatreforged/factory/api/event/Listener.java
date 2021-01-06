@@ -1,4 +1,4 @@
-package com.combatreforged.factory.factoryapi.event;
+package com.combatreforged.factory.api.event;
 
 /**Interface to be used when registering a listener
  * @param <T> the event to register the listener for.
