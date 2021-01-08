@@ -1,8 +1,8 @@
 package com.combatreforged.factory.api.world.entity;
 
+import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
-import com.combatreforged.factory.api.world.damage.DamageData;
 
 import java.util.List;
 
