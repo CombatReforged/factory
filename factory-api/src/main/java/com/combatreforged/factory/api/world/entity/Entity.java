@@ -4,6 +4,7 @@ import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.api.world.util.Vector3D;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -18,13 +19,20 @@ public interface Entity {
     int getEntityId();
 
     /**
-     * Gets the Entity's custom name.
+     * Gets the Entity's name.
+     * @return the Entity's name
+     */
+    Component getName();
+
+    /**
+     * Gets the Entity's custom name. Can be null.
      * @return the custom name
      */
+    @Nullable
     Component getCustomName();
 
     /**
-     * Sets the Entity's custom name.
+     * Sets the Entity's custom name. Can be null.
      * @param customName the new custom name
      */
     void setCustomName(Component customName);
@@ -43,6 +51,8 @@ public interface Entity {
 
     /**
      * Teleports the Entity to the specified location.
+     * Yaw will automatically be set between -180 and 180.
+     * Pitch will automatically be set between -90 and 90.
      * @param location the Location to teleport to.
      * @param ignoreDirection whether to keep the Entity's previous facing direction.
      */
@@ -51,6 +61,7 @@ public interface Entity {
     /**
      * Teleports the Entity to the specified location.
      * @param location the Location to teleport to
+     * @see this.teleport(Location, boolean)
      */
     default void teleport(Location location) { teleport(location, false); }
 
@@ -66,14 +77,8 @@ public interface Entity {
     boolean isOnFire();
 
     /**
-     * Gets the amount of ticks this Entity has been on fire for.
-     * @return how many ticks this Entity has been on fire
-     */
-    int getFireTicks();
-
-    /**
      * Gets how long this Entity will remain on fire for.
-     * @returns the amount of ticks this entity will burn for
+     * @return the amount of ticks this entity will burn for
      */
     int getRemainingFireTicks();
 
@@ -112,4 +117,15 @@ public interface Entity {
      * @param entity the entity to add to this entity's passenger
      */
     void addPassenger(Entity entity);
+
+    /**
+     * Makes this Entity start riding another Entity.
+     * @param entity the Entity to ride
+     */
+    void startRiding(Entity entity);
+
+    /**
+     * Stops this Entity from riding another one.
+     */
+    void stopRiding();
 }

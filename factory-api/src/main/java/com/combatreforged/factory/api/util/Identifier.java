@@ -1,5 +1,6 @@
 package com.combatreforged.factory.api.util;
 
+@Future
 public class Identifier {
     private final String namespace;
     private final String id;

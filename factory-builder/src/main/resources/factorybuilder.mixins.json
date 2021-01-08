@@ -4,6 +4,8 @@
   "package": "com.combatreforged.factory.builder.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "world.ServerLevelMixin",
+    "world.entity.EntityMixin"
   ],
   "client": [
   ],
