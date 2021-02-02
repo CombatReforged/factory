@@ -20,6 +20,10 @@ public class WrappedLivingEntity extends WrappedEntity<LivingEntity> implements 
         this.wrapped = entity;
     }
 
+    public net.minecraft.world.entity.LivingEntity unwrap() {
+        return wrapped;
+    }
+
     @Override
     public float getHealth() {
         return wrapped.getHealth();

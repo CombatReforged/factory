@@ -108,11 +108,17 @@ public class WrappedEntity<T> extends Wrapped<net.minecraft.world.entity.Entity>
         wrapped.setDeltaMovement(velocity.getX(), velocity.getY(), velocity.getZ());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<Entity> getPassengers() {
         List<Entity> passengers = new ArrayList<>();
         for (net.minecraft.world.entity.Entity entity : wrapped.getPassengers()) {
-            passengers.add(new WrappedEntity<T>(entity));
+            try {
+                passengers.add(((Wrap<Entity>) entity).wrap());
+            } catch (ClassCastException e) {
+                LOGGER.error("Unable to wrap Entity!");
+                LOGGER.error(e);
+            }
         }
         return passengers;
     }
@@ -131,7 +137,7 @@ public class WrappedEntity<T> extends Wrapped<net.minecraft.world.entity.Entity>
 
     @Override
     public void startRiding(Entity entity) {
-        wrapped.startRiding(((WrappedEntity<T>) entity).unwrap());
+        wrapped.startRiding(((WrappedEntity<?>) entity).unwrap());
     }
 
     @Override
@@ -145,6 +151,6 @@ public class WrappedEntity<T> extends Wrapped<net.minecraft.world.entity.Entity>
             return false;
         else if (other.getClass() != getClass())
             return false;
-        return getEntityId() == ((WrappedEntity) other).getEntityId();
+        return getEntityId() == ((WrappedEntity<?>) other).getEntityId();
     }
 }
