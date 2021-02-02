@@ -18,7 +18,7 @@ import java.util.List;
 
 import static com.combatreforged.factory.builder.FactoryBuilder.LOGGER;
 
-public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> implements Entity {
+public class WrappedEntity<T> extends Wrapped<net.minecraft.world.entity.Entity> implements Entity {
     public WrappedEntity(net.minecraft.world.entity.Entity entity) {
         super(entity);
     }
@@ -112,7 +112,7 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
     public List<Entity> getPassengers() {
         List<Entity> passengers = new ArrayList<>();
         for (net.minecraft.world.entity.Entity entity : wrapped.getPassengers()) {
-            passengers.add(new WrappedEntity(entity));
+            passengers.add(new WrappedEntity<T>(entity));
         }
         return passengers;
     }
@@ -131,7 +131,7 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
 
     @Override
     public void startRiding(Entity entity) {
-        wrapped.startRiding(((WrappedEntity) entity).unwrap());
+        wrapped.startRiding(((WrappedEntity<T>) entity).unwrap());
     }
 
     @Override

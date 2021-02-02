@@ -10,6 +10,18 @@ public class DamageData {
 
     private DamageData() {}
 
+    public Type getDamageType() {
+        return damageType;
+    }
+
+    public Entity getDamageSource() {
+        return damageSource;
+    }
+
+    public LivingEntity getProjectileOwner() {
+        return projectileOwner;
+    }
+
     public static class Builder {
         private final DamageData damageData;
 

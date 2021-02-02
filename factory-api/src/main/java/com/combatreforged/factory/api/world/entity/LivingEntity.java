@@ -1,6 +1,5 @@
 package com.combatreforged.factory.api.world.entity;
 
-import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 
@@ -21,19 +20,13 @@ public interface LivingEntity extends Entity {
      */
     void setHealth(float health);
 
-    /**
-     * Damages this entity.
-     * @param amount the amount of damage to deal
-     * @param damageData information about the damage source etc.
-     */
-    void damage(float amount, DamageData damageData);
 
     /**
      * Damages this entity.
      * Default damage type is GENERIC.
      * @param amount the amount of damage to deal
      */
-    default void damage(float amount) { damage(amount, DamageData.Builder.create().damageType(DamageData.Type.GENERIC).build()); }
+    void damage(float amount);
 
     /**
      * Get all active effects of this LivingEntity.
@@ -43,15 +36,9 @@ public interface LivingEntity extends Entity {
 
     /**
      * Gives this LivingEntity an effect.
-     * @param statusEffectInstance the effect instance to add
+     * @param effectSettings the StatusEffectInstance settings to create the StatusEffectInstance with
      */
-    void addEffectInstance(StatusEffectInstance statusEffectInstance);
-
-    /**
-     * Removes an active effect instance.
-     * @param statusEffectInstance the effect instance to remove
-     */
-    void removeEffectInstance(StatusEffectInstance statusEffectInstance);
+    void addEffectInstance(StatusEffectInstance.Settings effectSettings);
 
     /**
      * Removes all instances of a specific StatusEffect

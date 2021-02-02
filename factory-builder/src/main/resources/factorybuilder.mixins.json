@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "world.ServerLevelMixin",
-    "world.entity.EntityMixin"
+    "world.effect.MobEffectInstanceMixin",
+    "world.entity.EntityMixin",
+    "world.entity.LivingEntityMixin"
   ],
   "client": [
   ],
