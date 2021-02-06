@@ -12,7 +12,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WrappedLivingEntity extends WrappedEntity<LivingEntity> implements LivingEntity {
+public class WrappedLivingEntity<T> extends WrappedEntity<LivingEntity> implements LivingEntity {
     private final net.minecraft.world.entity.LivingEntity wrapped;
 
     public WrappedLivingEntity(net.minecraft.world.entity.LivingEntity entity) {
@@ -32,6 +32,16 @@ public class WrappedLivingEntity extends WrappedEntity<LivingEntity> implements 
     @Override
     public void setHealth(float health) {
         wrapped.setHealth(health);
+    }
+
+    @Override
+    public int getInvulnerabilityTime() {
+        return wrapped.invulnerableTime;
+    }
+
+    @Override
+    public void setInvulnerabilityTime(int ticks) {
+        wrapped.invulnerableTime = ticks;
     }
 
     @Override

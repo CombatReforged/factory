@@ -20,6 +20,10 @@ public interface LivingEntity extends Entity {
      */
     void setHealth(float health);
 
+    int getInvulnerabilityTime();
+
+    void setInvulnerabilityTime(int ticks);
+
 
     /**
      * Damages this entity.

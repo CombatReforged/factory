@@ -2,6 +2,8 @@ package com.combatreforged.factory.builder.implementation.world.effect;
 
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
+import com.combatreforged.factory.builder.FactoryBuilder;
+import com.combatreforged.factory.builder.implementation.ConversionTables;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -39,11 +41,26 @@ public class WrappedStatusEffectInstance extends Wrapped<net.minecraft.world.eff
     }
 
     private static StatusEffect convert(MobEffect effect) {
-        ResourceLocation resourceLocation = Registry.MOB_EFFECT.getKey(effect);
-        return resourceLocation != null ? StatusEffect.getRegisteredEffects().get(resourceLocation.toString()) : null;
+        StatusEffect statusEffect;
+        if (ConversionTables.EFFECTS.inverse().containsKey(effect))
+            statusEffect = ConversionTables.EFFECTS.inverse().get(effect);
+        else {
+            ResourceLocation resourceLocation = Registry.MOB_EFFECT.getKey(effect);
+            if (resourceLocation != null)
+                statusEffect = new StatusEffect.Unidentified(resourceLocation.toString(), effect.isBeneficial() ? StatusEffect.Type.BENEFICIAL : StatusEffect.Type.HARMFUL);
+            else {
+                FactoryBuilder.LOGGER.error("MobEffect " + effect.toString() + " not registered!");
+                statusEffect = null;
+            }
+        }
+        return statusEffect;
     }
 
     public static MobEffect convert(StatusEffect statusEffect) {
-        return Registry.MOB_EFFECT.get(new ResourceLocation(statusEffect.getId()));
+        if (ConversionTables.EFFECTS.containsKey(statusEffect))
+            return ConversionTables.EFFECTS.get(statusEffect);
+        else
+            FactoryBuilder.LOGGER.error("StatusEffect has no pendant in vanilla!");
+        return null;
     }
 }
