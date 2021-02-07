@@ -40,9 +40,9 @@ public interface LivingEntity extends Entity {
 
     /**
      * Gives this LivingEntity an effect.
-     * @param effectSettings the StatusEffectInstance settings to create the StatusEffectInstance with
+     * @param effectInstance the StatusEffectInstance settings to create the StatusEffectInstance with
      */
-    void addEffectInstance(StatusEffectInstance.Settings effectSettings);
+    void addEffectInstance(StatusEffectInstance effectInstance);
 
     /**
      * Removes all instances of a specific StatusEffect

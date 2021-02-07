@@ -67,9 +67,9 @@ public class WrappedLivingEntity<T> extends WrappedEntity<LivingEntity> implemen
     }
 
     @Override
-    public void addEffectInstance(StatusEffectInstance.Settings effectSettings) {
-        wrapped.addEffect(new MobEffectInstance(WrappedStatusEffectInstance.convert(effectSettings.getStatusEffect()),
-                effectSettings.getDuration(), effectSettings.getAmplifier(), effectSettings.isAmbient(), effectSettings.isAmbient()));
+    public void addEffectInstance(StatusEffectInstance effectInstance) {
+        wrapped.addEffect(new MobEffectInstance(WrappedStatusEffectInstance.convert(effectInstance.getStatusEffect()),
+                effectInstance.getTicksLeft(), effectInstance.getAmplifier(), effectInstance.isAmbient(), effectInstance.isAmbient()));
     }
 
     @Override
