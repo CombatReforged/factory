@@ -11,8 +11,7 @@ public interface Builder {
     StatusEffectInstance createStatusEffectInstance(StatusEffect statusEffect, int duration,
                                                     int amplifier, boolean ambient);
 
-    DamageData createDamageData(DamageData.Type type, Entity entityCause,
-                                Block blockCause, boolean isIndirect);
+    DamageData createDamageData(DamageData.Type type, Entity entityCause, boolean isIndirect);
 
 
     static Builder getInstance() {

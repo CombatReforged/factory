@@ -1,7 +1,6 @@
 package com.combatreforged.factory.api.world.damage;
 
 import com.combatreforged.factory.api.builder.Builder;
-import com.combatreforged.factory.api.world.block.Block;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.projectile.Projectile;
 
@@ -11,7 +10,6 @@ public interface DamageData {
         return this::getDamagingEntity;
     }
     Entity getDamagingEntity();
-    Block getBlock();
     default boolean hasIndirectCause() {
         return getType() == Type.MAGIC
                 || (getType() == Type.PROJECTILE && getProjectile().getOwner() != null)
@@ -26,15 +24,11 @@ public interface DamageData {
     }
 
     static DamageData create(Type type, Entity cause, boolean isIndirect) {
-        return Builder.getInstance().createDamageData(type, cause, null, isIndirect);
+        return Builder.getInstance().createDamageData(type, cause, isIndirect);
     }
 
-    static DamageData create(Type type, Block cause) {
-        return Builder.getInstance().createDamageData(type, null, cause, false);
-    }
 
     static DamageData create(Type type) {
-        return Builder.getInstance().createDamageData(type, null, null,
-                false);
+        return Builder.getInstance().createDamageData(type, null, false);
     }
 }

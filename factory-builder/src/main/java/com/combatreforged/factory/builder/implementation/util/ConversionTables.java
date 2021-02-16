@@ -1,9 +1,11 @@
-package com.combatreforged.factory.builder.implementation;
+package com.combatreforged.factory.builder.implementation.util;
 
+import com.combatreforged.factory.api.world.damage.DamageData.Type;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.items.Item;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.Items;
@@ -12,9 +14,13 @@ public abstract class ConversionTables {
     public static final BiMap<StatusEffect, MobEffect> EFFECTS = HashBiMap.create();
     public static final BiMap<Item, net.minecraft.world.item.Item> ITEMS = HashBiMap.create();
 
+    public static final BiMap<Type, DamageSource> DAMAGE_TYPES = HashBiMap.create();
+
     static {
         setupEffects();
         setupItems();
+
+        setupDamageTypes();
     }
 
     public static void setupEffects() {
@@ -1029,5 +1035,29 @@ public abstract class ConversionTables {
         ITEMS.put(Item.POLISHED_BLACKSTONE_BRICK_STAIRS, Items.POLISHED_BLACKSTONE_BRICK_STAIRS);
         ITEMS.put(Item.CRACKED_POLISHED_BLACKSTONE_BRICKS, Items.CRACKED_POLISHED_BLACKSTONE_BRICKS);
         ITEMS.put(Item.RESPAWN_ANCHOR, Items.RESPAWN_ANCHOR);
+    }
+
+    public static void setupDamageTypes() {
+        DAMAGE_TYPES.put(Type.CACTUS, DamageSource.CACTUS);
+        DAMAGE_TYPES.put(Type.CRAMMING, DamageSource.CRAMMING);
+        DAMAGE_TYPES.put(Type.CRASHING, DamageSource.FLY_INTO_WALL);
+        DAMAGE_TYPES.put(Type.DRAGON_BREATH, DamageSource.DRAGON_BREATH);
+        DAMAGE_TYPES.put(Type.DROWNING, DamageSource.DROWN);
+        DAMAGE_TYPES.put(Type.DRY_OUT, DamageSource.DRY_OUT);
+        DAMAGE_TYPES.put(Type.FALLING, DamageSource.FALL);
+        DAMAGE_TYPES.put(Type.FALLING_ANVIL, DamageSource.ANVIL);
+        DAMAGE_TYPES.put(Type.FALLING_BLOCK, DamageSource.FALLING_BLOCK);
+        DAMAGE_TYPES.put(Type.GENERIC, DamageSource.GENERIC);
+        DAMAGE_TYPES.put(Type.IN_FIRE, DamageSource.IN_FIRE);
+        DAMAGE_TYPES.put(Type.LAVA, DamageSource.LAVA);
+        DAMAGE_TYPES.put(Type.LIGHTNING, DamageSource.LIGHTNING_BOLT);
+        DAMAGE_TYPES.put(Type.MAGIC, DamageSource.MAGIC);
+        DAMAGE_TYPES.put(Type.MAGMA, DamageSource.HOT_FLOOR);
+        DAMAGE_TYPES.put(Type.ON_FIRE, DamageSource.ON_FIRE);
+        DAMAGE_TYPES.put(Type.STARVING, DamageSource.STARVE);
+        DAMAGE_TYPES.put(Type.SUFFOCATION, DamageSource.IN_WALL);
+        DAMAGE_TYPES.put(Type.SWEET_BERRY_BUSH, DamageSource.SWEET_BERRY_BUSH);
+        DAMAGE_TYPES.put(Type.VOID, DamageSource.OUT_OF_WORLD);
+        DAMAGE_TYPES.put(Type.WITHERING, DamageSource.WITHER);
     }
 }

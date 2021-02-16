@@ -5,14 +5,14 @@ import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.api.world.entity.LivingEntity;
 import com.combatreforged.factory.builder.FactoryBuilder;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
-import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
+import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffect;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WrappedLivingEntity<T> extends WrappedEntity<LivingEntity> implements LivingEntity {
+public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
     private final net.minecraft.world.entity.LivingEntity wrapped;
 
     public WrappedLivingEntity(net.minecraft.world.entity.LivingEntity entity) {
@@ -68,12 +68,12 @@ public class WrappedLivingEntity<T> extends WrappedEntity<LivingEntity> implemen
 
     @Override
     public void addEffectInstance(StatusEffectInstance effectInstance) {
-        wrapped.addEffect(new MobEffectInstance(WrappedStatusEffectInstance.convert(effectInstance.getStatusEffect()),
+        wrapped.addEffect(new MobEffectInstance(WrappedStatusEffect.convert(effectInstance.getStatusEffect()),
                 effectInstance.getTicksLeft(), effectInstance.getAmplifier(), effectInstance.isAmbient(), effectInstance.isAmbient()));
     }
 
     @Override
     public void removeEffect(StatusEffect statusEffect) {
-        wrapped.removeEffect(WrappedStatusEffectInstance.convert(statusEffect));
+        wrapped.removeEffect(WrappedStatusEffect.convert(statusEffect));
     }
 }

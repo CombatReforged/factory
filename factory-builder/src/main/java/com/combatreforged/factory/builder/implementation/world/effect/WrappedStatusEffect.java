@@ -3,18 +3,18 @@ package com.combatreforged.factory.builder.implementation.world.effect;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.builder.FactoryBuilder;
-import com.combatreforged.factory.builder.implementation.ConversionTables;
+import com.combatreforged.factory.builder.implementation.util.ConversionTables;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 
-public class WrappedStatusEffectInstance extends Wrapped<net.minecraft.world.effect.MobEffectInstance> implements StatusEffectInstance {
+public class WrappedStatusEffect extends Wrapped<MobEffectInstance> implements StatusEffectInstance {
     private final net.minecraft.world.effect.MobEffectInstance wrapped;
     private final StatusEffect effect;
 
-    public WrappedStatusEffectInstance(MobEffectInstance instance) {
+    public WrappedStatusEffect(MobEffectInstance instance) {
         super(instance);
         this.wrapped = instance;
         this.effect = convert(instance.getEffect());
@@ -62,5 +62,10 @@ public class WrappedStatusEffectInstance extends Wrapped<net.minecraft.world.eff
         else
             FactoryBuilder.LOGGER.error("StatusEffect has no pendant in vanilla!");
         return null;
+    }
+
+    @Override
+    public MobEffectInstance unwrap() {
+        return this.wrapped;
     }
 }
