@@ -3,7 +3,7 @@ package com.combatreforged.factory.builder.implementation.world.entity;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.api.world.entity.LivingEntity;
-import com.combatreforged.factory.builder.FactoryBuilder;
+import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffect;
 import net.minecraft.world.damagesource.DamageSource;
@@ -58,8 +58,7 @@ public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
             try {
                 effectInstances.add(((Wrap<StatusEffectInstance>) vanillaInstance).wrap());
             } catch (ClassCastException e) {
-                FactoryBuilder.LOGGER.error("Unable to wrap StatusEffectInstance!");
-                FactoryBuilder.LOGGER.error(e);
+                throw new WrappingException("Unable to wrap StatusEffectInstance!");
             }
         }
 

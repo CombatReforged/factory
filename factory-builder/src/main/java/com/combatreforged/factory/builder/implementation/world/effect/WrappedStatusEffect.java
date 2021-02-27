@@ -2,15 +2,13 @@ package com.combatreforged.factory.builder.implementation.world.effect;
 
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
-import com.combatreforged.factory.builder.FactoryBuilder;
+import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.extension.MobEffectExtension;
-import com.combatreforged.factory.builder.implementation.util.ConversionTables;
 import com.combatreforged.factory.builder.implementation.Wrapped;
+import com.combatreforged.factory.builder.implementation.util.ConversionTables;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.effect.HealthBoostMobEffect;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 
 public class WrappedStatusEffect extends Wrapped<MobEffectInstance> implements StatusEffectInstance {
@@ -64,8 +62,7 @@ public class WrappedStatusEffect extends Wrapped<MobEffectInstance> implements S
                 }
                 statusEffect = new StatusEffect.Unidentified(resourceLocation.toString(), type);
             } else {
-                FactoryBuilder.LOGGER.error("MobEffect " + effect.toString() + " not registered!");
-                statusEffect = null;
+                throw new WrappingException("MobEffect " + effect.toString() + " not registered!");
             }
         }
         return statusEffect;
@@ -75,8 +72,7 @@ public class WrappedStatusEffect extends Wrapped<MobEffectInstance> implements S
         if (ConversionTables.EFFECTS.containsKey(statusEffect))
             return ConversionTables.EFFECTS.get(statusEffect);
         else
-            FactoryBuilder.LOGGER.error("StatusEffect has no pendant in vanilla!");
-        return null;
+            throw new WrappingException("StatusEffect has no pendant in vanilla!");
     }
 
     @Override

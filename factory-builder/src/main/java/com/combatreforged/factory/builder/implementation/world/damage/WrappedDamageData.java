@@ -2,8 +2,8 @@ package com.combatreforged.factory.builder.implementation.world.damage;
 
 import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.entity.Entity;
-import com.combatreforged.factory.builder.implementation.util.ConversionTables;
 import com.combatreforged.factory.builder.implementation.Wrapped;
+import com.combatreforged.factory.builder.implementation.util.ConversionTables;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.EntityDamageSource;

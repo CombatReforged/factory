@@ -16,8 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.combatreforged.factory.builder.FactoryBuilder.LOGGER;
-
 public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> implements Entity {
     public WrappedEntity(net.minecraft.world.entity.Entity entity) {
         super(entity);
@@ -59,8 +57,7 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
         if (wrapped.level instanceof ServerLevel && wrapped.level instanceof Wrap) {
             return Wrapped.wrap(wrapped.level, WrappedWorld.class);
         } else {
-            LOGGER.error(new WrappingException("Entity is not in a ServerLevel!"));
-            return null;
+            throw new WrappingException("Entity is not in a ServerLevel");
         }
     }
 
@@ -116,8 +113,7 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
             try {
                 passengers.add(((Wrap<Entity>) entity).wrap());
             } catch (ClassCastException e) {
-                LOGGER.error("Unable to wrap Entity!");
-                LOGGER.error(e);
+                throw new WrappingException("Unable to wrap Entity!");
             }
         }
         return passengers;
