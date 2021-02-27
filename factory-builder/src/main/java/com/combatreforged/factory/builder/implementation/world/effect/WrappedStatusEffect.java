@@ -3,11 +3,14 @@ package com.combatreforged.factory.builder.implementation.world.effect;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.builder.FactoryBuilder;
+import com.combatreforged.factory.builder.extension.MobEffectExtension;
 import com.combatreforged.factory.builder.implementation.util.ConversionTables;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.HealthBoostMobEffect;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 
 public class WrappedStatusEffect extends Wrapped<MobEffectInstance> implements StatusEffectInstance {
@@ -46,9 +49,21 @@ public class WrappedStatusEffect extends Wrapped<MobEffectInstance> implements S
             statusEffect = ConversionTables.EFFECTS.inverse().get(effect);
         else {
             ResourceLocation resourceLocation = Registry.MOB_EFFECT.getKey(effect);
-            if (resourceLocation != null)
-                statusEffect = new StatusEffect.Unidentified(resourceLocation.toString(), effect.isBeneficial() ? StatusEffect.Type.BENEFICIAL : StatusEffect.Type.HARMFUL);
-            else {
+            if (resourceLocation != null) {
+                StatusEffect.Type type;
+                MobEffectExtension mex = ((MobEffectExtension) effect);
+                switch (mex.getCategory()) {
+                    case BENEFICIAL:
+                        type = StatusEffect.Type.BENEFICIAL;
+                        break;
+                    case HARMFUL:
+                        type = StatusEffect.Type.HARMFUL;
+                        break;
+                    default:
+                        type = StatusEffect.Type.NEUTRAL;
+                }
+                statusEffect = new StatusEffect.Unidentified(resourceLocation.toString(), type);
+            } else {
                 FactoryBuilder.LOGGER.error("MobEffect " + effect.toString() + " not registered!");
                 statusEffect = null;
             }
