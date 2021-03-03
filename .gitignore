@@ -1,6 +1,8 @@
 # gradle
 
+.gradle/
 factory-builder/.gradle/
+factory-api/.gradle
 build/
 out/
 classes/
