@@ -17,6 +17,7 @@ public abstract class Wrapped<T> {
 
     @SuppressWarnings("unchecked")
     public static <U, T extends Wrapped<U>> T wrap(Object unwrapped, Class<T> clazz) {
+        if (unwrapped == null) return null;
         try {
             return (T) ((Wrap<U>) unwrapped).wrap();
         } catch (ClassCastException e) {

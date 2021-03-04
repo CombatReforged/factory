@@ -1,6 +1,7 @@
 package com.combatreforged.factory.api.world.entity;
 
 import com.combatreforged.factory.api.world.World;
+import com.combatreforged.factory.api.world.command.CommandSource;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.api.world.util.Vector3D;
 import net.kyori.adventure.text.Component;
@@ -11,7 +12,7 @@ import java.util.List;
 /**
  * Represents an Entity on the server.
  */
-public interface Entity {
+public interface Entity extends CommandSource {
     /**
      * Gets the Entity's internal id.
      * @return the Entity's id

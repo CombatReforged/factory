@@ -10,6 +10,7 @@ import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.Nullable;
 
@@ -148,6 +149,15 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
         else if (other.getClass() != getClass())
             return false;
         return getEntityId() == ((WrappedEntity) other).getEntityId();
+    }
+
+    @Override
+    public int runCommand(String command) {
+        MinecraftServer server = wrapped.getServer();
+        if (server != null)
+            return wrapped.getServer().getCommands().performCommand(wrapped.createCommandSourceStack(), command);
+        else
+            return 0;
     }
 
     @Override
