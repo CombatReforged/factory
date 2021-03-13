@@ -5,17 +5,17 @@ import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.extension.MobEffectExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
-import com.combatreforged.factory.builder.implementation.util.ConversionTables;
+import com.combatreforged.factory.builder.implementation.util.Conversion;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 
-public class WrappedStatusEffect extends Wrapped<MobEffectInstance> implements StatusEffectInstance {
+public class WrappedStatusEffectInstance extends Wrapped<MobEffectInstance> implements StatusEffectInstance {
     private final net.minecraft.world.effect.MobEffectInstance wrapped;
     private final StatusEffect effect;
 
-    public WrappedStatusEffect(MobEffectInstance instance) {
+    public WrappedStatusEffectInstance(MobEffectInstance instance) {
         super(instance);
         this.wrapped = instance;
         this.effect = convert(instance.getEffect());
@@ -43,8 +43,8 @@ public class WrappedStatusEffect extends Wrapped<MobEffectInstance> implements S
 
     private static StatusEffect convert(MobEffect effect) {
         StatusEffect statusEffect;
-        if (ConversionTables.EFFECTS.inverse().containsKey(effect))
-            statusEffect = ConversionTables.EFFECTS.inverse().get(effect);
+        if (Conversion.EFFECTS.inverse().containsKey(effect))
+            statusEffect = Conversion.EFFECTS.inverse().get(effect);
         else {
             ResourceLocation resourceLocation = Registry.MOB_EFFECT.getKey(effect);
             if (resourceLocation != null) {
@@ -69,8 +69,8 @@ public class WrappedStatusEffect extends Wrapped<MobEffectInstance> implements S
     }
 
     public static MobEffect convert(StatusEffect statusEffect) {
-        if (ConversionTables.EFFECTS.containsKey(statusEffect))
-            return ConversionTables.EFFECTS.get(statusEffect);
+        if (Conversion.EFFECTS.containsKey(statusEffect))
+            return Conversion.EFFECTS.get(statusEffect);
         else
             throw new WrappingException("StatusEffect has no pendant in vanilla!");
     }

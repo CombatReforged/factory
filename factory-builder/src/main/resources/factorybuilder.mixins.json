@@ -4,12 +4,16 @@
   "package": "com.combatreforged.factory.builder.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "server.DedicatedServerMixin",
+    "server.dedicated.DedicatedServerMixin",
+    "server.network.ServerGamePacketListenerImplMixin",
+    "server.players.PlayerListMixin",
     "world.ServerLevelMixin",
+    "world.damagesource.DamageSourceMixin",
     "world.effect.MobEffectInstanceMixin",
     "world.effect.MobEffectMixin",
     "world.effect.MobEffectsMixin",
     "world.entity.EntityMixin",
+    "world.food.FoodDataMixin",
     "world.item.ItemsMixin",
     "world.level.block.BlocksMixin"
   ],

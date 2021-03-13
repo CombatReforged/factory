@@ -1,6 +1,6 @@
 package com.combatreforged.factory.builder.mixin.world.item;
 
-import com.combatreforged.factory.builder.implementation.util.ConversionTables;
+import com.combatreforged.factory.builder.implementation.util.Conversion;
 import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,6 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ItemsMixin {
     @Inject(method = "<clinit>", at = @At("TAIL"))
     private static void loadConversionTable(CallbackInfo ci) {
-        ConversionTables.setupItems();
+        Conversion.setupItems();
     }
 }

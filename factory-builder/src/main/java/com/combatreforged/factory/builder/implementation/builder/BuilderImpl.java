@@ -7,9 +7,9 @@ import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.projectile.Projectile;
 import com.combatreforged.factory.builder.implementation.Wrapped;
-import com.combatreforged.factory.builder.implementation.util.ConversionTables;
+import com.combatreforged.factory.builder.implementation.util.Conversion;
 import com.combatreforged.factory.builder.implementation.world.damage.WrappedDamageData;
-import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffect;
+import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -26,15 +26,15 @@ public class BuilderImpl implements Builder {
 
     @Override
     public StatusEffectInstance createStatusEffectInstance(StatusEffect statusEffect, int duration, int amplifier, boolean ambient) {
-        MobEffectInstance mei = new MobEffectInstance(ConversionTables.EFFECTS.get(statusEffect), duration, amplifier, ambient, ambient, ambient);
-        return Wrapped.wrap(mei, WrappedStatusEffect.class);
+        MobEffectInstance mei = new MobEffectInstance(Conversion.EFFECTS.get(statusEffect), duration, amplifier, ambient, ambient, ambient);
+        return Wrapped.wrap(mei, WrappedStatusEffectInstance.class);
     }
 
     @Override
     public DamageData createDamageData(DamageData.Type type, Entity entityCause, boolean isIndirect) {
         DamageSource ds = DamageSource.GENERIC;
-        if (ConversionTables.DAMAGE_TYPES.containsKey(type)) {
-            ds = ConversionTables.DAMAGE_TYPES.get(type);
+        if (Conversion.DAMAGE_TYPES.containsKey(type)) {
+            ds = Conversion.DAMAGE_TYPES.get(type);
         }
         else {
             switch (type) {

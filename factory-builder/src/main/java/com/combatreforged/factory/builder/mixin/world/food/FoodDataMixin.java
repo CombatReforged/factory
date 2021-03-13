@@ -1,4 +1,4 @@
-package com.combatreforged.factory.builder.mixin.world.entity.player;
+package com.combatreforged.factory.builder.mixin.world.food;
 
 import com.combatreforged.factory.builder.extension.FoodDataExtension;
 import net.minecraft.world.food.FoodData;

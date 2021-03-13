@@ -12,10 +12,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.dedicated.DedicatedServer;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements FactoryServer {
     final DedicatedServer wrapped;
@@ -38,10 +36,11 @@ public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements Fa
     }
 
     @Override
-    public Collection<Player> getPlayers() {
-        Set<Player> players = new HashSet<>();
-        wrapped.getPlayerList().getPlayers().forEach(player -> players.add(Wrapped.wrap(player, WrappedPlayer.class)));
-        return players; //TODO Improve efficiency
+    public List<Player> getPlayers() {
+        return wrapped.getPlayerList().getPlayers()
+                .stream()
+                .map((player) -> Wrapped.wrap(player, WrappedPlayer.class))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -60,7 +59,7 @@ public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements Fa
         wrapped.getAllLevels().forEach((world) -> {
             worlds.add(Wrapped.wrap(world, WrappedWorld.class));
         });
-        return worlds; //TODO Improve efficiency
+        return worlds;
     }
 
     @Override

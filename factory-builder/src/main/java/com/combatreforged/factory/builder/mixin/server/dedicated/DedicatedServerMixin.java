@@ -1,4 +1,4 @@
-package com.combatreforged.factory.builder.mixin.server;
+package com.combatreforged.factory.builder.mixin.server.dedicated;
 
 import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
@@ -19,10 +19,7 @@ import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.WorldData;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -36,10 +33,15 @@ public abstract class DedicatedServerMixin extends MinecraftServer implements Wr
         super(thread, registryHolder, levelStorageAccess, worldData, packRepository, proxy, dataFixer, serverResources, minecraftSessionService, gameProfileRepository, gameProfileCache, chunkProgressListenerFactory);
     }
 
-    @Inject(method = "initServer", at = @At("HEAD"))
+    @Inject(method = "initServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/dedicated/DedicatedServer;loadLevel()V", shift = At.Shift.AFTER))
     public void loadAPI(CallbackInfoReturnable<Boolean> cir) {
-        FactoryBuilder.LOGGER.info(FactoryBuilder.PREFIX + "Injecting the API...");
+        FactoryBuilder.LOGGER.info("Injecting the API...");
         FactoryAPI api = new FactoryAPI(new BuilderImpl(LogManager.getLogger("FactoryWrapBuilder")));
         this.wrapped = new WrappedFactoryServer((DedicatedServer) (Object) this, api);
+    }
+
+    @Override
+    public FactoryServer wrap() {
+        return wrapped;
     }
 }

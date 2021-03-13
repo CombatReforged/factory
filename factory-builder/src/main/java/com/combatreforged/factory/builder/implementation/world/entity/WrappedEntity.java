@@ -7,9 +7,9 @@ import com.combatreforged.factory.api.world.util.Vector3D;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.Wrapped;
+import com.combatreforged.factory.builder.implementation.util.Conversion;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.Nullable;
@@ -29,23 +29,20 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
 
     @Override
     public Component getName() {
-        String mcCompString = net.minecraft.network.chat.Component.Serializer.toJson(wrapped.getName());
-        return GsonComponentSerializer.gson().deserialize(mcCompString);
+        return Conversion.convertComponent(wrapped.getName());
     }
 
     @Override
     public @Nullable Component getCustomName() {
         if (wrapped.getCustomName() != null) {
-            String mcCompString = net.minecraft.network.chat.Component.Serializer.toJson(wrapped.getCustomName());
-            return GsonComponentSerializer.gson().deserialize(mcCompString);
+            return Conversion.convertComponent(wrapped.getCustomName());
         }
         return null;
     }
 
     @Override
     public void setCustomName(Component customName) {
-        String compString = GsonComponentSerializer.gson().serialize(customName);
-        wrapped.setCustomName(net.minecraft.network.chat.Component.Serializer.fromJson(compString));
+        wrapped.setCustomName(Conversion.convertComponent(customName));
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.item.Item;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
-import com.combatreforged.factory.builder.implementation.util.ConversionTables;
+import com.combatreforged.factory.builder.implementation.util.Conversion;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class WrappedBlock extends Wrapped<BlockState> implements Block {
@@ -15,10 +15,10 @@ public class WrappedBlock extends Wrapped<BlockState> implements Block {
 
     @Override
     public Item getDrop() {
-        if (!ConversionTables.ITEMS.inverse().containsKey(wrapped.getBlock().asItem())) {
+        if (!Conversion.ITEMS.inverse().containsKey(wrapped.getBlock().asItem())) {
           throw new WrappingException("Can't wrap Item");
         }
-        return ConversionTables.ITEMS.inverse().get(wrapped.getBlock().asItem());
+        return Conversion.ITEMS.inverse().get(wrapped.getBlock().asItem());
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.combatreforged.factory.api.world.util;
 
 import com.combatreforged.factory.api.world.World;
 
+import java.util.Objects;
+
 /**
  * A util that represents a specific location in a world that includes a position
  * and optionally a direction.
@@ -147,5 +149,17 @@ public class Location {
         double yDif = other.y - this.y;
         double zDif = other.z - this.z;
         return Math.sqrt(xDif * xDif + yDif * yDif + zDif * zDif);
+    }
+
+    public Location copy() {
+        return new Location(x, y, z, yaw, pitch, world);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Location location = (Location) o;
+        return Double.compare(location.x, x) == 0 && Double.compare(location.y, y) == 0 && Double.compare(location.z, z) == 0 && Float.compare(location.yaw, yaw) == 0 && Float.compare(location.pitch, pitch) == 0 && Objects.equals(world, location.world);
     }
 }

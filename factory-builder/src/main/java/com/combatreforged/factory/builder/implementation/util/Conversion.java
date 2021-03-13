@@ -6,6 +6,8 @@ import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.item.Item;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
@@ -13,7 +15,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
-public abstract class ConversionTables {
+public abstract class Conversion {
     public static final BiMap<StatusEffect, MobEffect> EFFECTS = HashBiMap.create();
     public static final BiMap<BlockType, Block> BLOCKS = HashBiMap.create();
     public static final BiMap<Item, net.minecraft.world.item.Item> ITEMS = HashBiMap.create();
@@ -1826,6 +1828,16 @@ public abstract class ConversionTables {
         DAMAGE_TYPES.put(Type.SWEET_BERRY_BUSH, DamageSource.SWEET_BERRY_BUSH);
         DAMAGE_TYPES.put(Type.VOID, DamageSource.OUT_OF_WORLD);
         DAMAGE_TYPES.put(Type.WITHERING, DamageSource.WITHER);
+    }
+
+    public static net.kyori.adventure.text.Component convertComponent(Component mcComponent) {
+        String mcCompString = net.minecraft.network.chat.Component.Serializer.toJson(mcComponent);
+        return GsonComponentSerializer.gson().deserialize(mcCompString);
+    }
+
+    public static Component convertComponent(net.kyori.adventure.text.Component component) {
+        String compString = GsonComponentSerializer.gson().serialize(component);
+        return net.minecraft.network.chat.Component.Serializer.fromJson(compString);
     }
 
     static {

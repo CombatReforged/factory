@@ -2,7 +2,7 @@ package com.combatreforged.factory.builder.mixin.world.effect;
 
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
-import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffect;
+import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +17,7 @@ public abstract class MobEffectInstanceMixin implements Comparable<MobEffectInst
 
     @Inject(method = "<init>(Lnet/minecraft/world/effect/MobEffect;IIZZZLnet/minecraft/world/effect/MobEffectInstance;)V", at = @At("TAIL"))
     public void injectWrap(MobEffect mobEffect, int i, int j, boolean bl, boolean bl2, boolean bl3, @Nullable MobEffectInstance mobEffectInstance, CallbackInfo ci) {
-        this.wrapped = new WrappedStatusEffect((MobEffectInstance) (Object) this);
+        this.wrapped = new WrappedStatusEffectInstance((MobEffectInstance) (Object) this);
     }
 
     @Override

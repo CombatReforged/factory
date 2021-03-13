@@ -3,7 +3,7 @@ package com.combatreforged.factory.builder.implementation.world.damage;
 import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.builder.implementation.Wrapped;
-import com.combatreforged.factory.builder.implementation.util.ConversionTables;
+import com.combatreforged.factory.builder.implementation.util.Conversion;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.EntityDamageSource;
@@ -17,8 +17,8 @@ public class WrappedDamageData extends Wrapped<DamageSource> implements DamageDa
     public WrappedDamageData(DamageSource wrapped) {
         super(wrapped);
         this.wrapped = wrapped;
-        if (ConversionTables.DAMAGE_TYPES.inverse().containsKey(wrapped)) {
-            type = ConversionTables.DAMAGE_TYPES.inverse().get(wrapped);
+        if (Conversion.DAMAGE_TYPES.inverse().containsKey(wrapped)) {
+            type = Conversion.DAMAGE_TYPES.inverse().get(wrapped);
         }
         else {
             if (wrapped.isExplosion()) {

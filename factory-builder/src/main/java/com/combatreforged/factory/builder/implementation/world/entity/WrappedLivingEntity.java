@@ -5,7 +5,7 @@ import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.api.world.entity.LivingEntity;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
-import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffect;
+import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 
@@ -67,12 +67,12 @@ public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
 
     @Override
     public void addEffectInstance(StatusEffectInstance effectInstance) {
-        wrapped.addEffect(new MobEffectInstance(WrappedStatusEffect.convert(effectInstance.getStatusEffect()),
+        wrapped.addEffect(new MobEffectInstance(WrappedStatusEffectInstance.convert(effectInstance.getStatusEffect()),
                 effectInstance.getTicksLeft(), effectInstance.getAmplifier(), effectInstance.isAmbient(), effectInstance.isAmbient()));
     }
 
     @Override
     public void removeEffect(StatusEffect statusEffect) {
-        wrapped.removeEffect(WrappedStatusEffect.convert(statusEffect));
+        wrapped.removeEffect(WrappedStatusEffectInstance.convert(statusEffect));
     }
 }
