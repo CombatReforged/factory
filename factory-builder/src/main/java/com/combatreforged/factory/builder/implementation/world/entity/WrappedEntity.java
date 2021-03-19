@@ -12,6 +12,7 @@ import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -68,8 +69,8 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
             wrapped.setLevel(((WrappedWorld) location.getWorld()).unwrap());
         wrapped.teleportTo(location.getX(), location.getY(), location.getZ());
         if (!ignoreDirection) {
-            wrapped.yRot = Math.min(Math.max(location.getYaw(), -180), 180);
-            wrapped.xRot = Math.min(Math.max(location.getPitch(), -90), 90);
+            wrapped.yRot = location.getYaw() % 360.0F;
+            wrapped.xRot = Mth.clamp(location.getPitch(), -90.0F, 90.0F) % 360.0F;
         }
     }
 
