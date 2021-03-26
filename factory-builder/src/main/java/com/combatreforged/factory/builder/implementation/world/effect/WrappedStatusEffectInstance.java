@@ -12,13 +12,11 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 
 public class WrappedStatusEffectInstance extends Wrapped<MobEffectInstance> implements StatusEffectInstance {
-    private final net.minecraft.world.effect.MobEffectInstance wrapped;
     private final StatusEffect effect;
 
-    public WrappedStatusEffectInstance(MobEffectInstance instance) {
-        super(instance);
-        this.wrapped = instance;
-        this.effect = convert(instance.getEffect());
+    public WrappedStatusEffectInstance(MobEffectInstance wrapped) {
+        super(wrapped);
+        this.effect = convert(wrapped.getEffect());
     }
 
     @Override

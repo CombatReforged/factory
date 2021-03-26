@@ -105,4 +105,6 @@ public abstract class ServerGamePacketListenerImplMixin {
                 Math.abs(second.getPitch() - first.getPitch())
         };
     }
+
+    // END: MOVE EVENT
 }

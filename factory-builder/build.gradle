@@ -23,7 +23,8 @@ dependencies {
 	mappings minecraft.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:0.10.8"
 
-	implementation project(":factory-api")
+	implementation include(project(":factory-api"))
+	modImplementation include("net.kyori:adventure-platform-fabric:4.0.0-SNAPSHOT") //TODO Fix Fabric API dep
 }
 
 minecraft {

@@ -4,10 +4,12 @@ import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.command.CommandSource;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.api.world.util.Vector3D;
+import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents an Entity on the server.
@@ -129,4 +131,14 @@ public interface Entity extends CommandSource {
      * Stops this Entity from riding another one.
      */
     void stopRiding();
+
+    Set<String> getTags();
+
+    boolean addTag(String tag);
+
+    void removeTag(String tag);
+
+    boolean hasTag(String tag);
+
+    BinaryTagHolder getEntityData();
 }

@@ -9,7 +9,9 @@ import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
+import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -17,10 +19,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> implements Entity {
-    public WrappedEntity(net.minecraft.world.entity.Entity entity) {
-        super(entity);
+    public WrappedEntity(net.minecraft.world.entity.Entity wrapped) {
+        super(wrapped);
     }
 
     @Override
@@ -138,6 +141,31 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
     @Override
     public void stopRiding() {
         wrapped.stopRiding();
+    }
+
+    @Override
+    public Set<String> getTags() {
+        return wrapped.getTags();
+    }
+
+    @Override
+    public boolean addTag(String tag) {
+        return wrapped.addTag(tag);
+    }
+
+    @Override
+    public void removeTag(String tag) {
+        wrapped.removeTag(tag);
+    }
+
+    @Override
+    public boolean hasTag(String tag) {
+        return wrapped.getTags().contains(tag);
+    }
+
+    @Override
+    public BinaryTagHolder getEntityData() {
+        return BinaryTagHolder.of(wrapped.saveWithoutId(new CompoundTag()).getAsString());
     }
 
     @Override

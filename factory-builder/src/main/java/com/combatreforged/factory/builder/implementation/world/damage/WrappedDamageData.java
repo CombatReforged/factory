@@ -10,13 +10,10 @@ import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.damagesource.IndirectEntityDamageSource;
 
 public class WrappedDamageData extends Wrapped<DamageSource> implements DamageData {
-    final DamageSource wrapped;
-
     final Type type;
 
     public WrappedDamageData(DamageSource wrapped) {
         super(wrapped);
-        this.wrapped = wrapped;
         if (Conversion.DAMAGE_TYPES.inverse().containsKey(wrapped)) {
             type = Conversion.DAMAGE_TYPES.inverse().get(wrapped);
         }

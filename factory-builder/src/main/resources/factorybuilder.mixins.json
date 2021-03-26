@@ -15,7 +15,9 @@
     "world.entity.EntityMixin",
     "world.food.FoodDataMixin",
     "world.item.ItemsMixin",
-    "world.level.block.BlocksMixin"
+    "world.level.block.BlocksMixin",
+    "world.level.block.entity.BlockEntityMixin",
+    "world.level.block.state.BlockStateMixin"
   ],
   "client": [
   ],

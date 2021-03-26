@@ -14,6 +14,11 @@ public class WrappedBlock extends Wrapped<BlockState> implements Block {
     }
 
     @Override
+    public boolean isAir() {
+        return wrapped.isAir();
+    }
+
+    @Override
     public Item getDrop() {
         if (!Conversion.ITEMS.inverse().containsKey(wrapped.getBlock().asItem())) {
           throw new WrappingException("Can't wrap Item");

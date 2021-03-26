@@ -15,9 +15,9 @@ import java.util.List;
 public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
     private final net.minecraft.world.entity.LivingEntity wrapped;
 
-    public WrappedLivingEntity(net.minecraft.world.entity.LivingEntity entity) {
-        super(entity);
-        this.wrapped = entity;
+    public WrappedLivingEntity(net.minecraft.world.entity.LivingEntity wrapped) {
+        super(wrapped);
+        this.wrapped = wrapped;
     }
 
     public net.minecraft.world.entity.LivingEntity unwrap() {
