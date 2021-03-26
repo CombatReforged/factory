@@ -4,6 +4,7 @@
   "package": "com.combatreforged.factory.builder.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "server.MinecraftServerMixin",
     "server.dedicated.DedicatedServerMixin",
     "server.network.ServerGamePacketListenerImplMixin",
     "server.players.PlayerListMixin",
