@@ -4,7 +4,6 @@ import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.world.block.WrappedBlock;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
