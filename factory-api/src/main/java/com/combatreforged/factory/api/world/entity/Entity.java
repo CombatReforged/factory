@@ -141,4 +141,6 @@ public interface Entity extends CommandSource {
     boolean hasTag(String tag);
 
     BinaryTagHolder getEntityData();
+
+    void setEntityData(BinaryTagHolder tag);
 }

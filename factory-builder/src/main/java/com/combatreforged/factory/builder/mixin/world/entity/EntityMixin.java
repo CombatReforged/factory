@@ -1,5 +1,6 @@
 package com.combatreforged.factory.builder.mixin.world.entity;
 
+import com.combatreforged.factory.builder.extension.EntityExtension;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedLivingEntity;
@@ -14,6 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -23,7 +25,7 @@ yRot = yaw*/
 
 
 @Mixin(Entity.class)
-public abstract class EntityMixin implements Nameable, CommandSource, Wrap<com.combatreforged.factory.api.world.entity.Entity> {
+public abstract class EntityMixin implements Nameable, CommandSource, Wrap<com.combatreforged.factory.api.world.entity.Entity>, EntityExtension {
     private com.combatreforged.factory.api.world.entity.Entity wrapped;
 
     @Inject(method = "<init>", at = @At("TAIL"))
@@ -49,5 +51,10 @@ public abstract class EntityMixin implements Nameable, CommandSource, Wrap<com.c
     @Override
     public com.combatreforged.factory.api.world.entity.Entity wrap() {
         return this.wrapped;
+    }
+
+    @Invoker
+    public int getPermissionLevel() {
+        return 0;
     }
 }

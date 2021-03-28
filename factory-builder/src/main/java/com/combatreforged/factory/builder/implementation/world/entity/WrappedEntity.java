@@ -5,13 +5,17 @@ import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.api.world.util.Vector3D;
 import com.combatreforged.factory.builder.exception.WrappingException;
+import com.combatreforged.factory.builder.extension.EntityExtension;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -169,6 +173,15 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
     }
 
     @Override
+    public void setEntityData(BinaryTagHolder tag) {
+        try {
+            wrapped.load(TagParser.parseTag(tag.toString()));
+        } catch (CommandSyntaxException e) {
+            throw new UnsupportedOperationException("Tag is invalid");
+        }
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (other == null)
             return false;
@@ -178,12 +191,18 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
     }
 
     @Override
-    public int runCommand(String command) {
+    public int runCommand(String command, int permissionLevel, boolean giveFeedback) {
         MinecraftServer server = wrapped.getServer();
-        if (server != null)
-            return wrapped.getServer().getCommands().performCommand(wrapped.createCommandSourceStack(), command);
-        else
-            return 0;
+        if (server == null) return 0;
+
+        CommandSourceStack sourceStack = wrapped.createCommandSourceStack().withPermission(permissionLevel);
+        if (!giveFeedback) sourceStack = sourceStack.withSuppressedOutput();
+        return wrapped.getServer().getCommands().performCommand(sourceStack, command);
+    }
+
+    @Override
+    public int getPermissionLevel() {
+        return ((EntityExtension) wrapped).getPermissionLevel();
     }
 
     @Override

@@ -36,7 +36,7 @@ public abstract class DedicatedServerMixin extends MinecraftServer implements Wr
     @Inject(method = "initServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/dedicated/DedicatedServer;loadLevel()V", shift = At.Shift.AFTER))
     public void loadAPI(CallbackInfoReturnable<Boolean> cir) {
         FactoryBuilder.LOGGER.info("Injecting the API...");
-        FactoryAPI api = new FactoryAPI(new BuilderImpl(LogManager.getLogger("FactoryWrapBuilder")));
+        FactoryAPI api = new FactoryAPI(wrapped, new BuilderImpl(LogManager.getLogger("FactoryWrapBuilder")));
         this.wrapped = new WrappedFactoryServer((DedicatedServer) (Object) this, api);
     }
 

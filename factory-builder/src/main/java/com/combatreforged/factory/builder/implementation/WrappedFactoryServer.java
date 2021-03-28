@@ -7,6 +7,7 @@ import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -67,7 +68,14 @@ public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements Fa
     }
 
     @Override
-    public int runCommand(String command) {
-        return wrapped.getCommands().performCommand(wrapped.createCommandSourceStack(), command);
+    public int runCommand(String command, int permissionLevel, boolean giveFeedback) {
+        CommandSourceStack sourceStack = wrapped.createCommandSourceStack().withPermission(permissionLevel);
+        if (!giveFeedback) sourceStack = sourceStack.withSuppressedOutput();
+        return wrapped.getCommands().performCommand(sourceStack, command);
+    }
+
+    @Override
+    public int getPermissionLevel() {
+        return 4;
     }
 }
