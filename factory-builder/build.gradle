@@ -75,3 +75,7 @@ publishing {
 		mavenLocal()
 	}
 }
+
+test {
+	useJUnitPlatform()
+}

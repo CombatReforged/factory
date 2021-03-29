@@ -6,11 +6,17 @@ import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.projectile.Projectile;
+import com.combatreforged.factory.api.world.item.Item;
+import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
 import com.combatreforged.factory.builder.implementation.world.damage.WrappedDamageData;
 import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
+import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.kyori.adventure.nbt.api.BinaryTagHolder;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -59,5 +65,18 @@ public class BuilderImpl implements Builder {
             }
         }
         return Wrapped.wrap(ds, WrappedDamageData.class);
+    }
+
+    @Override
+    public ItemStack createItemStack(Item item, int count, int damage, BinaryTagHolder tag) {
+        net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(Conversion.ITEMS.get(item), count);
+        stack.setDamageValue(damage);
+        try {
+            stack.setTag(TagParser.parseTag(tag.toString()));
+        } catch (CommandSyntaxException e) {
+            throw new UnsupportedOperationException("Tag is invalid");
+        }
+
+        return Wrapped.wrap(stack, WrappedItemStack.class);
     }
 }

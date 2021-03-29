@@ -54,7 +54,7 @@ public abstract class EntityMixin implements Nameable, CommandSource, Wrap<com.c
     }
 
     @Invoker
-    public int getPermissionLevel() {
+    public int invokeGetPermissionLevel() {
         return 0;
     }
 }

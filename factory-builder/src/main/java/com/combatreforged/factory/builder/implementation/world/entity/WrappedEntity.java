@@ -202,7 +202,7 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
 
     @Override
     public int getPermissionLevel() {
-        return ((EntityExtension) wrapped).getPermissionLevel();
+        return ((EntityExtension) wrapped).invokeGetPermissionLevel();
     }
 
     @Override

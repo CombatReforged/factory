@@ -90,7 +90,7 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
                 try {
                     MutableComponent component = net.minecraft.network.chat.Component.Serializer.fromJson(string);
                     if (component != null) {
-                        returnValue.add(Conversion.convertComponent(ComponentUtils.mergeStyles(component, ItemStackAccessor.LORE_STYLE())));
+                        returnValue.add(Conversion.convertComponent(ComponentUtils.mergeStyles(component, ItemStackAccessor.getLORE_STYLE())));
                     }
                 } catch (JsonParseException e) {
                     throw new IllegalStateException("Lore is invalid");
