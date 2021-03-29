@@ -1,11 +1,13 @@
 package com.combatreforged.factory.builder.implementation.world;
 
+import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.block.Block;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
+import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
 import com.combatreforged.factory.builder.implementation.world.block.WrappedBlock;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
 import net.minecraft.core.BlockPos;
@@ -52,5 +54,10 @@ public class WrappedWorld extends Wrapped<ServerLevel> implements World {
     @Override
     public Entity getEntity(UUID uuid) {
         return Wrapped.wrap(wrapped.getEntity(uuid), WrappedEntity.class);
+    }
+
+    @Override
+    public FactoryServer getServer() {
+        return Wrapped.wrap(wrapped.getServer(), WrappedFactoryServer.class);
     }
 }

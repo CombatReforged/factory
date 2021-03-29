@@ -1,5 +1,6 @@
 package com.combatreforged.factory.api.world;
 
+import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.world.block.Block;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.util.Location;
@@ -17,4 +18,6 @@ public interface World {
     boolean spawn(Entity entity);
 
     Entity getEntity(UUID uuid);
+
+    FactoryServer getServer();
 }
