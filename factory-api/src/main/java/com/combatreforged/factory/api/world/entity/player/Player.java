@@ -1,6 +1,7 @@
 package com.combatreforged.factory.api.world.entity.player;
 
 import com.combatreforged.factory.api.world.entity.LivingEntity;
+import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 
 public interface Player extends LivingEntity {
     int getFoodLevel();
@@ -9,4 +10,6 @@ public interface Player extends LivingEntity {
     void setSaturation(float saturation);
     float getExhaustion();
     void setExhaustion(float exhaustion);
+    PlayerInventory getInventory();
+    int getSelectedSlot();
 }

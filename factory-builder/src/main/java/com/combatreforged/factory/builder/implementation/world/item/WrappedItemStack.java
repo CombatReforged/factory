@@ -4,7 +4,6 @@ import com.combatreforged.factory.api.world.item.Item;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
-import com.combatreforged.factory.builder.mixin.world.item.ItemStackAccessor;
 import com.google.gson.JsonParseException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
@@ -12,10 +11,10 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.MutableComponent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack> implements ItemStack {
@@ -81,8 +80,12 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
     @Override
     public List<Component> getLore() {
         List<Component> returnValue = new ArrayList<>();
-        if (wrapped.getTag() != null && wrapped.getTag().contains("Lore")) {
-            ListTag listTag = wrapped.getTag().getList("Lore", 8);
+        if (!wrapped.hasTag()) return returnValue;
+        assert wrapped.getTag() != null;
+
+        CompoundTag displayTag = wrapped.getTag().contains("display", 10) ? wrapped.getTag().getCompound("display") : null;
+        if (displayTag != null && displayTag.getTagType("Lore") == 9) {
+            ListTag listTag = displayTag.getList("Lore", 8);
 
             for(int i = 0; i < listTag.size(); ++i) {
                 String string = listTag.getString(i);
@@ -90,7 +93,7 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
                 try {
                     MutableComponent component = net.minecraft.network.chat.Component.Serializer.fromJson(string);
                     if (component != null) {
-                        returnValue.add(Conversion.convertComponent(ComponentUtils.mergeStyles(component, ItemStackAccessor.getLORE_STYLE())));
+                        returnValue.add(Conversion.convertComponent(component));
                     }
                 } catch (JsonParseException e) {
                     throw new IllegalStateException("Lore is invalid");
@@ -103,12 +106,26 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
 
     @Override
     public void setLore(Component... lore) {
-        //TODO
+        setLore(Arrays.asList(lore));
     }
 
     @Override
     public void setLore(List<Component> lore) {
-        //TODO
+        CompoundTag tag = wrapped.getOrCreateTag();
+        CompoundTag display = wrapped.getOrCreateTagElement("display");
+
+        ListTag loreArray = new ListTag();
+
+        for (Component component : lore) {
+            try {
+                loreArray.add(TagParser.parseTag(Conversion.convertComponent(component).toString()));
+            } catch (CommandSyntaxException e) {
+                throw new UnsupportedOperationException("Component " + lore.indexOf(component) + " is invalid");
+            }
+        }
+
+        display.put("Lore", loreArray);
+        tag.put("display", display);
     }
 
     @Override

@@ -14,9 +14,11 @@
     "world.effect.MobEffectMixin",
     "world.effect.MobEffectsMixin",
     "world.entity.EntityMixin",
+    "world.entity.player.InventoryMixin",
     "world.food.FoodDataMixin",
     "world.item.ItemsMixin",
     "world.item.ItemStackAccessor",
+    "world.item.ItemStackMixin",
     "world.level.block.BlocksMixin",
     "world.level.block.entity.BlockEntityMixin",
     "world.level.block.state.BlockStateMixin"

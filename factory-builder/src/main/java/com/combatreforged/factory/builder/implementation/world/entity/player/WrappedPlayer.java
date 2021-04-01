@@ -1,8 +1,11 @@
 package com.combatreforged.factory.builder.implementation.world.entity.player;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 import com.combatreforged.factory.builder.extension.FoodDataExtension;
+import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedLivingEntity;
+import com.combatreforged.factory.builder.implementation.world.item.container.WrappedPlayerInventory;
 import net.minecraft.server.level.ServerPlayer;
 
 public class WrappedPlayer extends WrappedLivingEntity implements Player {
@@ -40,5 +43,15 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
     @Override
     public void setExhaustion(float exhaustion) {
         ((FoodDataExtension) wrapped.getFoodData()).setExhaustion(exhaustion);
+    }
+
+    @Override
+    public PlayerInventory getInventory() {
+        return Wrapped.wrap(wrapped.inventory, WrappedPlayerInventory.class);
+    }
+
+    @Override
+    public int getSelectedSlot() {
+        return wrapped.inventory.selected;
     }
 }
