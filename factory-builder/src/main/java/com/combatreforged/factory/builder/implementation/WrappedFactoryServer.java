@@ -1,6 +1,5 @@
 package com.combatreforged.factory.builder.implementation;
 
-import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.World;
