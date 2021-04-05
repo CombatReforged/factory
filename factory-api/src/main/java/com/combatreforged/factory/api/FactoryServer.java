@@ -9,8 +9,6 @@ import java.util.Collection;
 import java.util.UUID;
 
 public interface FactoryServer extends CommandSource {
-    FactoryAPI getAPI();
-
     int getMaxPlayerCount();
     Collection<Player> getPlayers();
     Player getPlayer(String name);

@@ -6,6 +6,7 @@ import com.combatreforged.factory.api.world.item.Item;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
+import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class WrappedBlock extends Wrapped<BlockState> implements Block {
@@ -24,11 +25,6 @@ public class WrappedBlock extends Wrapped<BlockState> implements Block {
           throw new WrappingException("Can't wrap Item");
         }
         return Conversion.ITEMS.inverse().get(wrapped.getBlock().asItem());
-    }
-
-    @Override
-    public float getBreakingProgress(Player player) {
-        return 0; //TODO
     }
 
     @Override

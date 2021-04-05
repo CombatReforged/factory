@@ -14,6 +14,7 @@
     "world.effect.MobEffectMixin",
     "world.effect.MobEffectsMixin",
     "world.entity.EntityMixin",
+    "world.entity.EntityTypeMixin",
     "world.entity.player.InventoryMixin",
     "world.food.FoodDataMixin",
     "world.item.ItemsMixin",

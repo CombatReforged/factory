@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "factory-test",
+  "version": "0.1.0",
+
+  "name": "Factory Test",
+  "description": "Testing the Factory API.",
+  "authors": [
+    "rizecookey"
+  ],
+
+  "environment": "server",
+  "entrypoints": {
+    "factory": [
+      "net.rizecookey.factorytest.TestPlugin"
+    ]
+  },
+
+  "depends": {
+    "fabricloader": ">=0.10.8"
+  }
+}

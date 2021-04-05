@@ -17,16 +17,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements FactoryServer {
-    final FactoryAPI api;
-    public WrappedFactoryServer(DedicatedServer wrapped, FactoryAPI api) {
+    public WrappedFactoryServer(DedicatedServer wrapped) {
         super(wrapped);
-        this.api = api;
-    }
-
-
-    @Override
-    public FactoryAPI getAPI() {
-        return api;
     }
 
     @Override
