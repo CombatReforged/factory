@@ -2,6 +2,7 @@ package com.combatreforged.factory.builder.implementation.world.entity;
 
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.Entity;
+import com.combatreforged.factory.api.world.entity.EntityType;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.api.world.util.Vector3D;
 import com.combatreforged.factory.builder.exception.WrappingException;
@@ -33,6 +34,11 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
     @Override
     public int getEntityId() {
         return wrapped.getId();
+    }
+
+    @Override
+    public EntityType getEntityType() {
+        return Conversion.ENTITIES.inverse().get(this.wrapped.getType());
     }
 
     @Override

@@ -3,6 +3,7 @@
 .gradle/
 factory-builder/.gradle/
 factory-api/.gradle
+factory-test/.gradle
 build/
 out/
 classes/

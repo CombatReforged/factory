@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** An Event Backend for a special event
- * @param <T> the Event this backend is representing
- */
 public class EventBackend<T extends Event> {
     public static final Logger LOGGER = LogManager.getLogger("EventBackend");
 
@@ -22,20 +19,10 @@ public class EventBackend<T extends Event> {
         listeners = new ArrayList<>();
     }
 
-    /**
-     * Registers a listener that will be called once the event is called.
-     * @param listener a listener
-     */
     public void register(Listener<T> listener) {
         register(listener, 0);
     }
 
-    /**
-     * Registers a listener with a specific priority.
-     * @param listener a listener
-     * @param priority the listeners priority. The higher the priority, the sooner
-     *                 the listener will be called before others.
-     */
     public void register(Listener<T> listener, int priority) {
         if (priority < -100 || priority > 100) {
             LOGGER.error("Listener " + listener.toString() + " tried to register with an invalid priority of " + priority + " (has to be between -100 and 100)!");
@@ -58,19 +45,11 @@ public class EventBackend<T extends Event> {
         }
     }
 
-    /**
-     * Unregisters a listener.
-     * @param listener the listener to unregister
-     */
     public void unregister(Listener<T> listener) {
         listeners.remove(listener);
         priorityMap.remove(listener);
     }
 
-    /**
-     * Calls the event represented by this backend.
-     * @param event the event to call
-     */
     public void invoke(T event) {
         for (Listener<T> listener : listeners) {
             try { listener.onEvent(event); }
@@ -81,19 +60,10 @@ public class EventBackend<T extends Event> {
         }
     }
 
-    /**
-     * Creates a backend for an event class.
-     * @param eventClass the class of the event
-     * @param <T> the event
-     * @return a new EventBackend for the event class
-     */
     public static <T extends Event> EventBackend<T> create(Class<T> eventClass) {
         return new EventBackend<>();
     }
 
-    /**
-     * Priority constants for registering a listener.
-     */
     public static final class Priority {
         public static final int HIGHEST = 100;
         public static final int VERY_HIGH = 75;
