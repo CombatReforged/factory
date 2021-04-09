@@ -8,10 +8,11 @@ import com.combatreforged.factory.builder.implementation.util.Conversion;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class WrappedContainer extends Wrapped<net.minecraft.world.Container> implements Container {
+public abstract class WrappedContainer extends Wrapped<net.minecraft.world.Container> implements Container {
     public WrappedContainer(net.minecraft.world.Container wrapped) {
         super(wrapped);
     }
@@ -48,4 +49,7 @@ public class WrappedContainer extends Wrapped<net.minecraft.world.Container> imp
                 .map(Conversion.ITEMS::get)
                 .collect(Collectors.toSet()));
     }
+
+    @Override
+    public abstract List<Integer> getAvailableSlots();
 }

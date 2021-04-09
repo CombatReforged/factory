@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public interface Container {
@@ -18,4 +19,5 @@ public interface Container {
         return contains(new HashSet<>(Arrays.asList(items)));
     }
     boolean contains(Set<Item> items);
+    List<Integer> getAvailableSlots();
 }
