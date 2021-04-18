@@ -10,6 +10,6 @@ import java.util.List;
 
 @Mixin(Inventory.class)
 public interface InventoryAccessor {
-    @Accessor
+    @Accessor(value = "compartments")
     List<NonNullList<ItemStack>> compartments();
 }
