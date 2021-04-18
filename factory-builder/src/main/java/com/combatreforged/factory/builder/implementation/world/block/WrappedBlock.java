@@ -6,6 +6,7 @@ import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 
 public class WrappedBlock extends Wrapped<BlockState> implements Block {
     public WrappedBlock(BlockState wrapped) {

@@ -4,8 +4,6 @@ import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
-import com.combatreforged.factory.builder.mixin.world.entity.player.InventoryAccessor;
-import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.Nullable;
 

@@ -2148,6 +2148,17 @@ public abstract class Conversion {
         return net.minecraft.network.chat.Component.Serializer.fromJson(compString);
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T extends Comparable<T>, U> T convertValue(Property<T> property, U value) {
+        try {
+            if (value instanceof StateProperty.StatePropertyEnum) {
+                return ((T) STATE_PROPERTY_ENUMS.get(value));
+            } else return ((T) value);
+        } catch (ClassCastException e) {
+            throw new UnsupportedOperationException("Value not convertible");
+        }
+    }
+
     static {
         initIndependent();
     }
