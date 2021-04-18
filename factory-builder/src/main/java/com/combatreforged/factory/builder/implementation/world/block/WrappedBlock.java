@@ -6,7 +6,6 @@ import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.Property;
 
 public class WrappedBlock extends Wrapped<BlockState> implements Block {
     public WrappedBlock(BlockState wrapped) {
@@ -27,12 +26,12 @@ public class WrappedBlock extends Wrapped<BlockState> implements Block {
     }
 
     @Override
-    public <T> T getPropertyValue(StateProperty stateProperty) {
+    public <T> T getPropertyValue(StateProperty<?> stateProperty) {
         return null; //TODO
     }
 
     @Override
-    public <T> void setPropertyValue(StateProperty stateProperty, T value) {
+    public <T> void setPropertyValue(StateProperty<T> stateProperty, T value) {
         //TODO
     }
 

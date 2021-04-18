@@ -26,7 +26,7 @@ public abstract class Conversion {
     public static final BiMap<BlockType, Block> BLOCKS = HashBiMap.create();
     public static final BiMap<Item, net.minecraft.world.item.Item> ITEMS = HashBiMap.create();
     public static final BiMap<EntityType, net.minecraft.world.entity.EntityType<?>> ENTITIES = HashBiMap.create();
-    public static final BiMap<StateProperty, Property<?>> STATE_PROPERTIES = HashBiMap.create();
+    public static final BiMap<StateProperty<?>, Property<?>> STATE_PROPERTIES = HashBiMap.create();
     public static final BiMap<Object, Object> STATE_PROPERTY_ENUMS = HashBiMap.create();
 
     public static final BiMap<Type, DamageSource> DAMAGE_TYPES = HashBiMap.create();
@@ -2146,17 +2146,6 @@ public abstract class Conversion {
     public static Component convertComponent(net.kyori.adventure.text.Component component) {
         String compString = GsonComponentSerializer.gson().serialize(component);
         return net.minecraft.network.chat.Component.Serializer.fromJson(compString);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends Comparable<T>, U> T convertValue(Property<T> property, U value) {
-        try {
-            if (value instanceof StateProperty.StatePropertyEnum) {
-                return ((T) STATE_PROPERTY_ENUMS.get(value));
-            } else return ((T) value);
-        } catch (ClassCastException e) {
-            throw new UnsupportedOperationException("Value not convertible");
-        }
     }
 
     static {
