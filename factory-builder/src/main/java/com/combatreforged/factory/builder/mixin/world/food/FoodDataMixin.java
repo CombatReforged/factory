@@ -9,10 +9,12 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class FoodDataMixin implements FoodDataExtension {
     @Shadow private float exhaustionLevel;
 
+    @Override
     public void setExhaustion(float exhaustion) {
         this.exhaustionLevel = exhaustion;
     }
 
+    @Override
     public float getExhaustion() {
         return this.exhaustionLevel;
     }

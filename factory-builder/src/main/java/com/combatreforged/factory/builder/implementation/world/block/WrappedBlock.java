@@ -26,7 +26,7 @@ public class WrappedBlock extends Wrapped<BlockState> implements Block {
     }
 
     @Override
-    public <T> T getPropertyValue(StateProperty<?> stateProperty) {
+    public <T> T getPropertyValue(StateProperty<T> stateProperty) {
         return null; //TODO
     }
 

@@ -27,7 +27,7 @@ import java.util.UUID;
 public abstract class ServerGamePacketListenerImplMixin {
     @Shadow public ServerPlayer player;
 
-    @Shadow
+    @Shadow @SuppressWarnings("unused")
     private static boolean containsInvalidValues(ServerboundMovePlayerPacket serverboundMovePlayerPacket) {
         return false;
     }

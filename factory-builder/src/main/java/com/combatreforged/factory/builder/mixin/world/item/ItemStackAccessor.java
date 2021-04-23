@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.throwables.MixinApplyError;
 
 @Mixin(ItemStack.class)
 public interface ItemStackAccessor {
-    @Accessor
+    @Accessor @SuppressWarnings("DoNotCallSuggester")
     static Style getLORE_STYLE() { throw new MixinApplyError("Accessor for LORE_STYLE not applied"); }
 }

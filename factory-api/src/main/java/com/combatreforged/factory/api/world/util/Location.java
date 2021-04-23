@@ -84,8 +84,13 @@ public class Location {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Location)) return false;
         Location location = (Location) o;
         return Double.compare(location.x, x) == 0 && Double.compare(location.y, y) == 0 && Double.compare(location.z, z) == 0 && Float.compare(location.yaw, yaw) == 0 && Float.compare(location.pitch, pitch) == 0 && Objects.equals(world, location.world);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z, yaw, pitch, world);
     }
 }

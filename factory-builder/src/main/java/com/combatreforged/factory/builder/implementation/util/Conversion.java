@@ -2,7 +2,7 @@ package com.combatreforged.factory.builder.implementation.util;
 
 import com.combatreforged.factory.api.world.block.Block.StateProperty;
 import com.combatreforged.factory.api.world.block.BlockType;
-import com.combatreforged.factory.api.world.damage.DamageData.Type;
+import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.entity.EntityType;
 import com.combatreforged.factory.api.world.item.Item;
@@ -29,7 +29,7 @@ public abstract class Conversion {
     public static final BiMap<StateProperty<?>, Property<?>> STATE_PROPERTIES = HashBiMap.create();
     public static final BiMap<Object, Object> STATE_PROPERTY_ENUMS = HashBiMap.create();
 
-    public static final BiMap<Type, DamageSource> DAMAGE_TYPES = HashBiMap.create();
+    public static final BiMap<DamageData.Type, DamageSource> DAMAGE_TYPES = HashBiMap.create();
 
     public static void initIndependent() {
         setupDamageTypes();
@@ -1816,27 +1816,27 @@ public abstract class Conversion {
     }
 
     public static void setupDamageTypes() {
-        DAMAGE_TYPES.put(Type.CACTUS, DamageSource.CACTUS);
-        DAMAGE_TYPES.put(Type.CRAMMING, DamageSource.CRAMMING);
-        DAMAGE_TYPES.put(Type.CRASHING, DamageSource.FLY_INTO_WALL);
-        DAMAGE_TYPES.put(Type.DRAGON_BREATH, DamageSource.DRAGON_BREATH);
-        DAMAGE_TYPES.put(Type.DROWNING, DamageSource.DROWN);
-        DAMAGE_TYPES.put(Type.DRY_OUT, DamageSource.DRY_OUT);
-        DAMAGE_TYPES.put(Type.FALLING, DamageSource.FALL);
-        DAMAGE_TYPES.put(Type.FALLING_ANVIL, DamageSource.ANVIL);
-        DAMAGE_TYPES.put(Type.FALLING_BLOCK, DamageSource.FALLING_BLOCK);
-        DAMAGE_TYPES.put(Type.GENERIC, DamageSource.GENERIC);
-        DAMAGE_TYPES.put(Type.IN_FIRE, DamageSource.IN_FIRE);
-        DAMAGE_TYPES.put(Type.LAVA, DamageSource.LAVA);
-        DAMAGE_TYPES.put(Type.LIGHTNING, DamageSource.LIGHTNING_BOLT);
-        DAMAGE_TYPES.put(Type.MAGIC, DamageSource.MAGIC);
-        DAMAGE_TYPES.put(Type.MAGMA, DamageSource.HOT_FLOOR);
-        DAMAGE_TYPES.put(Type.ON_FIRE, DamageSource.ON_FIRE);
-        DAMAGE_TYPES.put(Type.STARVING, DamageSource.STARVE);
-        DAMAGE_TYPES.put(Type.SUFFOCATION, DamageSource.IN_WALL);
-        DAMAGE_TYPES.put(Type.SWEET_BERRY_BUSH, DamageSource.SWEET_BERRY_BUSH);
-        DAMAGE_TYPES.put(Type.VOID, DamageSource.OUT_OF_WORLD);
-        DAMAGE_TYPES.put(Type.WITHERING, DamageSource.WITHER);
+        DAMAGE_TYPES.put(DamageData.Type.CACTUS, DamageSource.CACTUS);
+        DAMAGE_TYPES.put(DamageData.Type.CRAMMING, DamageSource.CRAMMING);
+        DAMAGE_TYPES.put(DamageData.Type.CRASHING, DamageSource.FLY_INTO_WALL);
+        DAMAGE_TYPES.put(DamageData.Type.DRAGON_BREATH, DamageSource.DRAGON_BREATH);
+        DAMAGE_TYPES.put(DamageData.Type.DROWNING, DamageSource.DROWN);
+        DAMAGE_TYPES.put(DamageData.Type.DRY_OUT, DamageSource.DRY_OUT);
+        DAMAGE_TYPES.put(DamageData.Type.FALLING, DamageSource.FALL);
+        DAMAGE_TYPES.put(DamageData.Type.FALLING_ANVIL, DamageSource.ANVIL);
+        DAMAGE_TYPES.put(DamageData.Type.FALLING_BLOCK, DamageSource.FALLING_BLOCK);
+        DAMAGE_TYPES.put(DamageData.Type.GENERIC, DamageSource.GENERIC);
+        DAMAGE_TYPES.put(DamageData.Type.IN_FIRE, DamageSource.IN_FIRE);
+        DAMAGE_TYPES.put(DamageData.Type.LAVA, DamageSource.LAVA);
+        DAMAGE_TYPES.put(DamageData.Type.LIGHTNING, DamageSource.LIGHTNING_BOLT);
+        DAMAGE_TYPES.put(DamageData.Type.MAGIC, DamageSource.MAGIC);
+        DAMAGE_TYPES.put(DamageData.Type.MAGMA, DamageSource.HOT_FLOOR);
+        DAMAGE_TYPES.put(DamageData.Type.ON_FIRE, DamageSource.ON_FIRE);
+        DAMAGE_TYPES.put(DamageData.Type.STARVING, DamageSource.STARVE);
+        DAMAGE_TYPES.put(DamageData.Type.SUFFOCATION, DamageSource.IN_WALL);
+        DAMAGE_TYPES.put(DamageData.Type.SWEET_BERRY_BUSH, DamageSource.SWEET_BERRY_BUSH);
+        DAMAGE_TYPES.put(DamageData.Type.VOID, DamageSource.OUT_OF_WORLD);
+        DAMAGE_TYPES.put(DamageData.Type.WITHERING, DamageSource.WITHER);
     }
 
     public static void setupEntities() {

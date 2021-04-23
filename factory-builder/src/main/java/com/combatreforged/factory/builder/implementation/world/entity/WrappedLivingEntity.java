@@ -13,40 +13,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
-    private final net.minecraft.world.entity.LivingEntity wrapped;
+    private final net.minecraft.world.entity.LivingEntity wrappedLiving;
 
-    public WrappedLivingEntity(net.minecraft.world.entity.LivingEntity wrapped) {
-        super(wrapped);
-        this.wrapped = wrapped;
+    public WrappedLivingEntity(net.minecraft.world.entity.LivingEntity wrappedLiving) {
+        super(wrappedLiving);
+        this.wrappedLiving = wrappedLiving;
     }
 
+    @Override
     public net.minecraft.world.entity.LivingEntity unwrap() {
-        return wrapped;
+        return wrappedLiving;
     }
 
     @Override
     public float getHealth() {
-        return wrapped.getHealth();
+        return wrappedLiving.getHealth();
     }
 
     @Override
     public void setHealth(float health) {
-        wrapped.setHealth(health);
+        wrappedLiving.setHealth(health);
     }
 
     @Override
     public int getInvulnerabilityTime() {
-        return wrapped.invulnerableTime;
+        return wrappedLiving.invulnerableTime;
     }
 
     @Override
     public void setInvulnerabilityTime(int ticks) {
-        wrapped.invulnerableTime = ticks;
+        wrappedLiving.invulnerableTime = ticks;
     }
 
     @Override
     public void damage(float amount) {
-        wrapped.hurt(DamageSource.GENERIC, amount);
+        wrappedLiving.hurt(DamageSource.GENERIC, amount);
     }
 
     @SuppressWarnings("unchecked")
@@ -54,7 +55,7 @@ public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
     public List<StatusEffectInstance> getActiveEffects() {
         List<StatusEffectInstance> effectInstances = new ArrayList<>();
 
-        for (MobEffectInstance vanillaInstance : wrapped.getActiveEffects()) {
+        for (MobEffectInstance vanillaInstance : wrappedLiving.getActiveEffects()) {
             try {
                 effectInstances.add(((Wrap<StatusEffectInstance>) vanillaInstance).wrap());
             } catch (ClassCastException e) {
@@ -67,12 +68,12 @@ public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
 
     @Override
     public void addEffectInstance(StatusEffectInstance effectInstance) {
-        wrapped.addEffect(new MobEffectInstance(WrappedStatusEffectInstance.convert(effectInstance.getStatusEffect()),
+        wrappedLiving.addEffect(new MobEffectInstance(WrappedStatusEffectInstance.convert(effectInstance.getStatusEffect()),
                 effectInstance.getTicksLeft(), effectInstance.getAmplifier(), effectInstance.isAmbient(), effectInstance.isAmbient()));
     }
 
     @Override
     public void removeEffect(StatusEffect statusEffect) {
-        wrapped.removeEffect(WrappedStatusEffectInstance.convert(statusEffect));
+        wrappedLiving.removeEffect(WrappedStatusEffectInstance.convert(statusEffect));
     }
 }

@@ -9,26 +9,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WrappedBlockEntityContainer extends WrappedContainer implements BlockEntityContainer {
-    private final BaseContainerBlockEntity wrapped;
-    public WrappedBlockEntityContainer(BaseContainerBlockEntity wrapped) {
-        super(wrapped);
-        this.wrapped = wrapped;
+    private final BaseContainerBlockEntity wrappedBEC;
+    public WrappedBlockEntityContainer(BaseContainerBlockEntity wrappedBEC) {
+        super(wrappedBEC);
+        this.wrappedBEC = wrappedBEC;
     }
 
     @Override
     public Component getName() {
-        return Conversion.convertComponent(wrapped.getName());
+        return Conversion.convertComponent(wrappedBEC.getName());
     }
 
     @Override
     public void setName(Component component) {
-        wrapped.setCustomName(Conversion.convertComponent(component));
+        wrappedBEC.setCustomName(Conversion.convertComponent(component));
     }
 
     @Override
     public List<Integer> getAvailableSlots() {
         List<Integer> slots = new ArrayList<>();
-        for (int i = 0; i < wrapped.getContainerSize(); i++) {
+        for (int i = 0; i < wrappedBEC.getContainerSize(); i++) {
             slots.add(i);
         }
 
@@ -37,6 +37,6 @@ public class WrappedBlockEntityContainer extends WrappedContainer implements Blo
 
     @Override
     public BaseContainerBlockEntity unwrap() {
-        return wrapped;
+        return wrappedBEC;
     }
 }

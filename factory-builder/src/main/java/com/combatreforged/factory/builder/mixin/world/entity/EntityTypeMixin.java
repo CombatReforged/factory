@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityType.class)
 public class EntityTypeMixin<T extends Entity> {
-    @Inject(method = "<clinit>", at = @At("TAIL"))
+    @Inject(method = "<clinit>", at = @At("TAIL")) @SuppressWarnings("unused")
     private static void loadConversionTable(CallbackInfo ci) {
         Conversion.setupEntities();
     }

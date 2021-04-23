@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'net.ltgt.errorprone' version "2.0.1"
 }
 
 group 'com.combatreforged.factory'
@@ -7,6 +8,7 @@ version '0.1.0'
 
 allprojects {
     apply plugin: 'java'
+    apply plugin: 'net.ltgt.errorprone'
 
     repositories {
         mavenCentral()
@@ -26,9 +28,15 @@ allprojects {
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 
+        errorprone implementation('com.google.errorprone:error_prone_core:2.6.0')
     }
 
     test {
         useJUnitPlatform()
+    }
+
+    compileJava {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 }

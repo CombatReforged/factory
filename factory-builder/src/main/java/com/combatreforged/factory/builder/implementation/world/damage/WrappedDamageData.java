@@ -31,6 +31,7 @@ public class WrappedDamageData extends Wrapped<DamageSource> implements DamageDa
         }
     }
 
+    @Override
     public DamageSource unwrap() {
         return wrapped;
     }

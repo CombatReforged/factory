@@ -191,9 +191,14 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
     public boolean equals(Object other) {
         if (other == null)
             return false;
-        else if (other.getClass() != getClass())
+        else if (!(other instanceof WrappedEntity))
             return false;
         return getEntityId() == ((WrappedEntity) other).getEntityId();
+    }
+
+    @Override
+    public int hashCode() {
+        return wrapped.hashCode();
     }
 
     @Override

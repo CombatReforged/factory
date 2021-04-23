@@ -6,19 +6,20 @@ import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
 
 public class WrappedProjectile extends WrappedEntity implements Projectile {
-    final net.minecraft.world.entity.projectile.Projectile wrapped;
+    final net.minecraft.world.entity.projectile.Projectile wrappedProjectile;
 
-    public WrappedProjectile(net.minecraft.world.entity.projectile.Projectile wrapped) {
-        super(wrapped);
-        this.wrapped = wrapped;
+    public WrappedProjectile(net.minecraft.world.entity.projectile.Projectile wrappedProjectile) {
+        super(wrappedProjectile);
+        this.wrappedProjectile = wrappedProjectile;
     }
 
+    @Override
     public net.minecraft.world.entity.projectile.Projectile unwrap() {
-        return wrapped;
+        return wrappedProjectile;
     }
 
     @Override
     public Entity getOwner() {
-        return Wrapped.wrap(wrapped.getOwner(), WrappedEntity.class);
+        return Wrapped.wrap(wrappedProjectile.getOwner(), WrappedEntity.class);
     }
 }

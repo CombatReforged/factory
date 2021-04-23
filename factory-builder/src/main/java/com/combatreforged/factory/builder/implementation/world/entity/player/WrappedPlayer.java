@@ -9,49 +9,49 @@ import com.combatreforged.factory.builder.implementation.world.item.container.Wr
 import net.minecraft.server.level.ServerPlayer;
 
 public class WrappedPlayer extends WrappedLivingEntity implements Player {
-    final ServerPlayer wrapped;
-    public WrappedPlayer(ServerPlayer wrapped) {
-        super(wrapped);
-        this.wrapped = wrapped;
+    final ServerPlayer wrappedPlayer;
+    public WrappedPlayer(ServerPlayer wrappedPlayer) {
+        super(wrappedPlayer);
+        this.wrappedPlayer = wrappedPlayer;
     }
 
     @Override
     public int getFoodLevel() {
-        return wrapped.getFoodData().getFoodLevel();
+        return wrappedPlayer.getFoodData().getFoodLevel();
     }
 
     @Override
     public float getSaturation() {
-        return wrapped.getFoodData().getSaturationLevel();
+        return wrappedPlayer.getFoodData().getSaturationLevel();
     }
 
     @Override
     public void setFoodLevel(int level) {
-        wrapped.getFoodData().setFoodLevel(level);
+        wrappedPlayer.getFoodData().setFoodLevel(level);
     }
 
     @Override
     public void setSaturation(float saturation) {
-        wrapped.getFoodData().setSaturation(saturation);
+        wrappedPlayer.getFoodData().setSaturation(saturation);
     }
 
     @Override
     public float getExhaustion() {
-        return ((FoodDataExtension) wrapped.getFoodData()).getExhaustion();
+        return ((FoodDataExtension) wrappedPlayer.getFoodData()).getExhaustion();
     }
 
     @Override
     public void setExhaustion(float exhaustion) {
-        ((FoodDataExtension) wrapped.getFoodData()).setExhaustion(exhaustion);
+        ((FoodDataExtension) wrappedPlayer.getFoodData()).setExhaustion(exhaustion);
     }
 
     @Override
     public PlayerInventory getInventory() {
-        return Wrapped.wrap(wrapped.inventory, WrappedPlayerInventory.class);
+        return Wrapped.wrap(wrappedPlayer.inventory, WrappedPlayerInventory.class);
     }
 
     @Override
     public int getSelectedSlot() {
-        return wrapped.inventory.selected;
+        return wrappedPlayer.inventory.selected;
     }
 }

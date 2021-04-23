@@ -1,5 +1,7 @@
 package com.combatreforged.factory.api.world.effect;
 
+import java.util.Objects;
+
 public interface StatusEffect {
     Type getType();
 
@@ -20,8 +22,15 @@ public interface StatusEffect {
             return id;
         }
 
+        @Override
         public boolean equals(Object obj) {
-            return obj instanceof Unidentified && obj.getClass() == getClass() && ((Unidentified) obj).getId().equals(this.id);
+            return obj instanceof Unidentified
+                    && ((Unidentified) obj).getId().equals(this.id);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.id, this.type);
         }
 
         @Override

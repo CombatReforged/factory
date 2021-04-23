@@ -9,7 +9,7 @@ public interface Block {
 
     Item getDrop();
 
-    <T> T getPropertyValue(StateProperty<?> stateProperty);
+    <T> T getPropertyValue(StateProperty<T> stateProperty);
 
     <T> void setPropertyValue(StateProperty<T> stateProperty, T value);
 

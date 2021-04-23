@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MobEffects.class)
 public abstract class MobEffectsMixin {
-    @Inject(method = "<clinit>", at = @At("TAIL"))
+    @Inject(method = "<clinit>", at = @At("TAIL")) @SuppressWarnings("unused")
     private static void loadConversionTable(CallbackInfo ci) {
         Conversion.setupEffects();
     }
