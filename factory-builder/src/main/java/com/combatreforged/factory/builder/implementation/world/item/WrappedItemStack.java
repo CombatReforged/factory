@@ -1,6 +1,6 @@
 package com.combatreforged.factory.builder.implementation.world.item;
 
-import com.combatreforged.factory.api.world.item.Item;
+import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
@@ -43,7 +43,7 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
     }
 
     @Override
-    public Item getItem() {
+    public ItemType getItem() {
         return Conversion.ITEMS.inverse().get(wrapped.getItem());
     }
 

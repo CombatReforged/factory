@@ -1,13 +1,13 @@
 package com.combatreforged.factory.api.world.block;
 
-import com.combatreforged.factory.api.world.item.Item;
+import com.combatreforged.factory.api.world.item.ItemType;
 
 import java.util.function.Predicate;
 
 public interface Block {
     boolean isAir();
 
-    Item getDrop();
+    ItemType getDrop();
 
     <T> T getPropertyValue(StateProperty<T> stateProperty);
 

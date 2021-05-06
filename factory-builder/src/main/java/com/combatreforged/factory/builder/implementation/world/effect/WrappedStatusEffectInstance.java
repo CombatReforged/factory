@@ -58,7 +58,19 @@ public class WrappedStatusEffectInstance extends Wrapped<MobEffectInstance> impl
                     default:
                         type = StatusEffect.Type.NEUTRAL;
                 }
-                statusEffect = new StatusEffect.Unidentified(resourceLocation.toString(), type);
+                statusEffect = new StatusEffect.Other() {
+                    final Type thisType = type;
+                    final String id = effect.getDescriptionId();
+                    @Override
+                    public Type getType() {
+                        return thisType;
+                    }
+
+                    @Override
+                    public String getId() {
+                        return id;
+                    }
+                };
             } else {
                 throw new WrappingException("MobEffect " + effect.toString() + " not registered!");
             }

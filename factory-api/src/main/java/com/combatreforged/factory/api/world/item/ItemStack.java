@@ -11,7 +11,7 @@ public interface ItemStack {
     void setCount(int count);
     int getDamage();
     void setDamage(int damage);
-    Item getItem();
+    ItemType getItem();
     boolean isFull();
     void decrementCount();
     int getRepairCost();
@@ -26,19 +26,19 @@ public interface ItemStack {
     BinaryTagHolder getItemData();
     void setItemData(BinaryTagHolder tag);
 
-    static ItemStack create(Item item) {
-        return create(item, 1, 0, BinaryTagHolder.of("{}"));
+    static ItemStack create(ItemType itemType) {
+        return create(itemType, 1, 0, BinaryTagHolder.of("{}"));
     }
 
-    static ItemStack create(Item item, int count) {
-        return create(item, count, 0, BinaryTagHolder.of("{}"));
+    static ItemStack create(ItemType itemType, int count) {
+        return create(itemType, count, 0, BinaryTagHolder.of("{}"));
     }
 
-    static ItemStack create(Item item, int count, int damage) {
-        return create(item, count, damage, BinaryTagHolder.of("{}"));
+    static ItemStack create(ItemType itemType, int count, int damage) {
+        return create(itemType, count, damage, BinaryTagHolder.of("{}"));
     }
 
-    static ItemStack create(Item item, int count, int damage, BinaryTagHolder tag) {
-        return Builder.getInstance().createItemStack(item, count, damage, tag);
+    static ItemStack create(ItemType itemType, int count, int damage, BinaryTagHolder tag) {
+        return Builder.getInstance().createItemStack(itemType, count, damage, tag);
     }
 }

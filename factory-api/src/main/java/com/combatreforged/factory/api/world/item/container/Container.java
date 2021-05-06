@@ -1,6 +1,6 @@
 package com.combatreforged.factory.api.world.item.container;
 
-import com.combatreforged.factory.api.world.item.Item;
+import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,10 +14,10 @@ public interface Container {
     @Nullable ItemStack getItemStack(int slot);
     void setItemStack(int slot, @Nullable ItemStack itemStack);
     void clear();
-    int count(Item item);
-    default boolean contains(Item[] items) {
-        return contains(new HashSet<>(Arrays.asList(items)));
+    int count(ItemType itemType);
+    default boolean contains(ItemType[] itemTypes) {
+        return contains(new HashSet<>(Arrays.asList(itemTypes)));
     }
-    boolean contains(Set<Item> items);
+    boolean contains(Set<ItemType> itemTypes);
     List<Integer> getAvailableSlots();
 }

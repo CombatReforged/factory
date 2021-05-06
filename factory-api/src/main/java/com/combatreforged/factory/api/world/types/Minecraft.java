@@ -830,7 +830,7 @@ public abstract class Minecraft {
         }
     }
 
-    public enum Item implements com.combatreforged.factory.api.world.item.Item {
+    public enum Item implements com.combatreforged.factory.api.world.item.ItemType {
         AIR(64, 0),
         STONE(Minecraft.Block.STONE, 64, 0),
         GRANITE(Minecraft.Block.GRANITE, 64, 0),

@@ -1,6 +1,6 @@
 package com.combatreforged.factory.builder.implementation.world.item.container;
 
-import com.combatreforged.factory.api.world.item.Item;
+import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.container.Container;
 import com.combatreforged.factory.builder.implementation.Wrapped;
@@ -38,13 +38,13 @@ public abstract class WrappedContainer extends Wrapped<net.minecraft.world.Conta
     }
 
     @Override
-    public int count(Item item) {
-        return wrapped.countItem(Conversion.ITEMS.get(item));
+    public int count(ItemType itemType) {
+        return wrapped.countItem(Conversion.ITEMS.get(itemType));
     }
 
     @Override
-    public boolean contains(Set<Item> items) {
-        return wrapped.hasAnyOf(items
+    public boolean contains(Set<ItemType> itemTypes) {
+        return wrapped.hasAnyOf(itemTypes
                 .stream()
                 .map(Conversion.ITEMS::get)
                 .collect(Collectors.toSet()));

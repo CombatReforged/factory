@@ -1,7 +1,7 @@
 package com.combatreforged.factory.builder.implementation.world.block;
 
 import com.combatreforged.factory.api.world.block.Block;
-import com.combatreforged.factory.api.world.item.Item;
+import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
@@ -18,7 +18,7 @@ public class WrappedBlock extends Wrapped<BlockState> implements Block {
     }
 
     @Override
-    public Item getDrop() {
+    public ItemType getDrop() {
         if (!Conversion.ITEMS.inverse().containsKey(wrapped.getBlock().asItem())) {
           throw new WrappingException("Can't wrap Item");
         }

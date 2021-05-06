@@ -1,15 +1,18 @@
 package com.combatreforged.factory.builder.implementation.builder;
 
 import com.combatreforged.factory.api.builder.Builder;
+import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.api.world.entity.Entity;
+import com.combatreforged.factory.api.world.entity.EntityType;
 import com.combatreforged.factory.api.world.entity.projectile.Projectile;
-import com.combatreforged.factory.api.world.item.Item;
+import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
+import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.combatreforged.factory.builder.implementation.world.damage.WrappedDamageData;
 import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
@@ -28,6 +31,11 @@ public class BuilderImpl implements Builder {
 
     public BuilderImpl(Logger logger) {
         this.logger = logger;
+    }
+
+    @Override
+    public Entity createEntity(EntityType type, World world) {
+        return Wrapped.wrap(Conversion.ENTITIES.get(type).create(((WrappedWorld) world).unwrap()), WrappedEntity.class);
     }
 
     @Override
@@ -68,8 +76,8 @@ public class BuilderImpl implements Builder {
     }
 
     @Override
-    public ItemStack createItemStack(Item item, int count, int damage, BinaryTagHolder tag) {
-        net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(Conversion.ITEMS.get(item), count);
+    public ItemStack createItemStack(ItemType itemType, int count, int damage, BinaryTagHolder tag) {
+        net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(Conversion.ITEMS.get(itemType), count);
         stack.setDamageValue(damage);
         try {
             stack.setTag(TagParser.parseTag(tag.toString()));

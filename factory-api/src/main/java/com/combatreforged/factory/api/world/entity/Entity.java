@@ -1,5 +1,6 @@
 package com.combatreforged.factory.api.world.entity;
 
+import com.combatreforged.factory.api.builder.Builder;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.command.CommandSource;
 import com.combatreforged.factory.api.world.util.Location;
@@ -64,4 +65,8 @@ public interface Entity extends CommandSource {
     BinaryTagHolder getEntityData();
 
     void setEntityData(BinaryTagHolder tag);
+
+    static Entity create(EntityType type, World world) {
+        return Builder.getInstance().createEntity(type, world);
+    }
 }

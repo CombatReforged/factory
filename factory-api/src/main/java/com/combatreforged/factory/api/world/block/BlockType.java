@@ -1,5 +1,6 @@
 package com.combatreforged.factory.api.world.block;
 
+import com.combatreforged.factory.api.interfaces.StringIdentified;
 import com.google.common.collect.ImmutableList;
 import com.google.errorprone.annotations.Immutable;
 
@@ -73,5 +74,8 @@ public interface BlockType {
 
     enum RotationAxis {
         HORIZONTAL, VERTICAL
+    }
+
+    abstract class Other implements BlockType, StringIdentified {
     }
 }
