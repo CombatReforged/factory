@@ -1,7 +1,7 @@
 package com.combatreforged.factory.api.world.item.container;
 
-import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.item.ItemStack;
+import com.combatreforged.factory.api.world.item.ItemType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;

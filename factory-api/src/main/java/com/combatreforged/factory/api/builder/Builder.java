@@ -7,8 +7,8 @@ import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.EntityType;
-import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.item.ItemStack;
+import com.combatreforged.factory.api.world.item.ItemType;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 
 public interface Builder {

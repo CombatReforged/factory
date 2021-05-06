@@ -1,7 +1,7 @@
 package com.combatreforged.factory.builder.implementation.world.item;
 
-import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.item.ItemStack;
+import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
 import com.google.gson.JsonParseException;
