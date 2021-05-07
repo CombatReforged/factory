@@ -3,12 +3,14 @@ package com.combatreforged.factory.builder.implementation.world;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.block.Block;
+import com.combatreforged.factory.api.world.block.BlockEntity;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
 import com.combatreforged.factory.builder.implementation.world.block.WrappedBlock;
+import com.combatreforged.factory.builder.implementation.world.block.WrappedBlockEntity;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -29,9 +31,12 @@ public class WrappedWorld extends Wrapped<ServerLevel> implements World {
 
     @Override
     public Block getBlockAt(Location location) {
-        Wrapped.wrap(wrapped.getBlockState(new BlockPos
-                (location.getX(), location.getY(), location.getZ())), WrappedBlock.class);
-        return null;
+        return new WrappedBlock(location);
+    }
+
+    @Override
+    public BlockEntity getBlockEntity(Location location) {
+        return Wrapped.wrap(wrapped.getBlockEntity(new BlockPos(location.getX(), location.getY(), location.getZ())), WrappedBlockEntity.class);
     }
 
     @Override

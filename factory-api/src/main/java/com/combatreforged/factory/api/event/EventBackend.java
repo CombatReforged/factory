@@ -54,8 +54,7 @@ public class EventBackend<T extends Event> {
         for (Listener<T> listener : listeners) {
             try { listener.onEvent(event); }
             catch (Exception e) {
-                LOGGER.error("An error occured while executing event " + event.getClass().getSimpleName() + " in listener " + listener.toString() + ":");
-                LOGGER.error(e);
+                LOGGER.error("An error occured while executing event " + event.getClass().getSimpleName() + " in listener " + listener.toString() + ":", e);
             }
         }
     }

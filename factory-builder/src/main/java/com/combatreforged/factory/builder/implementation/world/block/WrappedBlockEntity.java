@@ -1,9 +1,12 @@
 package com.combatreforged.factory.builder.implementation.world.block;
 
 import com.combatreforged.factory.api.world.block.Block;
+import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.builder.implementation.Wrapped;
+import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -14,7 +17,9 @@ public class WrappedBlockEntity extends Wrapped<BlockEntity> implements com.comb
 
     @Override
     public Block getBlock() {
-        return Wrapped.wrap(wrapped.getBlockState(), WrappedBlock.class);
+        BlockPos pos = wrapped.getBlockPos();
+        return new WrappedBlock
+                (new Location(pos.getX(), pos.getY(), pos.getZ(), Wrapped.wrap(wrapped.getLevel(), WrappedWorld.class)));
     }
 
     @Override

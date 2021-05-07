@@ -1,10 +1,15 @@
 package com.combatreforged.factory.api.world.block;
 
 import com.combatreforged.factory.api.world.item.ItemType;
+import com.combatreforged.factory.api.world.util.Location;
 
 import java.util.function.Predicate;
 
 public interface Block {
+    BlockType getType();
+
+    Location getLocation();
+
     boolean isAir();
 
     ItemType getDrop();

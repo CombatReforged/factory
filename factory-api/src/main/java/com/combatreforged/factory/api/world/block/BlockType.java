@@ -76,6 +76,7 @@ public interface BlockType {
         HORIZONTAL, VERTICAL
     }
 
+    @Immutable
     abstract class Other implements BlockType, StringIdentified {
     }
 }

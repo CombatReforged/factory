@@ -2,13 +2,15 @@ package com.combatreforged.factory.builder.implementation.world.item.container;
 
 import com.combatreforged.factory.api.world.item.container.BlockEntityContainer;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
+import com.combatreforged.factory.builder.implementation.world.block.WrappedBlockEntity;
 import net.kyori.adventure.text.Component;
+import net.minecraft.world.Container;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WrappedBlockEntityContainer extends WrappedContainer implements BlockEntityContainer {
+public class WrappedBlockEntityContainer extends WrappedBlockEntity implements BlockEntityContainer, WrappedContainer {
     private final BaseContainerBlockEntity wrappedBEC;
     public WrappedBlockEntityContainer(BaseContainerBlockEntity wrappedBEC) {
         super(wrappedBEC);
@@ -33,6 +35,11 @@ public class WrappedBlockEntityContainer extends WrappedContainer implements Blo
         }
 
         return slots;
+    }
+
+    @Override
+    public Container container() {
+        return wrappedBEC;
     }
 
     @Override

@@ -12,44 +12,42 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class WrappedContainer extends Wrapped<net.minecraft.world.Container> implements Container {
-    public WrappedContainer(net.minecraft.world.Container wrapped) {
-        super(wrapped);
+public interface WrappedContainer extends Container {
+    @Override
+    default int getSize() {
+        return container().getContainerSize();
     }
 
     @Override
-    public int getSize() {
-        return wrapped.getContainerSize();
+    default @Nullable ItemStack getItemStack(int slot) {
+        return Wrapped.wrap(container().getItem(slot), WrappedItemStack.class);
     }
 
     @Override
-    public @Nullable ItemStack getItemStack(int slot) {
-        return Wrapped.wrap(wrapped.getItem(slot), WrappedItemStack.class);
+    default void setItemStack(int slot, @Nullable ItemStack itemStack) {
+        container().setItem(slot, itemStack != null ? ((WrappedItemStack) itemStack).unwrap() : net.minecraft.world.item.ItemStack.EMPTY);
     }
 
     @Override
-    public void setItemStack(int slot, @Nullable ItemStack itemStack) {
-        wrapped.setItem(slot, itemStack != null ? ((WrappedItemStack) itemStack).unwrap() : net.minecraft.world.item.ItemStack.EMPTY);
+    default void clear() {
+        container().clearContent();
     }
 
     @Override
-    public void clear() {
-        wrapped.clearContent();
+    default int count(ItemType itemType) {
+        return container().countItem(Conversion.ITEMS.get(itemType));
     }
 
     @Override
-    public int count(ItemType itemType) {
-        return wrapped.countItem(Conversion.ITEMS.get(itemType));
-    }
-
-    @Override
-    public boolean contains(Set<ItemType> itemTypes) {
-        return wrapped.hasAnyOf(itemTypes
+    default boolean contains(Set<ItemType> itemTypes) {
+        return container().hasAnyOf(itemTypes
                 .stream()
                 .map(Conversion.ITEMS::get)
                 .collect(Collectors.toSet()));
     }
 
     @Override
-    public abstract List<Integer> getAvailableSlots();
+    List<Integer> getAvailableSlots();
+
+    net.minecraft.world.Container container();
 }
