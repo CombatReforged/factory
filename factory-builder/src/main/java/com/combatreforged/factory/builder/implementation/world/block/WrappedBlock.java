@@ -6,6 +6,7 @@ import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 public class WrappedBlock extends Wrapped<BlockState> implements Block {
     public WrappedBlock(BlockState wrapped) {
@@ -25,9 +26,17 @@ public class WrappedBlock extends Wrapped<BlockState> implements Block {
         return Conversion.ITEMS.inverse().get(wrapped.getBlock().asItem());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getPropertyValue(StateProperty<T> stateProperty) {
-        return null; //TODO
+        Object value = wrapped.getValue(Conversion.STATE_PROPERTIES.get(stateProperty));
+
+        Object returnValue = value instanceof EnumProperty ? Conversion.STATE_PROPERTY_ENUMS.inverse().get(value) : value;
+        try {
+            return (T) returnValue;
+        } catch (ClassCastException e) {
+            throw new WrappingException("Invalid property returned");
+        }
     }
 
     @Override
