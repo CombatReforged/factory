@@ -9,6 +9,8 @@ public interface Block {
 
     ItemType getDrop();
 
+    boolean hasPropertyValue(StateProperty<?> stateProperty);
+
     <T> T getPropertyValue(StateProperty<T> stateProperty);
 
     <T> void setPropertyValue(StateProperty<T> stateProperty, T value);

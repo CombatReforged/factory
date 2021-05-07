@@ -7,6 +7,7 @@ import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 
 public class WrappedBlock extends Wrapped<BlockState> implements Block {
     public WrappedBlock(BlockState wrapped) {
@@ -21,27 +22,44 @@ public class WrappedBlock extends Wrapped<BlockState> implements Block {
     @Override
     public ItemType getDrop() {
         if (!Conversion.ITEMS.inverse().containsKey(wrapped.getBlock().asItem())) {
-          throw new WrappingException("Can't wrap Item");
+            throw new WrappingException("Can't wrap Item");
         }
         return Conversion.ITEMS.inverse().get(wrapped.getBlock().asItem());
+    }
+
+    @Override
+    public boolean hasPropertyValue(StateProperty<?> stateProperty) {
+        return wrapped.hasProperty(Conversion.STATE_PROPERTIES.get(stateProperty));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getPropertyValue(StateProperty<T> stateProperty) {
-        Object value = wrapped.getValue(Conversion.STATE_PROPERTIES.get(stateProperty));
+        Object mcValue = wrapped.getValue(Conversion.STATE_PROPERTIES.get(stateProperty));
 
-        Object returnValue = value instanceof EnumProperty ? Conversion.STATE_PROPERTY_ENUMS.inverse().get(value) : value;
+        Object returnValue = mcValue instanceof EnumProperty ? Conversion.STATE_PROPERTY_ENUMS.inverse().get(mcValue) : mcValue;
         try {
             return (T) returnValue;
         } catch (ClassCastException e) {
-            throw new WrappingException("Invalid property returned");
+            throw new WrappingException("Unable to return property: property conversion invalid");
         }
     }
 
     @Override
     public <T> void setPropertyValue(StateProperty<T> stateProperty, T value) {
-        //TODO
+        try {
+            this.proxy_setPropertyValue(stateProperty, value);
+        } catch (ClassCastException e) {
+            throw new WrappingException("Unable to set property: conversion to MC failed");
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Comparable<T>, V extends T> void proxy_setPropertyValue(StateProperty<?> stateProperty, Object value) {
+        Property<T> mcProperty = (Property<T>) Conversion.STATE_PROPERTIES.get(stateProperty);
+        V mcValue = (V) (mcProperty instanceof EnumProperty ? Conversion.STATE_PROPERTY_ENUMS.get(value) : value);
+
+        wrapped.setValue(mcProperty, mcValue);
     }
 
     @Override
