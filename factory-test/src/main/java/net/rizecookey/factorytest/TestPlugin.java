@@ -9,6 +9,7 @@ import com.combatreforged.factory.api.world.block.Block;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
+import com.combatreforged.factory.api.world.util.Vector3D;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,6 +33,7 @@ public class TestPlugin implements FactoryPlugin {
 
             Entity sheep = Entity.create(Minecraft.Entity.SHEEP, world);
             sheep.teleport(player.getLocation());
+            sheep.setVelocity(new Vector3D(1.0, 10.0, 1.0));
             world.spawn(sheep);
         });
     }

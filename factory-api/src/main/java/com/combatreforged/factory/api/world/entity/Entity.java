@@ -1,6 +1,7 @@
 package com.combatreforged.factory.api.world.entity;
 
 import com.combatreforged.factory.api.builder.Builder;
+import com.combatreforged.factory.api.exception.UnassignableTypeException;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.command.CommandSource;
 import com.combatreforged.factory.api.world.util.Location;
@@ -44,6 +45,10 @@ public interface Entity extends CommandSource {
 
     void setVelocity(Vector3D velocity);
 
+    default void addVelocity(Vector3D velocity) {
+        setVelocity(getVelocity().add(velocity));
+    }
+
     List<Entity> getPassengers();
 
     void removePassenger(Entity entity);
@@ -68,5 +73,14 @@ public interface Entity extends CommandSource {
 
     static Entity create(EntityType type, World world) {
         return Builder.getInstance().createEntity(type, world);
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T extends Entity> T create(EntityType type, World world, Class<T> clazz) {
+        try {
+            return ((T) create(type, world));
+        } catch (ClassCastException e) {
+            throw new UnassignableTypeException(clazz.getName() + " can not be assigned to entity type " + type.toString());
+        }
     }
 }
