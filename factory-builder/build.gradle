@@ -59,6 +59,14 @@ jar {
 	from "LICENSE"
 }
 
+runServer {
+	dependencies {
+		modImplementation(project(":factory-test")) {
+			transitive = false
+		}
+	}
+}
+
 publishing {
 	publications {
 		mavenJava(MavenPublication) {

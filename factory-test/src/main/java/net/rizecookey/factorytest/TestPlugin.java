@@ -9,7 +9,9 @@ import com.combatreforged.factory.api.world.block.Block;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
+import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.api.world.util.Vector3D;
+import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,7 +30,10 @@ public class TestPlugin implements FactoryPlugin {
                 block.setPropertyValue(Block.StateProperty.SLAB_TYPE, Block.StateProperty.SlabType.TOP);
             }
             if (world.isBlockEntity(player.getLocation())) {
-                System.out.println(world.getBlockEntity(player.getLocation()).getBlockData().toString());
+                Location loc = player.getLocation();
+                String blockData = "{x:" + Math.floor(loc.getX()) + ",y:" + Math.floor(loc.getY()) + ",z:" + Math.floor(loc.getZ()) + ",Items:[{id:\"minecraft:stone\",Slot:8b,Count:1b}],id:\"minecraft:chest\"}";
+                System.out.println(blockData);
+                world.getBlockEntity(loc).setBlockData(BinaryTagHolder.of(blockData));
             }
 
             Entity sheep = Entity.create(Minecraft.Entity.SHEEP, world);
