@@ -5,6 +5,9 @@ import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import net.minecraft.nbt.CompoundTag;
 
+import java.util.List;
+import java.util.Set;
+
 public class WrappedNBTObject extends Wrapped<CompoundTag> implements NBTObject {
     public WrappedNBTObject(CompoundTag wrapped) {
         super(wrapped);
@@ -13,6 +16,26 @@ public class WrappedNBTObject extends Wrapped<CompoundTag> implements NBTObject 
     @Override
     public NBTValue get(String id) {
         return new WrappedNBTValue(wrapped.get(id));
+    }
+
+    @Override
+    public boolean has(String id) {
+        return wrapped.contains(id);
+    }
+
+    @Override
+    public int size() {
+        return wrapped.size();
+    }
+
+    @Override
+    public Set<String> keys() {
+        return wrapped.getAllKeys();
+    }
+
+    @Override
+    public NBTObject copy() {
+        return Wrapped.wrap(wrapped.copy(), WrappedNBTObject.class);
     }
 
     @Override

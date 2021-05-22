@@ -6,12 +6,14 @@ import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.entity.EntityType;
 import com.combatreforged.factory.api.world.item.ItemType;
+import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.core.Direction;
 import net.minecraft.core.FrontAndTop;
+import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
@@ -28,6 +30,7 @@ public abstract class Conversion {
     public static final BiMap<EntityType, net.minecraft.world.entity.EntityType<?>> ENTITIES = HashBiMap.create();
     public static final BiMap<StateProperty<?>, Property<?>> STATE_PROPERTIES = HashBiMap.create();
     public static final BiMap<Object, Object> STATE_PROPERTY_ENUMS = HashBiMap.create();
+    public static final BiMap<Class<? extends Tag>, NBTValue.Type> NBT_VALUE_TYPES = HashBiMap.create();
 
     public static final BiMap<DamageData.Type, DamageSource> DAMAGE_TYPES = HashBiMap.create();
 
@@ -2136,6 +2139,21 @@ public abstract class Conversion {
         STATE_PROPERTIES.put(StateProperty.STAIRS_SHAPE, BlockStateProperties.STAIRS_SHAPE);
         STATE_PROPERTIES.put(StateProperty.STRUCTUREBLOCK_MODE, BlockStateProperties.STRUCTUREBLOCK_MODE);
         STATE_PROPERTIES.put(StateProperty.BAMBOO_LEAVES, BlockStateProperties.BAMBOO_LEAVES);
+    }
+
+    public static void setupNBTValueTypes() {
+        NBT_VALUE_TYPES.put(ShortTag.class, NBTValue.Type.SHORT);
+        NBT_VALUE_TYPES.put(DoubleTag.class, NBTValue.Type.DOUBLE);
+        NBT_VALUE_TYPES.put(FloatTag.class, NBTValue.Type.FLOAT);
+        NBT_VALUE_TYPES.put(ByteTag.class, NBTValue.Type.BYTE);
+        NBT_VALUE_TYPES.put(IntTag.class, NBTValue.Type.INT);
+        NBT_VALUE_TYPES.put(LongTag.class, NBTValue.Type.LONG);
+        NBT_VALUE_TYPES.put(LongArrayTag.class, NBTValue.Type.LONG_ARRAY);
+        NBT_VALUE_TYPES.put(ByteArrayTag.class, NBTValue.Type.BYTE_ARRAY);
+        NBT_VALUE_TYPES.put(IntArrayTag.class, NBTValue.Type.INT_ARRAY);
+        NBT_VALUE_TYPES.put(StringTag.class, NBTValue.Type.STRING);
+        NBT_VALUE_TYPES.put(CompoundTag.class, NBTValue.Type.OBJECT);
+        NBT_VALUE_TYPES.put(ListTag.class, NBTValue.Type.LIST);
     }
 
     public static net.kyori.adventure.text.Component convertComponent(Component mcComponent) {

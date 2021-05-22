@@ -10,6 +10,10 @@ import com.combatreforged.factory.api.world.entity.EntityType;
 import com.combatreforged.factory.api.world.entity.projectile.Projectile;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.ItemType;
+import com.combatreforged.factory.api.world.nbt.NBTList;
+import com.combatreforged.factory.api.world.nbt.NBTObject;
+import com.combatreforged.factory.api.world.nbt.NBTValue;
+import com.combatreforged.factory.builder.exception.NBTParsingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
@@ -17,14 +21,22 @@ import com.combatreforged.factory.builder.implementation.world.damage.WrappedDam
 import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
+import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTList;
+import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Map;
 
 public class BuilderImpl implements Builder {
     final Logger logger;
@@ -36,6 +48,33 @@ public class BuilderImpl implements Builder {
     @Override
     public Entity createEntity(EntityType type, World world) {
         return Wrapped.wrap(Conversion.ENTITIES.get(type).create(((WrappedWorld) world).unwrap()), WrappedEntity.class);
+    }
+
+    @Override
+    public NBTObject createNBTObject(@Nullable Map<String, NBTValue> values) {
+        NBTObject nbt = Wrapped.wrap(new CompoundTag(), WrappedNBTObject.class);
+        if (values != null) {
+            nbt.setAll(values);
+        }
+        return nbt;
+    }
+
+    @Override
+    public NBTObject createNBTObjectFromString(String string) {
+        try {
+            return Wrapped.wrap(TagParser.parseTag(string), WrappedNBTObject.class);
+        } catch (CommandSyntaxException e) {
+            throw new NBTParsingException(string);
+        }
+    }
+
+    @Override
+    public NBTList createNBTList(List<NBTValue> values) {
+        NBTList list = Wrapped.wrap(new ListTag(), WrappedNBTList.class);
+        if (values != null) {
+            list.addAll(values);
+        }
+        return null;
     }
 
     @Override
@@ -75,6 +114,7 @@ public class BuilderImpl implements Builder {
         return Wrapped.wrap(ds, WrappedDamageData.class);
     }
 
+    @Deprecated
     @Override
     public ItemStack createItemStack(ItemType itemType, int count, int damage, BinaryTagHolder tag) {
         net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(Conversion.ITEMS.get(itemType), count);
@@ -83,6 +123,17 @@ public class BuilderImpl implements Builder {
             stack.setTag(TagParser.parseTag(tag.toString()));
         } catch (CommandSyntaxException e) {
             throw new UnsupportedOperationException("Tag is invalid");
+        }
+
+        return Wrapped.wrap(stack, WrappedItemStack.class);
+    }
+
+    @Override
+    public ItemStack createItemStack(ItemType itemType, int count, int damage, @Nullable NBTObject nbt) {
+        net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(Conversion.ITEMS.get(itemType), count);
+        stack.setDamageValue(damage);
+        if (nbt != null) {
+            stack.setTag(((WrappedNBTObject) nbt).unwrap());
         }
 
         return Wrapped.wrap(stack, WrappedItemStack.class);

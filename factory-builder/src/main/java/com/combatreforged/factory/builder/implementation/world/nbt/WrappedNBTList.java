@@ -15,32 +15,54 @@ public class WrappedNBTList extends Wrapped<ListTag> implements NBTList {
 
     @Override
     public void add(int index, NBTValue value) {
-        //TODO
+        wrapped.add(index, ((WrappedNBTValue) value).unwrap());
     }
 
     @Override
     public void set(int index, NBTValue value) {
-        //TODO
+        wrapped.set(index, ((WrappedNBTValue) value).unwrap());
     }
 
     @Override
     public void remove(int index) {
-        //TODO
+        wrapped.remove(index);
     }
 
     @Override
     public NBTValue get(int index) {
-        return null; //TODO
+        return Wrapped.wrap(wrapped.get(index), WrappedNBTValue.class);
     }
 
     @Override
     public int size() {
-        return 0; //TODO
+        return wrapped.size();
     }
 
     @NotNull
     @Override
     public Iterator<NBTValue> iterator() {
-        return null; //TODO
+        return new NBTListIterator(this);
+    }
+
+    private static class NBTListIterator implements Iterator<NBTValue> {
+        private final NBTList list;
+        private int index;
+
+        public NBTListIterator(NBTList list) {
+            this.list = list;
+            this.index = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return this.index < list.size();
+        }
+
+        @Override
+        public NBTValue next() {
+            NBTValue value = list.get(this.index);
+            this.index++;
+            return value;
+        }
     }
 }

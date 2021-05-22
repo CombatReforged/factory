@@ -4,6 +4,7 @@ import com.combatreforged.factory.api.builder.Builder;
 import com.combatreforged.factory.api.exception.UnassignableTypeException;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.command.CommandSource;
+import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.api.world.util.Vector3D;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
@@ -67,9 +68,13 @@ public interface Entity extends CommandSource {
 
     boolean hasTag(String tag);
 
-    BinaryTagHolder getEntityData();
+    @Deprecated BinaryTagHolder getEntityData();
 
-    void setEntityData(BinaryTagHolder tag);
+    @Deprecated void setEntityData(BinaryTagHolder tag);
+
+    NBTObject getEntityNBT();
+
+    void setEntityNBT(NBTObject nbt);
 
     static Entity create(EntityType type, World world) {
         return Builder.getInstance().createEntity(type, world);

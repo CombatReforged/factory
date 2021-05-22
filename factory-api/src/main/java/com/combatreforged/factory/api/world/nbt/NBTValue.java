@@ -21,7 +21,7 @@ public interface NBTValue {
     Type getType();
 
     enum Type {
-        //TODO
+        SHORT, DOUBLE, FLOAT, BYTE, INT, LONG, LONG_ARRAY, BYTE_ARRAY, INT_ARRAY, STRING, OBJECT, LIST
     }
 
     //TODO implement creation

@@ -3,6 +3,7 @@ package com.combatreforged.factory.builder.implementation.world.entity;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.EntityType;
+import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.api.world.util.Vector3D;
 import com.combatreforged.factory.builder.exception.WrappingException;
@@ -11,6 +12,7 @@ import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
+import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
@@ -173,11 +175,13 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
         return wrapped.getTags().contains(tag);
     }
 
+    @Deprecated
     @Override
     public BinaryTagHolder getEntityData() {
         return BinaryTagHolder.of(wrapped.saveWithoutId(new CompoundTag()).getAsString());
     }
 
+    @Deprecated
     @Override
     public void setEntityData(BinaryTagHolder tag) {
         try {
@@ -185,6 +189,16 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
         } catch (CommandSyntaxException e) {
             throw new UnsupportedOperationException("Tag is invalid");
         }
+    }
+
+    @Override
+    public NBTObject getEntityNBT() {
+        return Wrapped.wrap(wrapped.saveWithoutId(new CompoundTag()), WrappedNBTObject.class);
+    }
+
+    @Override
+    public void setEntityNBT(NBTObject nbt) {
+        wrapped.load(((WrappedNBTObject) nbt).unwrap());
     }
 
     @Override

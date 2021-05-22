@@ -6,6 +6,7 @@ import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
+import com.combatreforged.factory.builder.implementation.util.Conversion;
 import net.minecraft.nbt.*;
 
 public class WrappedNBTValue extends Wrapped<Tag> implements NBTValue {
@@ -119,6 +120,6 @@ public class WrappedNBTValue extends Wrapped<Tag> implements NBTValue {
 
     @Override
     public Type getType() {
-        return null; //TODO
+        return Conversion.NBT_VALUE_TYPES.get(wrapped.getClass());
     }
 }

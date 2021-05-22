@@ -1,9 +1,11 @@
 package com.combatreforged.factory.api.world.item;
 
 import com.combatreforged.factory.api.builder.Builder;
+import com.combatreforged.factory.api.world.nbt.NBTObject;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public interface ItemStack {
@@ -23,22 +25,29 @@ public interface ItemStack {
     void setLore(Component... lore);
     void setLore(List<Component> lore);
 
-    BinaryTagHolder getItemData();
-    void setItemData(BinaryTagHolder tag);
+    @Deprecated BinaryTagHolder getItemData();
+    @Deprecated void setItemData(BinaryTagHolder tag);
+
+    NBTObject getItemNBT();
+    void setItemNBT(NBTObject nbt);
 
     static ItemStack create(ItemType itemType) {
-        return create(itemType, 1, 0, BinaryTagHolder.of("{}"));
+        return create(itemType, 1, 0, (NBTObject) null);
     }
 
     static ItemStack create(ItemType itemType, int count) {
-        return create(itemType, count, 0, BinaryTagHolder.of("{}"));
+        return create(itemType, count, 0, (NBTObject) null);
     }
 
     static ItemStack create(ItemType itemType, int count, int damage) {
-        return create(itemType, count, damage, BinaryTagHolder.of("{}"));
+        return create(itemType, count, damage, (NBTObject) null);
     }
 
-    static ItemStack create(ItemType itemType, int count, int damage, BinaryTagHolder tag) {
+    @Deprecated static ItemStack create(ItemType itemType, int count, int damage, BinaryTagHolder tag) {
         return Builder.getInstance().createItemStack(itemType, count, damage, tag);
+    }
+
+    static ItemStack create(ItemType itemType, int count, int damage, @Nullable NBTObject nbt) {
+        return Builder.getInstance().createItemStack(itemType, count, damage, nbt);
     }
 }

@@ -2,8 +2,10 @@ package com.combatreforged.factory.builder.implementation.world.item;
 
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.ItemType;
+import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.Conversion;
+import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTObject;
 import com.google.gson.JsonParseException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
@@ -128,11 +130,13 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
         tag.put("display", display);
     }
 
+    @Deprecated
     @Override
     public BinaryTagHolder getItemData() {
         return BinaryTagHolder.of(wrapped.save(new CompoundTag()).getAsString());
     }
 
+    @Deprecated
     @Override
     public void setItemData(BinaryTagHolder tag) {
         try {
@@ -140,5 +144,15 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
         } catch (CommandSyntaxException e) {
             throw new UnsupportedOperationException("Tag is invalid");
         }
+    }
+
+    @Override
+    public NBTObject getItemNBT() {
+        return Wrapped.wrap(wrapped.save(new CompoundTag()), WrappedNBTObject.class);
+    }
+
+    @Override
+    public void setItemNBT(NBTObject nbt) {
+        wrapped.setTag(((WrappedNBTObject) nbt).unwrap());
     }
 }
