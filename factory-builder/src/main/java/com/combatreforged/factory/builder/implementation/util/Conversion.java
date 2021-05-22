@@ -36,6 +36,7 @@ public abstract class Conversion {
 
     public static void initIndependent() {
         setupDamageTypes();
+        setupStatePropertyEnums();
     }
 
     public static void setupEffects() {
