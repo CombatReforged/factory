@@ -1,5 +1,6 @@
 package com.combatreforged.factory.builder.implementation;
 
+import com.combatreforged.factory.builder.exception.NotAWrappedObjectException;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 
 import static com.combatreforged.factory.builder.FactoryBuilder.LOGGER;
@@ -21,9 +22,7 @@ public abstract class Wrapped<T> {
         try {
             return (T) ((Wrap<U>) unwrapped).wrap();
         } catch (ClassCastException e) {
-            LOGGER.error("Couldn't get a wrapped version of the object!");
-            LOGGER.error(e);
-            return null;
+            throw new NotAWrappedObjectException();
         }
     }
 }
