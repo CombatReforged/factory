@@ -4,8 +4,11 @@
   "package": "com.combatreforged.factory.builder.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "nbt.CollectionTagMixin",
     "nbt.CompoundTagMixin",
     "nbt.ListTagMixin",
+    "nbt.NumericTagMixin",
+    "nbt.StringTagMixin",
     "server.MinecraftServerMixin",
     "server.dedicated.DedicatedServerMixin",
     "server.network.ServerGamePacketListenerImplMixin",

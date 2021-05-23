@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version '0.6-SNAPSHOT'
 	id 'maven-publish'
+	id 'java'
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -24,6 +25,9 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:0.11.3"
 
 	implementation include(project(":factory-api"))
+	implementation(project(":factory-test")) {
+		transitive = false
+	}
 }
 
 minecraft {
@@ -57,14 +61,6 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 jar {
 	from "LICENSE"
-}
-
-runServer {
-	dependencies {
-		modImplementation(project(":factory-test")) {
-			transitive = false
-		}
-	}
 }
 
 publishing {

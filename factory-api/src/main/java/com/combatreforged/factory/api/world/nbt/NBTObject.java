@@ -2,11 +2,10 @@ package com.combatreforged.factory.api.world.nbt;
 
 import com.combatreforged.factory.api.builder.Builder;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface NBTObject {
+public interface NBTObject extends NBTValue {
     void set(String id, NBTValue value);
     default void setAll(Map<String, NBTValue> values) {
         for (String key : values.keySet()) {
@@ -25,7 +24,7 @@ public interface NBTObject {
         return value.getType();
     }
 
-    String toString();
+    @Override String toString();
 
     NBTObject copy();
 

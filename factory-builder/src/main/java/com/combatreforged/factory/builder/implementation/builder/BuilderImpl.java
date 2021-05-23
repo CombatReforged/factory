@@ -23,11 +23,10 @@ import com.combatreforged.factory.builder.implementation.world.entity.WrappedEnt
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTList;
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTObject;
+import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTValue;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.TagParser;
+import net.minecraft.nbt.*;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -74,7 +73,57 @@ public class BuilderImpl implements Builder {
         if (values != null) {
             list.addAll(values);
         }
-        return null;
+        return list;
+    }
+
+    @Override
+    public NBTValue createNBTValue(short s) {
+        return fromTag(ShortTag.valueOf(s));
+    }
+
+    @Override
+    public NBTValue createNBTValue(double d) {
+        return fromTag(DoubleTag.valueOf(d));
+    }
+
+    @Override
+    public NBTValue createNBTValue(float f) {
+        return fromTag(FloatTag.valueOf(f));
+    }
+
+    @Override
+    public NBTValue createNBTValue(byte b) {
+        return fromTag(ByteTag.valueOf(b));
+    }
+
+    @Override
+    public NBTValue createNBTValue(int i) {
+        return fromTag(IntTag.valueOf(i));
+    }
+
+    @Override
+    public NBTValue createNBTValue(long l) {
+        return fromTag(LongTag.valueOf(l));
+    }
+
+    @Override
+    public NBTValue createNBTValue(long[] arr) {
+        return fromTag(new LongArrayTag(arr));
+    }
+
+    @Override
+    public NBTValue createNBTValue(byte[] arr) {
+        return fromTag(new ByteArrayTag(arr));
+    }
+
+    @Override
+    public NBTValue createNBTValue(int[] arr) {
+        return fromTag(new IntArrayTag(arr));
+    }
+
+    @Override
+    public NBTValue createNBTValue(String string) {
+        return fromTag(StringTag.valueOf(string));
     }
 
     @Override
@@ -137,5 +186,9 @@ public class BuilderImpl implements Builder {
         }
 
         return Wrapped.wrap(stack, WrappedItemStack.class);
+    }
+
+    private NBTValue fromTag(Tag tag) {
+        return Wrapped.wrap(tag, WrappedNBTValue.class);
     }
 }

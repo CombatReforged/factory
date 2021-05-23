@@ -6,12 +6,14 @@ import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.block.Block;
+import com.combatreforged.factory.api.world.block.BlockEntity;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.nbt.NBTList;
+import com.combatreforged.factory.api.world.nbt.NBTObject;
+import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.combatreforged.factory.api.world.util.Location;
-import com.combatreforged.factory.api.world.util.Vector3D;
-import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,15 +33,28 @@ public class TestPlugin implements FactoryPlugin {
             }
             if (world.isBlockEntity(player.getLocation())) {
                 Location loc = player.getLocation();
-                String blockData = "{x:" + Math.floor(loc.getX()) + ",y:" + Math.floor(loc.getY()) + ",z:" + Math.floor(loc.getZ()) + ",Items:[{id:\"minecraft:stone\",Slot:8b,Count:1b}],id:\"minecraft:chest\"}";
-                System.out.println(blockData);
-                world.getBlockEntity(loc).setBlockData(BinaryTagHolder.of(blockData));
+                BlockEntity blockEntity = world.getBlockEntity(loc);
+                NBTObject blockNBT = blockEntity.getBlockNBT();
+                System.out.println("Current block: " + block.getType().toString() + blockNBT.asString());
+
+                NBTList list = NBTList.create();
+                NBTObject item = NBTObject.create();
+                item.set("id", NBTValue.of("minecraft:stone"));
+                item.set("Slot", NBTValue.of((byte) 8));
+                item.set("Count", NBTValue.of((byte) 1));
+                list.add(item);
+
+                blockNBT.set("Items", list);
+
+                blockEntity.setBlockNBT(blockNBT);
             }
 
-            Entity sheep = Entity.create(Minecraft.Entity.SHEEP, world);
-            sheep.teleport(player.getLocation());
-            sheep.setVelocity(new Vector3D(1.0, 10.0, 1.0));
-            world.spawn(sheep);
+            Entity firework = Entity.create(Minecraft.Entity.FIREWORK_ROCKET, world);
+            firework.teleport(player.getLocation());
+            NBTObject obj = firework.getEntityNBT();
+            obj.set("LifeTime", NBTValue.of(30));
+            firework.setEntityNBT(obj);
+            world.spawn(firework);
         });
     }
 }

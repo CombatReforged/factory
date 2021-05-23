@@ -3,8 +3,6 @@ package com.combatreforged.factory.builder.implementation;
 import com.combatreforged.factory.builder.exception.NotAWrappedObjectException;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 
-import static com.combatreforged.factory.builder.FactoryBuilder.LOGGER;
-
 public abstract class Wrapped<T> {
     public final T wrapped;
 

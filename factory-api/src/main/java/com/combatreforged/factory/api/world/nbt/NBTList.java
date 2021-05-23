@@ -4,7 +4,7 @@ import com.combatreforged.factory.api.builder.Builder;
 
 import java.util.List;
 
-public interface NBTList extends Iterable<NBTValue> {
+public interface NBTList extends Iterable<NBTValue>, NBTValue {
     default void add(NBTValue value) {
         add(size(), value);
     }

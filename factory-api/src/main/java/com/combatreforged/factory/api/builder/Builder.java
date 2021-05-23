@@ -22,10 +22,20 @@ public interface Builder {
     Entity createEntity(EntityType type, World world);
 
     NBTObject createNBTObject(@Nullable Map<String, NBTValue> values);
-
     NBTObject createNBTObjectFromString(String string);
 
     NBTList createNBTList(List<NBTValue> values);
+
+    NBTValue createNBTValue(short s);
+    NBTValue createNBTValue(double d);
+    NBTValue createNBTValue(float f);
+    NBTValue createNBTValue(byte b);
+    NBTValue createNBTValue(int i);
+    NBTValue createNBTValue(long l);
+    NBTValue createNBTValue(long[] arr);
+    NBTValue createNBTValue(byte[] arr);
+    NBTValue createNBTValue(int[] arr);
+    NBTValue createNBTValue(String string);
 
     StatusEffectInstance createStatusEffectInstance(StatusEffect statusEffect, int duration,
                                                     int amplifier, boolean ambient);
@@ -33,7 +43,6 @@ public interface Builder {
     DamageData createDamageData(DamageData.Type type, Entity entityCause, boolean isIndirect);
 
     @Deprecated ItemStack createItemStack(ItemType itemType, int count, int damage, BinaryTagHolder tag);
-
     ItemStack createItemStack(ItemType itemType, int count, int damage, NBTObject nbt);
 
     static Builder getInstance() {
