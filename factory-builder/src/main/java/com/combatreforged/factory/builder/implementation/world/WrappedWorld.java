@@ -14,6 +14,7 @@ import com.combatreforged.factory.builder.implementation.world.block.WrappedBloc
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.DerivedLevelData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,5 +65,15 @@ public class WrappedWorld extends Wrapped<ServerLevel> implements World {
     @Override
     public FactoryServer getServer() {
         return Wrapped.wrap(wrapped.getServer(), WrappedFactoryServer.class);
+    }
+
+    @Override
+    public boolean isChild() {
+        return wrapped.getLevelData() instanceof DerivedLevelData;
+    }
+
+    @Override
+    public World getParent() {
+        return null; //TODO
     }
 }

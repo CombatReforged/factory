@@ -22,4 +22,7 @@ public interface World {
     Entity getEntity(UUID uuid);
 
     FactoryServer getServer();
+
+    boolean isChild();
+    World getParent();
 }
