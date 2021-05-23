@@ -1,6 +1,5 @@
 package com.combatreforged.factory.api.world.types;
 
-import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.block.BlockType;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.entity.EntityType;
