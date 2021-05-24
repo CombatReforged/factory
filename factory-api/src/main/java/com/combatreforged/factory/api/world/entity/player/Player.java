@@ -16,6 +16,9 @@ public interface Player extends LivingEntity {
     PlayerInventory getInventory();
     int getSelectedSlot();
 
+    GameModeType getGameMode();
+    void setGameMode(GameModeType gameMode);
+
     static Player create(World world) {
         return (Player) Builder.getInstance().createEntity(Minecraft.Entity.PLAYER, world);
     }

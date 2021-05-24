@@ -30,7 +30,8 @@
     "world.level.block.BlocksMixin",
     "world.level.block.entity.BaseContainerBlockEntityMixin",
     "world.level.block.entity.BlockEntityMixin",
-    "world.level.block.state.properties.BlockStatePropertiesMixin"
+    "world.level.block.state.properties.BlockStatePropertiesMixin",
+    "world.level.border.WorldBorderMixin"
   ],
   "client": [
   ],

@@ -5,6 +5,7 @@ import com.combatreforged.factory.api.world.block.BlockType;
 import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.entity.EntityType;
+import com.combatreforged.factory.api.world.entity.player.GameModeType;
 import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.api.world.types.Minecraft;
@@ -19,6 +20,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.*;
@@ -30,13 +32,14 @@ public abstract class Conversion {
     public static final BiMap<EntityType, net.minecraft.world.entity.EntityType<?>> ENTITIES = HashBiMap.create();
     public static final BiMap<StateProperty<?>, Property<?>> STATE_PROPERTIES = HashBiMap.create();
     public static final BiMap<Object, Object> STATE_PROPERTY_ENUMS = HashBiMap.create();
-    public static final BiMap<Class<? extends Tag>, NBTValue.Type> NBT_VALUE_TYPES = HashBiMap.create();
-
+    public static final BiMap<NBTValue.Type, Class<? extends Tag>> NBT_VALUE_TYPES = HashBiMap.create();
+    public static final BiMap<GameModeType, GameType> GAME_MODES = HashBiMap.create();
     public static final BiMap<DamageData.Type, DamageSource> DAMAGE_TYPES = HashBiMap.create();
 
     public static void initIndependent() {
         setupDamageTypes();
         setupStatePropertyEnums();
+        setupGameModes();
     }
 
     public static void setupEffects() {
@@ -2143,18 +2146,25 @@ public abstract class Conversion {
     }
 
     public static void setupNBTValueTypes() {
-        NBT_VALUE_TYPES.put(ShortTag.class, NBTValue.Type.SHORT);
-        NBT_VALUE_TYPES.put(DoubleTag.class, NBTValue.Type.DOUBLE);
-        NBT_VALUE_TYPES.put(FloatTag.class, NBTValue.Type.FLOAT);
-        NBT_VALUE_TYPES.put(ByteTag.class, NBTValue.Type.BYTE);
-        NBT_VALUE_TYPES.put(IntTag.class, NBTValue.Type.INT);
-        NBT_VALUE_TYPES.put(LongTag.class, NBTValue.Type.LONG);
-        NBT_VALUE_TYPES.put(LongArrayTag.class, NBTValue.Type.LONG_ARRAY);
-        NBT_VALUE_TYPES.put(ByteArrayTag.class, NBTValue.Type.BYTE_ARRAY);
-        NBT_VALUE_TYPES.put(IntArrayTag.class, NBTValue.Type.INT_ARRAY);
-        NBT_VALUE_TYPES.put(StringTag.class, NBTValue.Type.STRING);
-        NBT_VALUE_TYPES.put(CompoundTag.class, NBTValue.Type.OBJECT);
-        NBT_VALUE_TYPES.put(ListTag.class, NBTValue.Type.LIST);
+        NBT_VALUE_TYPES.put(NBTValue.Type.SHORT, ShortTag.class);
+        NBT_VALUE_TYPES.put(NBTValue.Type.DOUBLE, DoubleTag.class);
+        NBT_VALUE_TYPES.put(NBTValue.Type.FLOAT, FloatTag.class);
+        NBT_VALUE_TYPES.put(NBTValue.Type.BYTE, ByteTag.class);
+        NBT_VALUE_TYPES.put(NBTValue.Type.INT, IntTag.class);
+        NBT_VALUE_TYPES.put(NBTValue.Type.LONG, LongTag.class);
+        NBT_VALUE_TYPES.put(NBTValue.Type.LONG_ARRAY, LongArrayTag.class);
+        NBT_VALUE_TYPES.put(NBTValue.Type.BYTE_ARRAY, ByteArrayTag.class);
+        NBT_VALUE_TYPES.put(NBTValue.Type.INT_ARRAY, IntArrayTag.class);
+        NBT_VALUE_TYPES.put(NBTValue.Type.STRING, StringTag.class);
+        NBT_VALUE_TYPES.put(NBTValue.Type.OBJECT, CompoundTag.class);
+        NBT_VALUE_TYPES.put(NBTValue.Type.LIST, ListTag.class);
+    }
+
+    public static void setupGameModes() {
+        GAME_MODES.put(Minecraft.GameMode.SURVIVAL, GameType.SURVIVAL);
+        GAME_MODES.put(Minecraft.GameMode.CREATIVE, GameType.CREATIVE);
+        GAME_MODES.put(Minecraft.GameMode.ADVENTURE, GameType.ADVENTURE);
+        GAME_MODES.put(Minecraft.GameMode.SPECTATOR, GameType.SPECTATOR);
     }
 
     public static net.kyori.adventure.text.Component convertComponent(Component mcComponent) {

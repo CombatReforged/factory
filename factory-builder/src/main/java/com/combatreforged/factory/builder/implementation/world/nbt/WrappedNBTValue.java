@@ -120,6 +120,6 @@ public class WrappedNBTValue extends Wrapped<Tag> implements NBTValue {
 
     @Override
     public Type getType() {
-        return Conversion.NBT_VALUE_TYPES.get(wrapped.getClass());
+        return Conversion.NBT_VALUE_TYPES.inverse().get(wrapped.getClass());
     }
 }

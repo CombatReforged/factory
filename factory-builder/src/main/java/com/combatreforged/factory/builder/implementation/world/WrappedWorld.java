@@ -4,17 +4,22 @@ import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.block.Block;
 import com.combatreforged.factory.api.world.block.BlockEntity;
+import com.combatreforged.factory.api.world.border.WorldBorder;
 import com.combatreforged.factory.api.world.entity.Entity;
+import com.combatreforged.factory.api.world.entity.player.GameModeType;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
+import com.combatreforged.factory.builder.implementation.util.Conversion;
 import com.combatreforged.factory.builder.implementation.world.block.WrappedBlock;
 import com.combatreforged.factory.builder.implementation.world.block.WrappedBlockEntity;
+import com.combatreforged.factory.builder.implementation.world.border.WrappedWorldBorder;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.DerivedLevelData;
+import net.minecraft.world.level.storage.ServerLevelData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,12 +73,85 @@ public class WrappedWorld extends Wrapped<ServerLevel> implements World {
     }
 
     @Override
-    public boolean isChild() {
+    public boolean isSubWorld() {
         return wrapped.getLevelData() instanceof DerivedLevelData;
     }
 
     @Override
-    public World getParent() {
-        return null; //TODO
+    public Weather getWeather() {
+        if (wrapped.isThundering()) {
+            return Weather.THUNDER;
+        }
+        else if (wrapped.isRaining()) {
+            return Weather.RAIN;
+        }
+        return Weather.CLEAR;
+    }
+
+    @Override
+    public void setWeather(Weather weather) {
+        this.setWeather(weather, 6000);
+    }
+
+    @Override
+    public void setWeather(Weather weather, int duration) {
+        int clearDur = 0;
+        int weatherDur = 0;
+        boolean raining = false;
+        boolean thundering = false;
+        switch (weather) {
+            case CLEAR:
+                clearDur = duration;
+                break;
+            case RAIN:
+                weatherDur = duration;
+                raining = true;
+                break;
+            case THUNDER:
+                weatherDur = duration;
+                raining = true;
+                thundering = true;
+                break;
+        }
+        wrapped.setWeatherParameters(clearDur, weatherDur, raining, thundering);
+    }
+
+    private ServerLevelData serverLevelData() {
+        return ((ServerLevelData) wrapped.getLevelData());
+    }
+
+    @Override
+    public WorldBorder getWorldBorder() {
+        return Wrapped.wrap(wrapped.getWorldBorder(), WrappedWorldBorder.class);
+    }
+
+    @Override
+    public long getDayTime() {
+        return serverLevelData().getDayTime();
+    }
+
+    @Override
+    public void setDayTime(long time) {
+        serverLevelData().setDayTime(time);
+    }
+
+    @Override
+    public long getGameTime() {
+        return serverLevelData().getGameTime();
+    }
+
+    @Override
+    public void setGameTime(long time) {
+        serverLevelData().setGameTime(time);
+    }
+
+    @Override
+    public GameModeType getDefaultGameMode() {
+        return Conversion.GAME_MODES.inverse().get(serverLevelData().getGameType());
+    }
+
+    @Override
+    public void setDefaultGameMode(GameModeType gameMode) {
+        serverLevelData().setGameType(Conversion.GAME_MODES.get(gameMode));
     }
 }

@@ -28,6 +28,9 @@ public class TestPlugin implements FactoryPlugin {
             World world = player.getWorld();
             Block block = world.getBlockAt(player.getLocation());
 
+            player.setGameMode(Minecraft.GameMode.SPECTATOR);
+            world.setDayTime(0);
+            world.setWeather(World.Weather.THUNDER, 60);
             if (block.hasPropertyValue(Block.StateProperty.SLAB_TYPE)) {
                 block.setPropertyValue(Block.StateProperty.SLAB_TYPE, Block.StateProperty.SlabType.TOP);
             }
