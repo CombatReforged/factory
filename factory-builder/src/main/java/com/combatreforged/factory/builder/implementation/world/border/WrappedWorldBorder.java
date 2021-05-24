@@ -1,7 +1,6 @@
 package com.combatreforged.factory.builder.implementation.world.border;
 
 import com.combatreforged.factory.api.world.border.WorldBorder;
-import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 
 public class WrappedWorldBorder extends Wrapped<net.minecraft.world.level.border.WorldBorder> implements WorldBorder {
