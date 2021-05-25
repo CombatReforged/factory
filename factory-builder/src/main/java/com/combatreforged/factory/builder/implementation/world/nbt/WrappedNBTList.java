@@ -1,8 +1,6 @@
 package com.combatreforged.factory.builder.implementation.world.nbt;
 
-import com.combatreforged.factory.api.exception.UnassignableTypeException;
 import com.combatreforged.factory.api.world.nbt.NBTList;
-import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import net.minecraft.nbt.ListTag;
@@ -55,63 +53,13 @@ public class WrappedNBTList extends WrappedNBTValue implements NBTList {
     }
 
     @Override
-    public short asShort() {
-        throw new UnassignableTypeException("Cannot return asShort from NBTList");
-    }
-
-    @Override
-    public double asDouble() {
-        throw new UnassignableTypeException("Cannot return asDouble from NBTList");
-    }
-
-    @Override
-    public float asFloat() {
-        throw new UnassignableTypeException("Cannot return asFloat from NBTList");
-    }
-
-    @Override
-    public byte asByte() {
-        throw new UnassignableTypeException("Cannot return asByte from NBTList");
-    }
-
-    @Override
-    public int asInt() {
-        throw new UnassignableTypeException("Cannot return asInt from NBTList");
-    }
-
-    @Override
-    public long asLong() {
-        throw new UnassignableTypeException("Cannot return asLong from NBTList");
-    }
-
-    @Override
-    public long[] asLongArray() {
-        throw new UnassignableTypeException("Cannot return asLongArray from NBTList");
-    }
-
-    @Override
-    public byte[] asByteArray() {
-        throw new UnassignableTypeException("Cannot return asByteArray from NBTList");
-    }
-
-    @Override
-    public int[] asIntArray() {
-        throw new UnassignableTypeException("Cannot return asIntArray from NBTList");
+    public NBTList asList() {
+        return this;
     }
 
     @Override
     public String asString() {
         return wrappedList.getAsString();
-    }
-
-    @Override
-    public NBTObject asObject() {
-        throw new UnassignableTypeException("Cannot return asObject from NBTList");
-    }
-
-    @Override
-    public NBTList asList() {
-        return this;
     }
 
     @Override
