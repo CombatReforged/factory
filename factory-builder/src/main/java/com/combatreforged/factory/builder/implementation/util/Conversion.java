@@ -5,6 +5,9 @@ import com.combatreforged.factory.api.world.block.BlockType;
 import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.entity.EntityType;
+import com.combatreforged.factory.api.world.entity.equipment.ArmorSlot;
+import com.combatreforged.factory.api.world.entity.equipment.EquipmentSlot;
+import com.combatreforged.factory.api.world.entity.equipment.HandSlot;
 import com.combatreforged.factory.api.world.entity.player.GameModeType;
 import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
@@ -35,11 +38,13 @@ public abstract class Conversion {
     public static final BiMap<NBTValue.Type, Class<? extends Tag>> NBT_VALUE_TYPES = HashBiMap.create();
     public static final BiMap<GameModeType, GameType> GAME_MODES = HashBiMap.create();
     public static final BiMap<DamageData.Type, DamageSource> DAMAGE_TYPES = HashBiMap.create();
+    public static final BiMap<EquipmentSlot, net.minecraft.world.entity.EquipmentSlot> EQUIPMENT_SLOTS = HashBiMap.create();
 
     public static void initIndependent() {
         setupDamageTypes();
         setupStatePropertyEnums();
         setupGameModes();
+        setupEquipmentSlots();
     }
 
     public static void setupEffects() {
@@ -2165,6 +2170,15 @@ public abstract class Conversion {
         GAME_MODES.put(Minecraft.GameMode.CREATIVE, GameType.CREATIVE);
         GAME_MODES.put(Minecraft.GameMode.ADVENTURE, GameType.ADVENTURE);
         GAME_MODES.put(Minecraft.GameMode.SPECTATOR, GameType.SPECTATOR);
+    }
+
+    public static void setupEquipmentSlots() {
+        EQUIPMENT_SLOTS.put(HandSlot.MAIN_HAND, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
+        EQUIPMENT_SLOTS.put(HandSlot.OFF_HAND, net.minecraft.world.entity.EquipmentSlot.OFFHAND);
+        EQUIPMENT_SLOTS.put(ArmorSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.HEAD);
+        EQUIPMENT_SLOTS.put(ArmorSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.CHEST);
+        EQUIPMENT_SLOTS.put(ArmorSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.LEGS);
+        EQUIPMENT_SLOTS.put(ArmorSlot.FEET, net.minecraft.world.entity.EquipmentSlot.FEET);
     }
 
     public static net.kyori.adventure.text.Component convertComponent(Component mcComponent) {

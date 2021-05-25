@@ -3,9 +3,14 @@ package com.combatreforged.factory.builder.implementation.world.entity;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.api.world.entity.LivingEntity;
+import com.combatreforged.factory.api.world.entity.equipment.EquipmentSlot;
+import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
+import com.combatreforged.factory.builder.implementation.Wrapped;
+import com.combatreforged.factory.builder.implementation.util.Conversion;
 import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
+import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 
@@ -23,6 +28,16 @@ public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
     @Override
     public net.minecraft.world.entity.LivingEntity unwrap() {
         return wrappedLiving;
+    }
+
+    @Override
+    public ItemStack getEquipmentStack(EquipmentSlot slot) {
+        return Wrapped.wrap(wrappedLiving.getItemBySlot(Conversion.EQUIPMENT_SLOTS.get(slot)), WrappedItemStack.class);
+    }
+
+    @Override
+    public void setEquipmentStack(EquipmentSlot slot, ItemStack itemStack) {
+        wrappedLiving.setItemSlot(Conversion.EQUIPMENT_SLOTS.get(slot), ((WrappedItemStack) itemStack).unwrap());
     }
 
     @Override
@@ -75,5 +90,35 @@ public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
     @Override
     public void removeEffect(StatusEffect statusEffect) {
         wrappedLiving.removeEffect(WrappedStatusEffectInstance.convert(statusEffect));
+    }
+
+    @Override
+    public boolean isSprinting() {
+        return wrappedLiving.isSprinting();
+    }
+
+    @Override
+    public void setSprinting(boolean sprinting) {
+        wrappedLiving.setSprinting(sprinting);
+    }
+
+    @Override
+    public boolean isSneaking() {
+        return wrappedLiving.isShiftKeyDown();
+    }
+
+    @Override
+    public void setSneaking(boolean sneaking) {
+        wrappedLiving.setShiftKeyDown(sneaking);
+    }
+
+    @Override
+    public boolean isSwimming() {
+        return wrappedLiving.isSwimming();
+    }
+
+    @Override
+    public void setSwimming(boolean swimming) {
+        wrappedLiving.setSwimming(swimming);
     }
 }

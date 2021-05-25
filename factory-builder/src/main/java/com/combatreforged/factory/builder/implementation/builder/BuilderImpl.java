@@ -167,7 +167,9 @@ public class BuilderImpl implements Builder {
     @Override
     public ItemStack createItemStack(ItemType itemType, int count, int damage, BinaryTagHolder tag) {
         net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(Conversion.ITEMS.get(itemType), count);
-        stack.setDamageValue(damage);
+        if (damage != 0) {
+            stack.setDamageValue(damage);
+        }
         try {
             stack.setTag(TagParser.parseTag(tag.toString()));
         } catch (CommandSyntaxException e) {
@@ -180,7 +182,9 @@ public class BuilderImpl implements Builder {
     @Override
     public ItemStack createItemStack(ItemType itemType, int count, int damage, @Nullable NBTObject nbt) {
         net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(Conversion.ITEMS.get(itemType), count);
-        stack.setDamageValue(damage);
+        if (damage != 0) {
+            stack.setDamageValue(damage);
+        }
         if (nbt != null) {
             stack.setTag(((WrappedNBTObject) nbt).unwrap());
         }

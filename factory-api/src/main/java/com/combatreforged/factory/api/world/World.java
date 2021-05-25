@@ -19,6 +19,8 @@ public interface World {
     BlockEntity getBlockEntity(Location location);
     List<Entity> getEntities();
 
+    //TODO add Bounding Box-based entity finding
+
     boolean spawn(Entity entity);
 
     Entity getEntity(UUID uuid);
@@ -47,8 +49,4 @@ public interface World {
 
     GameModeType getDefaultGameMode();
     void setDefaultGameMode(GameModeType gameMode);
-
-    enum Weather {
-        CLEAR, RAIN, THUNDER
-    }
 }

@@ -1,6 +1,7 @@
 package com.combatreforged.factory.builder.implementation.world;
 
 import com.combatreforged.factory.api.FactoryServer;
+import com.combatreforged.factory.api.world.Weather;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.block.Block;
 import com.combatreforged.factory.api.world.block.BlockEntity;

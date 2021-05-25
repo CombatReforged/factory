@@ -1,5 +1,9 @@
 package com.combatreforged.factory.builder.implementation.world.item.container;
 
+import com.combatreforged.factory.api.exception.UnassignableTypeException;
+import com.combatreforged.factory.api.world.entity.equipment.ArmorSlot;
+import com.combatreforged.factory.api.world.entity.equipment.EquipmentSlot;
+import com.combatreforged.factory.api.world.entity.equipment.HandSlot;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 import com.combatreforged.factory.builder.implementation.Wrapped;
@@ -12,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.combatreforged.factory.api.world.entity.equipment.ArmorSlot.*;
 
 public class WrappedPlayerInventory extends Wrapped<Inventory> implements PlayerInventory, WrappedContainer {
     public WrappedPlayerInventory(Inventory wrapped) {
@@ -34,13 +40,13 @@ public class WrappedPlayerInventory extends Wrapped<Inventory> implements Player
     }
 
     @Override
-    public void setItemStack(Slot slot, ItemStack itemStack) {
-        setItemStack(slot.id(), itemStack);
+    public void setItemStack(EquipmentSlot slot, ItemStack itemStack) {
+        setItemStack(transformToId(slot), itemStack);
     }
 
     @Override
-    public ItemStack getItemStack(Slot slot) {
-        return getItemStack(slot.id());
+    public ItemStack getItemStack(EquipmentSlot slot) {
+        return getItemStack(transformToId(slot));
     }
 
     @Override
@@ -69,10 +75,10 @@ public class WrappedPlayerInventory extends Wrapped<Inventory> implements Player
     }
 
     @Override
-    public Map<Slot.ArmorSlot, ItemStack> getArmorContents() {
-        Map<Slot.ArmorSlot, ItemStack> map = new HashMap<>();
+    public Map<ArmorSlot, ItemStack> getArmorContents() {
+        Map<ArmorSlot, ItemStack> map = new HashMap<>();
         for (int i = 0; i < wrapped.armor.size(); i++) {
-            map.put(Slot.ArmorSlot.of(i + 100), !wrapped.armor.get(i).isEmpty()
+            map.put(transformToArmorSlot(i + 100), !wrapped.armor.get(i).isEmpty()
                     ? Wrapped.wrap(wrapped.armor.get(i), WrappedItemStack.class)
                     : null);
         }
@@ -105,10 +111,50 @@ public class WrappedPlayerInventory extends Wrapped<Inventory> implements Player
         if (slot >= 100) {
             chosen = slot - 100 + wrapped.items.size();
         }
-        else if (slot == Slot.OFFHAND.id()) {
+        else if (slot == -106) {
             chosen = wrapped.items.size() + wrapped.armor.size() - 1;
         }
 
         return chosen;
+    }
+
+    private ArmorSlot transformToArmorSlot(int id) {
+        switch (id) {
+            case 100:
+                return FEET;
+            case 101:
+                return LEGS;
+            case 102:
+                return CHEST;
+            case 103:
+                return HEAD;
+            default:
+                throw new UnsupportedOperationException("Not an armor slot");
+        }
+    }
+
+    private int transformToId(EquipmentSlot slot) {
+        if (slot instanceof ArmorSlot) {
+            ArmorSlot armor = (ArmorSlot) slot;
+            switch (armor) {
+                case HEAD:
+                    return 103;
+                case CHEST:
+                    return 102;
+                case LEGS:
+                    return 101;
+                case FEET:
+                    return 100;
+            }
+        } else if (slot instanceof HandSlot) {
+            HandSlot hand = (HandSlot) slot;
+            switch (hand) {
+                case MAIN_HAND:
+                    return wrapped.selected;
+                case OFF_HAND:
+                    return -106;
+            }
+        }
+        throw new UnassignableTypeException("Invalid equipment slot");
     }
 }
