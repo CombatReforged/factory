@@ -12,7 +12,7 @@ import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
-import com.combatreforged.factory.builder.implementation.util.Conversion;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.block.WrappedBlock;
 import com.combatreforged.factory.builder.implementation.world.block.WrappedBlockEntity;
 import com.combatreforged.factory.builder.implementation.world.border.WrappedWorldBorder;
@@ -148,11 +148,11 @@ public class WrappedWorld extends Wrapped<ServerLevel> implements World {
 
     @Override
     public GameModeType getDefaultGameMode() {
-        return Conversion.GAME_MODES.inverse().get(serverLevelData().getGameType());
+        return ObjectMappings.GAME_MODES.inverse().get(serverLevelData().getGameType());
     }
 
     @Override
     public void setDefaultGameMode(GameModeType gameMode) {
-        serverLevelData().setGameType(Conversion.GAME_MODES.get(gameMode));
+        serverLevelData().setGameType(ObjectMappings.GAME_MODES.get(gameMode));
     }
 }

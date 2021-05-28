@@ -24,6 +24,7 @@
     "world.entity.player.InventoryMixin",
     "world.food.FoodDataMixin",
     "world.inventory.CraftingContainerMixin",
+    "world.item.EnchantmentsMixin",
     "world.item.ItemsMixin",
     "world.item.ItemStackAccessor",
     "world.item.ItemStackMixin",

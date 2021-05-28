@@ -1,7 +1,7 @@
 package com.combatreforged.factory.builder.implementation.world.item.container;
 
 import com.combatreforged.factory.api.world.item.container.BlockEntityContainer;
-import com.combatreforged.factory.builder.implementation.util.Conversion;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.block.WrappedBlockEntity;
 import net.kyori.adventure.text.Component;
 import net.minecraft.world.Container;
@@ -19,12 +19,12 @@ public class WrappedBlockEntityContainer extends WrappedBlockEntity implements B
 
     @Override
     public Component getName() {
-        return Conversion.convertComponent(wrappedBEC.getName());
+        return ObjectMappings.convertComponent(wrappedBEC.getName());
     }
 
     @Override
     public void setName(Component component) {
-        wrappedBEC.setCustomName(Conversion.convertComponent(component));
+        wrappedBEC.setCustomName(ObjectMappings.convertComponent(component));
     }
 
     @Override

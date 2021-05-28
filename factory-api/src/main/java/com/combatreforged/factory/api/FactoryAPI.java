@@ -3,6 +3,7 @@ package com.combatreforged.factory.api;
 import com.combatreforged.factory.api.builder.Builder;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.combatreforged.factory.api.exception.FactoryPluginException;
+import com.combatreforged.factory.api.util.ImplementationUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -12,10 +13,12 @@ public class FactoryAPI {
     private static FactoryAPI INSTANCE = null;
 
     private final Builder builder;
+    private final ImplementationUtils implementationUtils;
     private final FactoryServer server;
 
     public FactoryAPI(FactoryServer server, Builder builder) {
         this.builder = builder;
+        this.implementationUtils = builder.createImplementationUtils();
         this.server = server;
 
         INSTANCE = this;
@@ -39,6 +42,10 @@ public class FactoryAPI {
 
     public FactoryServer getServer() {
         return server;
+    }
+
+    public ImplementationUtils getImplementationUtils() {
+        return implementationUtils;
     }
 
     public static FactoryAPI getInstance() {

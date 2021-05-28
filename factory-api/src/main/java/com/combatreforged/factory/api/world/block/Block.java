@@ -1,8 +1,10 @@
 package com.combatreforged.factory.api.world.block;
 
+import com.combatreforged.factory.api.interfaces.ObjectMapped;
 import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.util.Location;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 public interface Block {
@@ -14,13 +16,15 @@ public interface Block {
 
     ItemType getDrop();
 
+    List<StateProperty<?>> getProperties();
+
     boolean hasPropertyValue(StateProperty<?> stateProperty);
 
     <T> T getPropertyValue(StateProperty<T> stateProperty);
 
     <T> void setPropertyValue(StateProperty<T> stateProperty, T value);
 
-    class StateProperty<T> {
+    class StateProperty<T> implements ObjectMapped {
         public static final StateProperty<Boolean>
                 ATTACHED = new StateProperty<>(Boolean.class),
                 BOTTOM = new StateProperty<>(Boolean.class),
@@ -150,7 +154,7 @@ public interface Block {
             return allowedCheck.test(value);
         }
 
-        public interface StatePropertyEnum {
+        public interface StatePropertyEnum extends ObjectMapped {
         }
 
         public enum Direction implements StatePropertyEnum {

@@ -1,6 +1,7 @@
 package com.combatreforged.factory.api.builder;
 
 import com.combatreforged.factory.api.FactoryAPI;
+import com.combatreforged.factory.api.util.ImplementationUtils;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
@@ -19,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface Builder {
+    ImplementationUtils createImplementationUtils();
+
     Entity createEntity(EntityType type, World world);
 
     NBTObject createNBTObject(@Nullable Map<String, NBTValue> values);

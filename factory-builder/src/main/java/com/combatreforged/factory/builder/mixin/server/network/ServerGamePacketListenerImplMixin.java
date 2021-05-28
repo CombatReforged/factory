@@ -5,7 +5,7 @@ import com.combatreforged.factory.api.event.player.PlayerMoveEvent;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.builder.implementation.Wrapped;
-import com.combatreforged.factory.builder.implementation.util.Conversion;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import net.minecraft.Util;
 import net.minecraft.network.chat.ChatType;
@@ -38,12 +38,12 @@ public abstract class ServerGamePacketListenerImplMixin {
     @Redirect(method = "onDisconnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     public void callPlayerDisconnectEvent(PlayerList playerList, Component component, ChatType chatType, UUID uUID, Component component2) {
         PlayerDisconnectEvent event = new PlayerDisconnectEvent(Wrapped.wrap(this.player, WrappedPlayer.class),
-                Conversion.convertComponent(component),
-                Conversion.convertComponent(component2));
+                ObjectMappings.convertComponent(component),
+                ObjectMappings.convertComponent(component2));
         PlayerDisconnectEvent.BACKEND.invoke(event);
 
         if (event.getLeaveMessage() != null) {
-            playerList.broadcastMessage(Conversion.convertComponent(event.getDisconnectReason()), ChatType.SYSTEM, Util.NIL_UUID);
+            playerList.broadcastMessage(ObjectMappings.convertComponent(event.getDisconnectReason()), ChatType.SYSTEM, Util.NIL_UUID);
         }
     }
     // END: DISCONNECT EVENT

@@ -1,16 +1,16 @@
-package com.combatreforged.factory.builder.mixin.world.effect;
+package com.combatreforged.factory.builder.mixin.world.item;
 
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
-import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.enchantment.Enchantments;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(MobEffects.class)
-public abstract class MobEffectsMixin {
-    @Inject(method = "<clinit>", at = @At("TAIL")) @SuppressWarnings("unused")
+@Mixin(Enchantments.class)
+public abstract class EnchantmentsMixin {
+    @Inject(method = "<clinit>", at = @At("TAIL"))
     private static void loadConversionTable(CallbackInfo ci) {
-        ObjectMappings.setupEffects();
+        ObjectMappings.setupEnchantments();
     }
 }

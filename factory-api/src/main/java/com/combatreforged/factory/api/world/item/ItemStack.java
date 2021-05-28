@@ -25,6 +25,12 @@ public interface ItemStack {
     void setLore(Component... lore);
     void setLore(List<Component> lore);
 
+    boolean hasEnchantment(Enchantment enchantment);
+    int getLevel(Enchantment enchantment);
+    void enchant(Enchantment enchantment, int level);
+    void removeEnchantment(Enchantment enchantment);
+    List<Enchantment> getEnchantments();
+
     @Deprecated BinaryTagHolder getItemData();
     @Deprecated void setItemData(BinaryTagHolder tag);
 

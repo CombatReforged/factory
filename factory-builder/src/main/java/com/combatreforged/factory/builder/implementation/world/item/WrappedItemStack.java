@@ -1,19 +1,25 @@
 package com.combatreforged.factory.builder.implementation.world.item;
 
+import com.combatreforged.factory.api.world.item.Enchantment;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.builder.implementation.Wrapped;
-import com.combatreforged.factory.builder.implementation.util.Conversion;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTObject;
+import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonParseException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
+import net.minecraft.ResourceLocationException;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,7 +52,7 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
 
     @Override
     public ItemType getItem() {
-        return Conversion.ITEMS.inverse().get(wrapped.getItem());
+        return ObjectMappings.ITEMS.inverse().get(wrapped.getItem());
     }
 
     @Override
@@ -71,12 +77,12 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
 
     @Override
     public Component getDisplayName() {
-        return Conversion.convertComponent(wrapped.getDisplayName());
+        return ObjectMappings.convertComponent(wrapped.getDisplayName());
     }
 
     @Override
     public void setDisplayName(Component displayName) {
-        wrapped.setHoverName(Conversion.convertComponent(displayName));
+        wrapped.setHoverName(ObjectMappings.convertComponent(displayName));
     }
 
     @Override
@@ -89,13 +95,13 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
         if (displayTag != null && displayTag.getTagType("Lore") == 9) {
             ListTag listTag = displayTag.getList("Lore", 8);
 
-            for(int i = 0; i < listTag.size(); ++i) {
+            for (int i = 0; i < listTag.size(); ++i) {
                 String string = listTag.getString(i);
 
                 try {
                     MutableComponent component = net.minecraft.network.chat.Component.Serializer.fromJson(string);
                     if (component != null) {
-                        returnValue.add(Conversion.convertComponent(component));
+                        returnValue.add(ObjectMappings.convertComponent(component));
                     }
                 } catch (JsonParseException e) {
                     throw new IllegalStateException("Lore is invalid");
@@ -120,7 +126,7 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
 
         for (Component component : lore) {
             try {
-                loreArray.add(TagParser.parseTag(Conversion.convertComponent(component).toString()));
+                loreArray.add(TagParser.parseTag(ObjectMappings.convertComponent(component).toString()));
             } catch (CommandSyntaxException e) {
                 throw new UnsupportedOperationException("Component " + lore.indexOf(component) + " is invalid");
             }
@@ -128,6 +134,108 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
 
         display.put("Lore", loreArray);
         tag.put("display", display);
+    }
+
+    @Override
+    public boolean hasEnchantment(Enchantment enchantment) {
+        return getEnchantments().contains(enchantment);
+    }
+
+    @Override
+    public int getLevel(Enchantment enchantment) {
+        return 0; //TODO
+    }
+
+    @Override
+    public void enchant(Enchantment enchantment, int level) {
+        wrapped.enchant(ObjectMappings.ENCHANTMENTS.get(enchantment), level);
+    }
+
+    @Override
+    public void removeEnchantment(Enchantment enchantment) {
+        ListTag listTag = wrapped.getEnchantmentTags();
+        List<Tag> remove = new ArrayList<>();
+        for (Tag tag : listTag) {
+            if (!(tag instanceof CompoundTag)) continue;
+            CompoundTag compoundTag = (CompoundTag) tag;
+            if (!compoundTag.contains("id")) continue;
+            if (enchantment.equals(stringToEnchantment(compoundTag.getString("id")))) {
+                remove.add(tag);
+            }
+        }
+        listTag.removeAll(remove);
+
+        if (wrapped.hasTag()) {
+            CompoundTag root = wrapped.getTag();
+            assert root != null;
+            if (root.contains("Enchantments")) {
+                root.put("Enchantments", listTag);
+                wrapped.setTag(root);
+            }
+        }
+    }
+
+    @Override
+    public List<Enchantment> getEnchantments() {
+        List<Enchantment> enchantments = new ArrayList<>();
+        ListTag listTag = wrapped.getEnchantmentTags();
+        for (Tag tag : listTag) {
+            if (!(tag instanceof CompoundTag)) continue;
+
+            CompoundTag compoundTag = (CompoundTag) tag;
+            if (!compoundTag.contains("id") || !compoundTag.contains("lvl") || compoundTag.getInt("lvl") <= 0) {
+                continue;
+            }
+
+            Enchantment enchantment = stringToEnchantment(compoundTag.getString("id"));
+
+            if (enchantment == null) continue;
+
+            enchantments.add(enchantment);
+        }
+        return ImmutableList.copyOf(enchantments);
+    }
+
+    private Enchantment stringToEnchantment(String s) {
+        ResourceLocation loc;
+        try {
+            loc = new ResourceLocation(s);
+        } catch (ResourceLocationException e) {
+            return null;
+        }
+        net.minecraft.world.item.enchantment.Enchantment mcEnchant = Registry.ENCHANTMENT.get(loc);
+        if (mcEnchant == null) return null;
+        Enchantment enchantment;
+        if (ObjectMappings.ENCHANTMENTS.inverse().containsKey(mcEnchant)) {
+            enchantment = ObjectMappings.ENCHANTMENTS.inverse().get(mcEnchant);
+        } else {
+            enchantment = new Enchantment.Other() {
+                private final ResourceLocation location = loc;
+                private final net.minecraft.world.item.enchantment.Enchantment ench = mcEnchant;
+
+                @Override
+                public String getId() {
+                    return location.toString();
+                }
+
+                @Override
+                public boolean isCurse() {
+                    return ench.isCurse();
+                }
+
+                @Override
+                public int getMaxLevel() {
+                    return ench.getMaxLevel();
+                }
+
+                @Override
+                public boolean canBeAppliedTo(ItemStack itemStack) {
+                    return ench.canEnchant(((WrappedItemStack) itemStack).unwrap(), true);
+                }
+            };
+
+        }
+        return enchantment;
     }
 
     @Deprecated

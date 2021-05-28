@@ -1,6 +1,7 @@
 package com.combatreforged.factory.builder.implementation.builder;
 
 import com.combatreforged.factory.api.builder.Builder;
+import com.combatreforged.factory.api.util.ImplementationUtils;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
@@ -15,7 +16,8 @@ import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.builder.exception.NBTParsingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
-import com.combatreforged.factory.builder.implementation.util.Conversion;
+import com.combatreforged.factory.builder.implementation.util.ImplementationUtilsImpl;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.combatreforged.factory.builder.implementation.world.damage.WrappedDamageData;
 import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
@@ -45,8 +47,13 @@ public class BuilderImpl implements Builder {
     }
 
     @Override
+    public ImplementationUtils createImplementationUtils() {
+        return new ImplementationUtilsImpl();
+    }
+
+    @Override
     public Entity createEntity(EntityType type, World world) {
-        return Wrapped.wrap(Conversion.ENTITIES.get(type).create(((WrappedWorld) world).unwrap()), WrappedEntity.class);
+        return Wrapped.wrap(ObjectMappings.ENTITIES.get(type).create(((WrappedWorld) world).unwrap()), WrappedEntity.class);
     }
 
     @Override
@@ -128,15 +135,15 @@ public class BuilderImpl implements Builder {
 
     @Override
     public StatusEffectInstance createStatusEffectInstance(StatusEffect statusEffect, int duration, int amplifier, boolean ambient) {
-        MobEffectInstance mei = new MobEffectInstance(Conversion.EFFECTS.get(statusEffect), duration, amplifier, ambient, ambient, ambient);
+        MobEffectInstance mei = new MobEffectInstance(ObjectMappings.EFFECTS.get(statusEffect), duration, amplifier, ambient, ambient, ambient);
         return Wrapped.wrap(mei, WrappedStatusEffectInstance.class);
     }
 
     @Override
     public DamageData createDamageData(DamageData.Type type, Entity entityCause, boolean isIndirect) {
         DamageSource ds = DamageSource.GENERIC;
-        if (Conversion.DAMAGE_TYPES.containsKey(type)) {
-            ds = Conversion.DAMAGE_TYPES.get(type);
+        if (ObjectMappings.DAMAGE_TYPES.containsKey(type)) {
+            ds = ObjectMappings.DAMAGE_TYPES.get(type);
         }
         else {
             switch (type) {
@@ -166,7 +173,7 @@ public class BuilderImpl implements Builder {
     @Deprecated
     @Override
     public ItemStack createItemStack(ItemType itemType, int count, int damage, BinaryTagHolder tag) {
-        net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(Conversion.ITEMS.get(itemType), count);
+        net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(ObjectMappings.ITEMS.get(itemType), count);
         if (damage != 0) {
             stack.setDamageValue(damage);
         }
@@ -181,7 +188,7 @@ public class BuilderImpl implements Builder {
 
     @Override
     public ItemStack createItemStack(ItemType itemType, int count, int damage, @Nullable NBTObject nbt) {
-        net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(Conversion.ITEMS.get(itemType), count);
+        net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(ObjectMappings.ITEMS.get(itemType), count);
         if (damage != 0) {
             stack.setDamageValue(damage);
         }

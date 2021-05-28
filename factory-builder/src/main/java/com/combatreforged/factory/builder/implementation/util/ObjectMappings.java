@@ -9,6 +9,7 @@ import com.combatreforged.factory.api.world.entity.equipment.ArmorSlot;
 import com.combatreforged.factory.api.world.entity.equipment.EquipmentSlot;
 import com.combatreforged.factory.api.world.entity.equipment.HandSlot;
 import com.combatreforged.factory.api.world.entity.player.GameModeType;
+import com.combatreforged.factory.api.world.item.Enchantment;
 import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.api.world.types.Minecraft;
@@ -23,22 +24,24 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.*;
 
-public abstract class Conversion {
+public abstract class ObjectMappings {
     public static final BiMap<StatusEffect, MobEffect> EFFECTS = HashBiMap.create();
     public static final BiMap<BlockType, Block> BLOCKS = HashBiMap.create();
     public static final BiMap<ItemType, net.minecraft.world.item.Item> ITEMS = HashBiMap.create();
     public static final BiMap<EntityType, net.minecraft.world.entity.EntityType<?>> ENTITIES = HashBiMap.create();
     public static final BiMap<StateProperty<?>, Property<?>> STATE_PROPERTIES = HashBiMap.create();
-    public static final BiMap<Object, Object> STATE_PROPERTY_ENUMS = HashBiMap.create();
+    public static final BiMap<StateProperty.StatePropertyEnum, Object> STATE_PROPERTY_ENUMS = HashBiMap.create();
     public static final BiMap<NBTValue.Type, Class<? extends Tag>> NBT_VALUE_TYPES = HashBiMap.create();
     public static final BiMap<GameModeType, GameType> GAME_MODES = HashBiMap.create();
     public static final BiMap<DamageData.Type, DamageSource> DAMAGE_TYPES = HashBiMap.create();
     public static final BiMap<EquipmentSlot, net.minecraft.world.entity.EquipmentSlot> EQUIPMENT_SLOTS = HashBiMap.create();
+    public static final BiMap<Enchantment, net.minecraft.world.item.enchantment.Enchantment> ENCHANTMENTS = HashBiMap.create();
 
     public static void initIndependent() {
         setupDamageTypes();
@@ -2179,6 +2182,48 @@ public abstract class Conversion {
         EQUIPMENT_SLOTS.put(ArmorSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.CHEST);
         EQUIPMENT_SLOTS.put(ArmorSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.LEGS);
         EQUIPMENT_SLOTS.put(ArmorSlot.FEET, net.minecraft.world.entity.EquipmentSlot.FEET);
+    }
+
+    public static void setupEnchantments() {
+        ENCHANTMENTS.put(Minecraft.Enchantment.PROTECTION, Enchantments.ALL_DAMAGE_PROTECTION);
+        ENCHANTMENTS.put(Minecraft.Enchantment.FIRE_PROTECTION, Enchantments.FIRE_PROTECTION);
+        ENCHANTMENTS.put(Minecraft.Enchantment.FEATHER_FALLING, Enchantments.FALL_PROTECTION);
+        ENCHANTMENTS.put(Minecraft.Enchantment.BLAST_PROTECTION, Enchantments.BLAST_PROTECTION);
+        ENCHANTMENTS.put(Minecraft.Enchantment.PROJECTILE_PROTECTION, Enchantments.PROJECTILE_PROTECTION);
+        ENCHANTMENTS.put(Minecraft.Enchantment.RESPIRATION, Enchantments.RESPIRATION);
+        ENCHANTMENTS.put(Minecraft.Enchantment.AQUA_AFFINITY, Enchantments.AQUA_AFFINITY);
+        ENCHANTMENTS.put(Minecraft.Enchantment.THORNS, Enchantments.THORNS);
+        ENCHANTMENTS.put(Minecraft.Enchantment.DEPTH_STRIDER, Enchantments.DEPTH_STRIDER);
+        ENCHANTMENTS.put(Minecraft.Enchantment.FROST_WALKER, Enchantments.FROST_WALKER);
+        ENCHANTMENTS.put(Minecraft.Enchantment.BINDING_CURSE, Enchantments.BINDING_CURSE);
+        ENCHANTMENTS.put(Minecraft.Enchantment.SOUL_SPEED, Enchantments.SOUL_SPEED);
+        ENCHANTMENTS.put(Minecraft.Enchantment.SHARPNESS, Enchantments.SHARPNESS);
+        ENCHANTMENTS.put(Minecraft.Enchantment.SMITE, Enchantments.SMITE);
+        ENCHANTMENTS.put(Minecraft.Enchantment.BANE_OF_ARTHROPODS, Enchantments.BANE_OF_ARTHROPODS);
+        ENCHANTMENTS.put(Minecraft.Enchantment.KNOCKBACK, Enchantments.KNOCKBACK);
+        ENCHANTMENTS.put(Minecraft.Enchantment.FIRE_ASPECT, Enchantments.FIRE_ASPECT);
+        ENCHANTMENTS.put(Minecraft.Enchantment.LOOTING, Enchantments.MOB_LOOTING);
+        ENCHANTMENTS.put(Minecraft.Enchantment.SWEEPING, Enchantments.SWEEPING_EDGE);
+        ENCHANTMENTS.put(Minecraft.Enchantment.CLEAVING, Enchantments.CLEAVING);
+        ENCHANTMENTS.put(Minecraft.Enchantment.EFFICIENCY, Enchantments.DIGGING_EFFICIENCY);
+        ENCHANTMENTS.put(Minecraft.Enchantment.SILK_TOUCH, Enchantments.SILK_TOUCH);
+        ENCHANTMENTS.put(Minecraft.Enchantment.UNBREAKING, Enchantments.UNBREAKING);
+        ENCHANTMENTS.put(Minecraft.Enchantment.FORTUNE, Enchantments.BLOCK_FORTUNE);
+        ENCHANTMENTS.put(Minecraft.Enchantment.POWER, Enchantments.POWER_ARROWS);
+        ENCHANTMENTS.put(Minecraft.Enchantment.PUNCH, Enchantments.PUNCH_ARROWS);
+        ENCHANTMENTS.put(Minecraft.Enchantment.FLAME, Enchantments.FLAMING_ARROWS);
+        ENCHANTMENTS.put(Minecraft.Enchantment.INFINITY, Enchantments.INFINITY_ARROWS);
+        ENCHANTMENTS.put(Minecraft.Enchantment.LUCK_OF_THE_SEA, Enchantments.FISHING_LUCK);
+        ENCHANTMENTS.put(Minecraft.Enchantment.LURE, Enchantments.FISHING_SPEED);
+        ENCHANTMENTS.put(Minecraft.Enchantment.LOYALTY, Enchantments.LOYALTY);
+        ENCHANTMENTS.put(Minecraft.Enchantment.IMPALING, Enchantments.IMPALING);
+        ENCHANTMENTS.put(Minecraft.Enchantment.RIPTIDE, Enchantments.RIPTIDE);
+        ENCHANTMENTS.put(Minecraft.Enchantment.CHANNELING, Enchantments.CHANNELING);
+        ENCHANTMENTS.put(Minecraft.Enchantment.MULTISHOT, Enchantments.MULTISHOT);
+        ENCHANTMENTS.put(Minecraft.Enchantment.QUICK_CHARGE, Enchantments.QUICK_CHARGE);
+        ENCHANTMENTS.put(Minecraft.Enchantment.PIERCING, Enchantments.PIERCING);
+        ENCHANTMENTS.put(Minecraft.Enchantment.MENDING, Enchantments.MENDING);
+        ENCHANTMENTS.put(Minecraft.Enchantment.VANISHING_CURSE, Enchantments.VANISHING_CURSE);
     }
 
     public static net.kyori.adventure.text.Component convertComponent(Component mcComponent) {

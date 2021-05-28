@@ -6,6 +6,7 @@ import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -13,7 +14,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.dedicated.DedicatedServer;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements FactoryServer {
     public WrappedFactoryServer(DedicatedServer wrapped) {
@@ -30,7 +30,7 @@ public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements Fa
         return wrapped.getPlayerList().getPlayers()
                 .stream()
                 .map((player) -> Wrapped.wrap(player, WrappedPlayer.class))
-                .collect(Collectors.toList());
+                .collect(ImmutableList.toImmutableList());
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.combatreforged.factory.builder.mixin.server.players;
 
 import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
 import com.combatreforged.factory.builder.implementation.Wrapped;
-import com.combatreforged.factory.builder.implementation.util.Conversion;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import net.minecraft.Util;
 import net.minecraft.network.Connection;
@@ -34,11 +34,11 @@ public abstract class PlayerListMixin {
     @Inject(method = "placeNewPlayer", at = @At("TAIL"))
     public void callPlayerJoinEvent(Connection connection, ServerPlayer serverPlayer, CallbackInfo ci) {
         PlayerJoinEvent event = new PlayerJoinEvent(Wrapped.wrap(serverPlayer, WrappedPlayer.class),
-                Conversion.convertComponent(joinMessage));
+                ObjectMappings.convertComponent(joinMessage));
         PlayerJoinEvent.BACKEND.invoke(event);
 
         if (event.getJoinMessage() != null) {
-            this.broadcastMessage(Conversion.convertComponent(event.getJoinMessage()), ChatType.SYSTEM, Util.NIL_UUID);
+            this.broadcastMessage(ObjectMappings.convertComponent(event.getJoinMessage()), ChatType.SYSTEM, Util.NIL_UUID);
         }
     }
 

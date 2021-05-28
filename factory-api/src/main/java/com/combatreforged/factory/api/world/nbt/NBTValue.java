@@ -1,6 +1,7 @@
 package com.combatreforged.factory.api.world.nbt;
 
 import com.combatreforged.factory.api.builder.Builder;
+import com.combatreforged.factory.api.interfaces.ObjectMapped;
 
 public interface NBTValue {
     short asShort();
@@ -22,7 +23,7 @@ public interface NBTValue {
 
     Type getType();
 
-    enum Type {
+    enum Type implements ObjectMapped {
         SHORT, DOUBLE, FLOAT, BYTE, INT, LONG, LONG_ARRAY, BYTE_ARRAY, INT_ARRAY, STRING, OBJECT, LIST
     }
 

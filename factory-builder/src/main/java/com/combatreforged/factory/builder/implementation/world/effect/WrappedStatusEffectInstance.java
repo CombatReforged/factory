@@ -5,7 +5,7 @@ import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.extension.MobEffectExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
-import com.combatreforged.factory.builder.implementation.util.Conversion;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -41,8 +41,8 @@ public class WrappedStatusEffectInstance extends Wrapped<MobEffectInstance> impl
 
     private static StatusEffect convert(MobEffect effect) {
         StatusEffect statusEffect;
-        if (Conversion.EFFECTS.inverse().containsKey(effect))
-            statusEffect = Conversion.EFFECTS.inverse().get(effect);
+        if (ObjectMappings.EFFECTS.inverse().containsKey(effect))
+            statusEffect = ObjectMappings.EFFECTS.inverse().get(effect);
         else {
             ResourceLocation resourceLocation = Registry.MOB_EFFECT.getKey(effect);
             if (resourceLocation != null) {
@@ -79,8 +79,8 @@ public class WrappedStatusEffectInstance extends Wrapped<MobEffectInstance> impl
     }
 
     public static MobEffect convert(StatusEffect statusEffect) {
-        if (Conversion.EFFECTS.containsKey(statusEffect))
-            return Conversion.EFFECTS.get(statusEffect);
+        if (ObjectMappings.EFFECTS.containsKey(statusEffect))
+            return ObjectMappings.EFFECTS.get(statusEffect);
         else
             throw new WrappingException("StatusEffect has no pendant in vanilla!");
     }

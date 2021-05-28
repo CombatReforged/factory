@@ -1,7 +1,10 @@
 package com.combatreforged.factory.api.interfaces;
 
 import com.combatreforged.factory.api.util.Identifier;
+import com.combatreforged.factory.api.util.ImplementationUtils;
 
 public interface Namespaced {
-    Identifier getNamespaceId();
+    default Identifier getNamespaceId() {
+        return ImplementationUtils.getInstance().getIdentifier(this);
+    }
 }

@@ -4,7 +4,7 @@ import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.item.container.Container;
 import com.combatreforged.factory.builder.implementation.Wrapped;
-import com.combatreforged.factory.builder.implementation.util.Conversion;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,14 +35,14 @@ public interface WrappedContainer extends Container {
 
     @Override
     default int count(ItemType itemType) {
-        return container().countItem(Conversion.ITEMS.get(itemType));
+        return container().countItem(ObjectMappings.ITEMS.get(itemType));
     }
 
     @Override
     default boolean contains(Set<ItemType> itemTypes) {
         return container().hasAnyOf(itemTypes
                 .stream()
-                .map(Conversion.ITEMS::get)
+                .map(ObjectMappings.ITEMS::get)
                 .collect(Collectors.toSet()));
     }
 

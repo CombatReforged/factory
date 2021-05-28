@@ -10,7 +10,7 @@ import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.extension.EntityExtension;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.Wrapped;
-import com.combatreforged.factory.builder.implementation.util.Conversion;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -40,25 +40,25 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
 
     @Override
     public EntityType getEntityType() {
-        return Conversion.ENTITIES.inverse().get(this.wrapped.getType());
+        return ObjectMappings.ENTITIES.inverse().get(this.wrapped.getType());
     }
 
     @Override
     public Component getName() {
-        return Conversion.convertComponent(wrapped.getName());
+        return ObjectMappings.convertComponent(wrapped.getName());
     }
 
     @Override
     public @Nullable Component getCustomName() {
         if (wrapped.getCustomName() != null) {
-            return Conversion.convertComponent(wrapped.getCustomName());
+            return ObjectMappings.convertComponent(wrapped.getCustomName());
         }
         return null;
     }
 
     @Override
     public void setCustomName(Component customName) {
-        wrapped.setCustomName(Conversion.convertComponent(customName));
+        wrapped.setCustomName(ObjectMappings.convertComponent(customName));
     }
 
     @Override

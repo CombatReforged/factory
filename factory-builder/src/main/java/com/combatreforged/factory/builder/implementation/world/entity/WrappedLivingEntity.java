@@ -8,7 +8,7 @@ import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.Wrapped;
-import com.combatreforged.factory.builder.implementation.util.Conversion;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
 import net.minecraft.world.damagesource.DamageSource;
@@ -32,12 +32,12 @@ public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
 
     @Override
     public ItemStack getEquipmentStack(EquipmentSlot slot) {
-        return Wrapped.wrap(wrappedLiving.getItemBySlot(Conversion.EQUIPMENT_SLOTS.get(slot)), WrappedItemStack.class);
+        return Wrapped.wrap(wrappedLiving.getItemBySlot(ObjectMappings.EQUIPMENT_SLOTS.get(slot)), WrappedItemStack.class);
     }
 
     @Override
     public void setEquipmentStack(EquipmentSlot slot, ItemStack itemStack) {
-        wrappedLiving.setItemSlot(Conversion.EQUIPMENT_SLOTS.get(slot), ((WrappedItemStack) itemStack).unwrap());
+        wrappedLiving.setItemSlot(ObjectMappings.EQUIPMENT_SLOTS.get(slot), ((WrappedItemStack) itemStack).unwrap());
     }
 
     @Override

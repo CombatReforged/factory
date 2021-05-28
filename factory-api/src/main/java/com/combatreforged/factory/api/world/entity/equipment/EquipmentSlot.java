@@ -1,4 +1,6 @@
 package com.combatreforged.factory.api.world.entity.equipment;
 
-public interface EquipmentSlot {
+import com.combatreforged.factory.api.interfaces.ObjectMapped;
+
+public interface EquipmentSlot extends ObjectMapped {
 }

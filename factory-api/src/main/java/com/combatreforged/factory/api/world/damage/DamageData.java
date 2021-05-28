@@ -1,6 +1,7 @@
 package com.combatreforged.factory.api.world.damage;
 
 import com.combatreforged.factory.api.builder.Builder;
+import com.combatreforged.factory.api.interfaces.ObjectMapped;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.projectile.Projectile;
 
@@ -16,7 +17,7 @@ public interface DamageData {
                 || getType() == Type.DRAGON_BREATH || getType() == Type.ENTITY_ATTACK;
     }
 
-    enum Type {
+    enum Type implements ObjectMapped {
         IN_FIRE, ON_FIRE, LIGHTNING, LAVA, MAGMA, SUFFOCATION, CRAMMING, DROWNING,
         STARVING, CACTUS, FALLING, CRASHING, VOID, GENERIC, MAGIC, WITHERING,
         FALLING_ANVIL, FALLING_BLOCK, DRAGON_BREATH, DRY_OUT, SWEET_BERRY_BUSH,
