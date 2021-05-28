@@ -16,13 +16,10 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.*;
-import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack> implements ItemStack {
     public WrappedItemStack(net.minecraft.world.item.ItemStack wrapped) {

@@ -21,7 +21,7 @@ import com.combatreforged.factory.api.world.types.Minecraft;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.api.world.util.Vector3D;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +35,13 @@ public class TestPlugin implements FactoryPlugin {
         PlayerMoveEvent.BACKEND.register(event -> {
             Player player = event.getPlayer();
 
-            if (player.isSneaking()) player.addVelocity(new Vector3D(0.0, 0.2, 0.0));
+            Vector3D old = event.getOldPosition().toVector();
+            Vector3D new_ = event.getNewPosition().toVector();
+            Vector3D diff = new_.subtract(old);
+            if (player.isSneaking()
+                    && (diff.getX() != 0.0
+                    || diff.getY() != 0.0
+                    || diff.getZ() != 0.0)) player.addVelocity(new Vector3D(0.0, 0.2, 0.0));
         });
 
         PlayerJoinEvent.BACKEND.register(event -> {
@@ -53,20 +59,12 @@ public class TestPlugin implements FactoryPlugin {
             player.setEquipmentStack(HandSlot.OFF_HAND, ItemStack.create(Minecraft.Item.GOLDEN_APPLE, 16));
 
             ItemStack stick = ItemStack.create(Minecraft.Item.STICK);
-            /*NBTObject nbt = stick.getItemNBT();
-            NBTList enchantments = NBTList.create();
-            NBTObject knockback = NBTObject.create();
-            knockback.set("id", NBTValue.of("minecraft:knockback"));
-            knockback.set("lvl", NBTValue.of((short) 2));
-            enchantments.add(knockback);
-            nbt.set("Enchantments", enchantments);
-            stick.setItemNBT(nbt);*/
             stick.enchant(Minecraft.Enchantment.KNOCKBACK, 2);
             stick.getEnchantments().forEach(ench -> System.out.println(ench + " (lvl: " + stick.getLevel(ench) + ")"));
             stick.setLore(Component.text()
                     .content("Haha Gomme cool xDdDdDD")
-                    .decoration(TextDecoration.BOLD, true)
                     .decoration(TextDecoration.ITALIC, false)
+                    .color(NamedTextColor.RED)
                     .build());
 
             player.getInventory().setItemStack(4, stick);

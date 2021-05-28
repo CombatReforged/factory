@@ -77,6 +77,10 @@ public class Location {
         return Math.sqrt(xDif * xDif + yDif * yDif + zDif * zDif);
     }
 
+    public Vector3D toVector() {
+        return new Vector3D(x, y, z);
+    }
+
     public Location copy() {
         return new Location(x, y, z, yaw, pitch, world);
     }
