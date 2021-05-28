@@ -16,6 +16,8 @@ public interface Player extends LivingEntity {
     PlayerInventory getInventory();
     int getSelectedSlot();
 
+    //TODO message
+
     GameModeType getGameMode();
     void setGameMode(GameModeType gameMode);
 

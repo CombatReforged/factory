@@ -12,18 +12,17 @@ import com.google.gson.JsonParseException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.Registry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.nbt.TagParser;
+import net.minecraft.nbt.*;
+import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack> implements ItemStack {
     public WrappedItemStack(net.minecraft.world.item.ItemStack wrapped) {
@@ -126,8 +125,8 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
 
         for (Component component : lore) {
             try {
-                loreArray.add(TagParser.parseTag(ObjectMappings.convertComponent(component).toString()));
-            } catch (CommandSyntaxException e) {
+                loreArray.add(StringTag.valueOf(GsonComponentSerializer.gson().serialize(component)));
+            } catch (Exception e) {
                 throw new UnsupportedOperationException("Component " + lore.indexOf(component) + " is invalid");
             }
         }
@@ -138,12 +137,19 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
 
     @Override
     public boolean hasEnchantment(Enchantment enchantment) {
-        return getEnchantments().contains(enchantment);
+        return this.getEnchantments().contains(enchantment);
     }
 
     @Override
     public int getLevel(Enchantment enchantment) {
-        return 0; //TODO
+        Optional<CompoundTag> enchTagOpt = this.getEnchantmentTags().stream()
+                .filter(tag -> enchantment.equals(stringToEnchantment(tag.getString("id"))))
+                .findFirst();
+        if (enchTagOpt.isPresent()) {
+            CompoundTag enchTag = enchTagOpt.get();
+            return enchTag.getInt("lvl");
+        }
+        return 0;
     }
 
     @Override
@@ -154,16 +160,12 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
     @Override
     public void removeEnchantment(Enchantment enchantment) {
         ListTag listTag = wrapped.getEnchantmentTags();
-        List<Tag> remove = new ArrayList<>();
-        for (Tag tag : listTag) {
-            if (!(tag instanceof CompoundTag)) continue;
-            CompoundTag compoundTag = (CompoundTag) tag;
-            if (!compoundTag.contains("id")) continue;
-            if (enchantment.equals(stringToEnchantment(compoundTag.getString("id")))) {
-                remove.add(tag);
-            }
-        }
-        listTag.removeAll(remove);
+        if (listTag.isEmpty()) return;
+        List<Tag> toBeRemoved = new ArrayList<>();
+        this.getEnchantmentTags().stream()
+                .filter(tag -> enchantment.equals(stringToEnchantment(tag.getString("id"))))
+                .forEach(toBeRemoved::add);
+        listTag.removeAll(toBeRemoved);
 
         if (wrapped.hasTag()) {
             CompoundTag root = wrapped.getTag();
@@ -175,25 +177,29 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
         }
     }
 
+    private List<CompoundTag> getEnchantmentTags() {
+        ListTag listTag = wrapped.getEnchantmentTags();
+        if (listTag.isEmpty()) return ImmutableList.of();
+        return listTag.stream()
+                .filter(tag -> {
+                    if (!(tag instanceof CompoundTag)) return false;
+                    CompoundTag compoundTag = (CompoundTag) tag;
+                    return compoundTag.contains("id")
+                            && Registry.ENCHANTMENT.get(new ResourceLocation(compoundTag.getString("id"))) != null
+                            && compoundTag.contains("lvl")
+                            && compoundTag.getInt("lvl") > 0;
+                })
+                .map(tag -> (CompoundTag) tag)
+                .collect(ImmutableList.toImmutableList());
+    }
+
     @Override
     public List<Enchantment> getEnchantments() {
-        List<Enchantment> enchantments = new ArrayList<>();
-        ListTag listTag = wrapped.getEnchantmentTags();
-        for (Tag tag : listTag) {
-            if (!(tag instanceof CompoundTag)) continue;
-
-            CompoundTag compoundTag = (CompoundTag) tag;
-            if (!compoundTag.contains("id") || !compoundTag.contains("lvl") || compoundTag.getInt("lvl") <= 0) {
-                continue;
-            }
-
-            Enchantment enchantment = stringToEnchantment(compoundTag.getString("id"));
-
-            if (enchantment == null) continue;
-
-            enchantments.add(enchantment);
-        }
-        return ImmutableList.copyOf(enchantments);
+        return this.getEnchantmentTags()
+                .stream()
+                .map(tag -> stringToEnchantment(tag.getString("id")))
+                .filter(Objects::nonNull)
+                .collect(ImmutableList.toImmutableList());
     }
 
     private Enchantment stringToEnchantment(String s) {

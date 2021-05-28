@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Enchantments.class)
 public abstract class EnchantmentsMixin {
-    @Inject(method = "<clinit>", at = @At("TAIL"))
+    @Inject(method = "<clinit>", at = @At("TAIL")) @SuppressWarnings("unused")
     private static void loadConversionTable(CallbackInfo ci) {
         ObjectMappings.setupEnchantments();
     }
