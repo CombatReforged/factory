@@ -9,8 +9,13 @@ import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedLivingEntity;
 import com.combatreforged.factory.builder.implementation.world.item.container.WrappedPlayerInventory;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
+import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.UUID;
 
 public class WrappedPlayer extends WrappedLivingEntity implements Player {
     final ServerPlayer wrappedPlayer;
@@ -60,6 +65,11 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
     }
 
     @Override
+    public void sendTitle(Title title) {
+        //TODO
+    }
+
+    @Override
     public GameModeType getGameMode() {
         return ObjectMappings.GAME_MODES.inverse().get(wrappedPlayer.gameMode.getGameModeForPlayer());
     }
@@ -73,5 +83,28 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
     public void setVelocity(Vector3D velocity) {
         super.setVelocity(velocity);
         wrappedPlayer.connection.send(new ClientboundSetEntityMotionPacket(wrappedPlayer));
+    }
+
+    @Override
+    public void sendMessage(Component component) {
+        sendMessage(component, Type.SYSTEM);
+    }
+
+    @Override
+    public void sendMessage(Component component, Type type) {
+        ChatType chatType;
+        switch (type) {
+            case CHAT:
+                chatType = ChatType.CHAT;
+                break;
+            case SYSTEM:
+            default:
+                chatType = ChatType.SYSTEM;
+                break;
+            case ACTION_BAR:
+                chatType = ChatType.GAME_INFO;
+                break;
+        }
+        wrappedPlayer.sendMessage(ObjectMappings.convertComponent(component), chatType, UUID.randomUUID());
     }
 }

@@ -8,6 +8,7 @@ import com.combatreforged.factory.api.world.block.BlockEntity;
 import com.combatreforged.factory.api.world.border.WorldBorder;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.player.GameModeType;
+import com.combatreforged.factory.api.world.util.BoundingBox;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
@@ -17,14 +18,17 @@ import com.combatreforged.factory.builder.implementation.world.block.WrappedBloc
 import com.combatreforged.factory.builder.implementation.world.block.WrappedBlockEntity;
 import com.combatreforged.factory.builder.implementation.world.border.WrappedWorldBorder;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.DerivedLevelData;
 import net.minecraft.world.level.storage.ServerLevelData;
+import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class WrappedWorld extends Wrapped<ServerLevel> implements World {
     public WrappedWorld(ServerLevel wrapped) {
@@ -56,6 +60,21 @@ public class WrappedWorld extends Wrapped<ServerLevel> implements World {
     }
 
     @Override
+    public List<Entity> getEntities(BoundingBox area, Predicate<Entity> filter) {
+        return wrapped.getEntities((net.minecraft.world.entity.Entity) null,
+                new AABB(area.getMinX(),
+                        area.getMinY(),
+                        area.getMinZ(),
+                        area.getMaxX(),
+                        area.getMaxY(),
+                        area.getMaxZ()),
+                (net.minecraft.world.entity.Entity entity) -> filter.test(Wrapped.wrap(entity, WrappedEntity.class)))
+                .stream()
+                .map(entity -> Wrapped.wrap(entity, WrappedEntity.class))
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    @Override
     public boolean spawn(Entity entity) {
         if (!(entity instanceof WrappedEntity)) {
             throw new WrappingException("Entity not a WrappedEntity");
@@ -82,8 +101,7 @@ public class WrappedWorld extends Wrapped<ServerLevel> implements World {
     public Weather getWeather() {
         if (wrapped.isThundering()) {
             return Weather.THUNDER;
-        }
-        else if (wrapped.isRaining()) {
+        } else if (wrapped.isRaining()) {
             return Weather.RAIN;
         }
         return Weather.CLEAR;
