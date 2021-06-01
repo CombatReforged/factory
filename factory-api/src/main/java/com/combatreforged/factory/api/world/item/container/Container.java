@@ -19,5 +19,5 @@ public interface Container {
         return contains(new HashSet<>(Arrays.asList(itemTypes)));
     }
     boolean contains(Set<ItemType> itemTypes);
-    List<Integer> getAvailableSlots();
+    List<Integer> getAvailableSlots(); //TODO implement into all Container Types (Mixin)
 }

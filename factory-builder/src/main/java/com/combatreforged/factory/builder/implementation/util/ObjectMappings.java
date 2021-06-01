@@ -11,6 +11,7 @@ import com.combatreforged.factory.api.world.entity.equipment.HandSlot;
 import com.combatreforged.factory.api.world.entity.player.GameModeType;
 import com.combatreforged.factory.api.world.item.Enchantment;
 import com.combatreforged.factory.api.world.item.ItemType;
+import com.combatreforged.factory.api.world.item.container.ContainerMenuType;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.google.common.collect.BiMap;
@@ -23,6 +24,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
@@ -42,6 +44,7 @@ public abstract class ObjectMappings {
     public static final BiMap<DamageData.Type, DamageSource> DAMAGE_TYPES = HashBiMap.create();
     public static final BiMap<EquipmentSlot, net.minecraft.world.entity.EquipmentSlot> EQUIPMENT_SLOTS = HashBiMap.create();
     public static final BiMap<Enchantment, net.minecraft.world.item.enchantment.Enchantment> ENCHANTMENTS = HashBiMap.create();
+    public static final BiMap<ContainerMenuType, MenuType> MENU_TYPES = HashBiMap.create();
 
     public static void initIndependent() {
         setupDamageTypes();
@@ -2224,6 +2227,33 @@ public abstract class ObjectMappings {
         ENCHANTMENTS.put(Minecraft.Enchantment.PIERCING, Enchantments.PIERCING);
         ENCHANTMENTS.put(Minecraft.Enchantment.MENDING, Enchantments.MENDING);
         ENCHANTMENTS.put(Minecraft.Enchantment.VANISHING_CURSE, Enchantments.VANISHING_CURSE);
+    }
+
+    public static void setupMenuTypes() {
+        MENU_TYPES.put(Minecraft.MenuType.DEFAULT_9x1, MenuType.GENERIC_9x1);
+        MENU_TYPES.put(Minecraft.MenuType.DEFAULT_9x2, MenuType.GENERIC_9x2);
+        MENU_TYPES.put(Minecraft.MenuType.DEFAULT_9x3, MenuType.GENERIC_9x3);
+        MENU_TYPES.put(Minecraft.MenuType.DEFAULT_9x4, MenuType.GENERIC_9x4);
+        MENU_TYPES.put(Minecraft.MenuType.DEFAULT_9x5, MenuType.GENERIC_9x5);
+        MENU_TYPES.put(Minecraft.MenuType.DEFAULT_9x6, MenuType.GENERIC_9x6);
+        MENU_TYPES.put(Minecraft.MenuType.DEFAULT_3x3, MenuType.GENERIC_3x3);
+        MENU_TYPES.put(Minecraft.MenuType.ANVIL, MenuType.ANVIL);
+        MENU_TYPES.put(Minecraft.MenuType.BEACON, MenuType.BEACON);
+        MENU_TYPES.put(Minecraft.MenuType.BLAST_FURNACE, MenuType.BLAST_FURNACE);
+        MENU_TYPES.put(Minecraft.MenuType.BREWING_STAND, MenuType.BREWING_STAND);
+        MENU_TYPES.put(Minecraft.MenuType.CRAFTING, MenuType.CRAFTING);
+        MENU_TYPES.put(Minecraft.MenuType.ENCHANTMENT, MenuType.ENCHANTMENT);
+        MENU_TYPES.put(Minecraft.MenuType.FURNACE, MenuType.FURNACE);
+        MENU_TYPES.put(Minecraft.MenuType.GRINDSTONE, MenuType.GRINDSTONE);
+        MENU_TYPES.put(Minecraft.MenuType.HOPPER, MenuType.HOPPER);
+        MENU_TYPES.put(Minecraft.MenuType.LECTERN, MenuType.LECTERN);
+        MENU_TYPES.put(Minecraft.MenuType.LOOM, MenuType.LOOM);
+        MENU_TYPES.put(Minecraft.MenuType.MERCHANT, MenuType.MERCHANT);
+        MENU_TYPES.put(Minecraft.MenuType.SHULKER_BOX, MenuType.SHULKER_BOX);
+        MENU_TYPES.put(Minecraft.MenuType.SMITHING, MenuType.SMITHING);
+        MENU_TYPES.put(Minecraft.MenuType.SMOKER, MenuType.SMOKER);
+        MENU_TYPES.put(Minecraft.MenuType.CARTOGROPHY, MenuType.CARTOGRAPHY_TABLE);
+        MENU_TYPES.put(Minecraft.MenuType.STONECUTTER, MenuType.STONECUTTER);
     }
 
     public static net.kyori.adventure.text.Component convertComponent(Component mcComponent) {

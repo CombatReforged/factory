@@ -1,6 +1,6 @@
 package com.combatreforged.factory.builder.implementation.world.item.container;
 
-import com.combatreforged.factory.api.world.item.container.BlockEntityContainer;
+import com.combatreforged.factory.api.world.block.container.BlockEntityContainer;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.block.WrappedBlockEntity;
 import net.kyori.adventure.text.Component;

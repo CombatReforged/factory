@@ -1,6 +1,6 @@
 package com.combatreforged.factory.builder.mixin.world.level.block.entity;
 
-import com.combatreforged.factory.api.world.item.container.BlockEntityContainer;
+import com.combatreforged.factory.api.world.block.container.BlockEntityContainer;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.world.item.container.WrappedBlockEntityContainer;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;

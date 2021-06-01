@@ -6,6 +6,7 @@ import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.entity.EntityType;
 import com.combatreforged.factory.api.world.entity.player.GameModeType;
 import com.combatreforged.factory.api.world.item.ItemStack;
+import com.combatreforged.factory.api.world.item.container.ContainerMenuType;
 import com.google.errorprone.annotations.Immutable;
 
 public abstract class Minecraft {
@@ -1987,5 +1988,27 @@ public abstract class Minecraft {
         public boolean canBeAppliedTo(ItemStack itemStack) {
             return utils.canApply(this, itemStack);
         }
+    }
+
+    public enum MenuType implements ContainerMenuType {
+        DEFAULT_9x1, DEFAULT_9x2, DEFAULT_9x3, DEFAULT_9x4, DEFAULT_9x5, DEFAULT_9x6,
+        DEFAULT_3x3,
+        ANVIL,
+        BEACON,
+        BLAST_FURNACE,
+        BREWING_STAND,
+        CRAFTING,
+        ENCHANTMENT,
+        FURNACE,
+        GRINDSTONE,
+        HOPPER,
+        LECTERN,
+        LOOM,
+        MERCHANT,
+        SHULKER_BOX,
+        SMITHING,
+        SMOKER,
+        CARTOGROPHY,
+        STONECUTTER
     }
 }
