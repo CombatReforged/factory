@@ -8,6 +8,7 @@ import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.EntityType;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.nbt.NBTList;
@@ -18,11 +19,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public interface Builder {
     ImplementationUtils createImplementationUtils();
 
     Entity createEntity(EntityType type, World world);
+
+    Player createNPCPlayer(World world, UUID uuid, String name);
 
     NBTObject createNBTObject(@Nullable Map<String, NBTValue> values);
     NBTObject createNBTObjectFromString(String string);

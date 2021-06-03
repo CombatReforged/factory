@@ -8,6 +8,8 @@ import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import net.kyori.adventure.title.Title;
 
+import java.util.UUID;
+
 public interface Player extends LivingEntity, MessageReceiver {
     int getFoodLevel();
     void setFoodLevel(int level);
@@ -23,7 +25,9 @@ public interface Player extends LivingEntity, MessageReceiver {
     GameModeType getGameMode();
     void setGameMode(GameModeType gameMode);
 
-    static Player create(World world) {
-        return (Player) Builder.getInstance().createEntity(Minecraft.Entity.PLAYER, world);
+    UUID getUUID();
+
+    static Player createNPCPlayer(World world, UUID uuid, String name) {
+        return Builder.getInstance().createNPCPlayer(world, uuid, name);
     }
 }

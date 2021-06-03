@@ -26,6 +26,8 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.UUID;
+
 public class TestPlugin implements FactoryPlugin {
     Logger logger = LogManager.getLogger();
     @Override
@@ -98,6 +100,11 @@ public class TestPlugin implements FactoryPlugin {
             obj.set("LifeTime", NBTValue.of(30));
             firework.setEntityNBT(obj);
             world.spawn(firework);
+
+            Player player1 = Player.createNPCPlayer(world, UUID.randomUUID(), "NPCPlayerLol");
+
+            player1.teleport(player.getLocation());
+            world.spawn(player1);
         });
     }
 }

@@ -44,7 +44,7 @@ public abstract class ObjectMappings {
     public static final BiMap<DamageData.Type, DamageSource> DAMAGE_TYPES = HashBiMap.create();
     public static final BiMap<EquipmentSlot, net.minecraft.world.entity.EquipmentSlot> EQUIPMENT_SLOTS = HashBiMap.create();
     public static final BiMap<Enchantment, net.minecraft.world.item.enchantment.Enchantment> ENCHANTMENTS = HashBiMap.create();
-    public static final BiMap<ContainerMenuType, MenuType> MENU_TYPES = HashBiMap.create();
+    public static final BiMap<ContainerMenuType, MenuType<?>> MENU_TYPES = HashBiMap.create();
 
     public static void initIndependent() {
         setupDamageTypes();

@@ -8,6 +8,7 @@ import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.EntityType;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.entity.projectile.Projectile;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.ItemType;
@@ -22,22 +23,33 @@ import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.combatreforged.factory.builder.implementation.world.damage.WrappedDamageData;
 import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
+import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTList;
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTObject;
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTValue;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.minecraft.nbt.*;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerPlayerGameMode;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class BuilderImpl implements Builder {
     final Logger logger;
@@ -53,7 +65,23 @@ public class BuilderImpl implements Builder {
 
     @Override
     public Entity createEntity(EntityType type, World world) {
-        return Wrapped.wrap(ObjectMappings.ENTITIES.get(type).create(((WrappedWorld) world).unwrap()), WrappedEntity.class);
+        net.minecraft.world.entity.EntityType<?> entityType = ObjectMappings.ENTITIES.get(type);
+        if (!entityType.canSummon()) {
+            throw new UnsupportedOperationException("Cannot summon " + type.toString());
+        }
+        return Wrapped.wrap(entityType.create(((WrappedWorld) world).unwrap()), WrappedEntity.class);
+    }
+
+    @Override
+    public Player createNPCPlayer(World world, UUID uuid, String name) {
+        ServerLevel level = ((WrappedWorld) world).unwrap();
+        MinecraftServer server = level.getServer();
+
+        ServerPlayer mcPlayer = new ServerPlayer(server, level, new GameProfile(uuid, name), new ServerPlayerGameMode(level));
+        Connection connection = new Connection(PacketFlow.SERVERBOUND);
+        mcPlayer.connection = new ServerGamePacketListenerImpl(server, connection, mcPlayer);
+        //server.getPlayerList().placeNewPlayer(connection, mcPlayer); TODO fix
+        return Wrapped.wrap(mcPlayer, WrappedPlayer.class);
     }
 
     @Override

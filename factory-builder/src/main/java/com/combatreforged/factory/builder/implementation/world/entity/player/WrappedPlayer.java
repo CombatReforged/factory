@@ -80,6 +80,11 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
     }
 
     @Override
+    public UUID getUUID() {
+        return wrappedPlayer.getUUID();
+    }
+
+    @Override
     public void setVelocity(Vector3D velocity) {
         super.setVelocity(velocity);
         wrappedPlayer.connection.send(new ClientboundSetEntityMotionPacket(wrappedPlayer));
