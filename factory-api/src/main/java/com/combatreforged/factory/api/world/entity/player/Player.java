@@ -5,6 +5,7 @@ import com.combatreforged.factory.api.interfaces.MessageReceiver;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.LivingEntity;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
+import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import net.kyori.adventure.title.Title;
 
@@ -26,6 +27,10 @@ public interface Player extends LivingEntity, MessageReceiver {
     void setGameMode(GameModeType gameMode);
 
     UUID getUUID();
+
+    Scoreboard getScoreboard();
+    void setScoreboard(Scoreboard scoreboard);
+    void setServerScoreboard();
 
     static Player createNPCPlayer(World world, UUID uuid, String name) {
         return Builder.getInstance().createNPCPlayer(world, uuid, name);

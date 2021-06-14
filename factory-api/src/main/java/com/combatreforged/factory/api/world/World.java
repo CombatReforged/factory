@@ -6,6 +6,7 @@ import com.combatreforged.factory.api.world.block.BlockEntity;
 import com.combatreforged.factory.api.world.border.WorldBorder;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.player.GameModeType;
+import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import com.combatreforged.factory.api.world.util.BoundingBox;
 import com.combatreforged.factory.api.world.util.Location;
 

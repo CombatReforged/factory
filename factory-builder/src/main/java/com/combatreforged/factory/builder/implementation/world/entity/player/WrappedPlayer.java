@@ -3,6 +3,7 @@ package com.combatreforged.factory.builder.implementation.world.entity.player;
 import com.combatreforged.factory.api.world.entity.player.GameModeType;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
+import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import com.combatreforged.factory.api.world.util.Vector3D;
 import com.combatreforged.factory.builder.extension.FoodDataExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
@@ -82,6 +83,21 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
     @Override
     public UUID getUUID() {
         return wrappedPlayer.getUUID();
+    }
+
+    @Override
+    public Scoreboard getScoreboard() {
+        return null; //TODO
+    }
+
+    @Override
+    public void setScoreboard(Scoreboard scoreboard) {
+        //TODO
+    }
+
+    @Override
+    public void setServerScoreboard() {
+        //TODO
     }
 
     @Override
