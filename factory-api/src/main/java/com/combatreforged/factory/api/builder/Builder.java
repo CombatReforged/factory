@@ -14,6 +14,7 @@ import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.nbt.NBTList;
 import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
+import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,6 +52,8 @@ public interface Builder {
 
     @Deprecated ItemStack createItemStack(ItemType itemType, int count, int damage, BinaryTagHolder tag);
     ItemStack createItemStack(ItemType itemType, int count, int damage, NBTObject nbt);
+
+    Scoreboard createScoreboard();
 
     static Builder getInstance() {
         return FactoryAPI.getInstance().getBuilder();

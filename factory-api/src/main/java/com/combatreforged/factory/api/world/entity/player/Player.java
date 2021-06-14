@@ -6,7 +6,6 @@ import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.LivingEntity;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
-import com.combatreforged.factory.api.world.types.Minecraft;
 import net.kyori.adventure.title.Title;
 
 import java.util.UUID;

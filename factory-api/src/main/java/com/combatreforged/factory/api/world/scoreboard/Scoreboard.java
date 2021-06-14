@@ -1,10 +1,15 @@
 package com.combatreforged.factory.api.world.scoreboard;
 
-import net.kyori.adventure.text.Component;
+import com.combatreforged.factory.api.builder.Builder;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public interface Scoreboard {
-    //TODO
+    List<ScoreboardObjective> getAllObjectives();
+    List<ScoreboardTeam> getAllTeams();
+    List<ScoreboardScore> getAllScores(String name);
+    List<ScoreboardScore> getAllScores(ScoreboardObjective objective);
 
     boolean hasObjective(String name);
     @Nullable ScoreboardObjective getObjective(String name);
@@ -15,13 +20,14 @@ public interface Scoreboard {
     void removeObjective(String name);
     void removeObjective(ScoreboardObjective objective);
 
-    void setDisplayedObjective(@Nullable String objectiveName, String slot);
+    @Nullable ScoreboardObjective getDisplayedObjective(String slot);
+    void setDisplayedObjective(String objectiveName, String slot);
     void setDisplayedObjective(@Nullable ScoreboardObjective objective, String slot);
     void clearDisplay(String slot);
 
-    ScoreboardScore getScore(String name);
-
-    //TODO finish, implementation
+    boolean hasScore(String name, ScoreboardObjective objective);
+    ScoreboardScore getOrCreateScore(String name, ScoreboardObjective objective);
+    void resetScore(String name, ScoreboardObjective objective);
 
 
     boolean hasTeam(String name);
@@ -33,5 +39,7 @@ public interface Scoreboard {
         setTeam(name, null);
     }
 
-    //TODO creation
+    static Scoreboard create() {
+        return Builder.getInstance().createScoreboard();
+    }
 }

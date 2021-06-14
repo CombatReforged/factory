@@ -33,7 +33,11 @@
     "world.level.block.entity.BaseContainerBlockEntityMixin",
     "world.level.block.entity.BlockEntityMixin",
     "world.level.block.state.properties.BlockStatePropertiesMixin",
-    "world.level.border.WorldBorderMixin"
+    "world.level.border.WorldBorderMixin",
+    "world.scores.ObjectiveMixin",
+    "world.scores.PlayerTeamMixin",
+    "world.scores.ScoreboardMixin",
+    "world.scores.ScoreMixin"
   ],
   "client": [
   ],

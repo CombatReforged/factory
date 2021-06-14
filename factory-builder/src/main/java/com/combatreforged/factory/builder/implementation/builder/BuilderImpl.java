@@ -15,6 +15,7 @@ import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.nbt.NBTList;
 import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
+import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import com.combatreforged.factory.builder.exception.NBTParsingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ImplementationUtilsImpl;
@@ -28,6 +29,7 @@ import com.combatreforged.factory.builder.implementation.world.item.WrappedItemS
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTList;
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTObject;
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTValue;
+import com.combatreforged.factory.builder.implementation.world.scoreboard.WrappedScoreboard;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
@@ -43,7 +45,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
@@ -225,6 +226,11 @@ public class BuilderImpl implements Builder {
         }
 
         return Wrapped.wrap(stack, WrappedItemStack.class);
+    }
+
+    @Override
+    public Scoreboard createScoreboard() {
+        return Wrapped.wrap(new net.minecraft.world.scores.Scoreboard(), WrappedScoreboard.class);
     }
 
     private NBTValue fromTag(Tag tag) {
