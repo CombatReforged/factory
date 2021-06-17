@@ -16,7 +16,9 @@ import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.core.FrontAndTop;
 import net.minecraft.nbt.*;
@@ -2264,6 +2266,14 @@ public abstract class ObjectMappings {
     public static Component convertComponent(net.kyori.adventure.text.Component component) {
         String compString = GsonComponentSerializer.gson().serialize(component);
         return net.minecraft.network.chat.Component.Serializer.fromJson(compString);
+    }
+
+    public static NamedTextColor convertColor(ChatFormatting color) {
+        return NamedTextColor.ofExact(color.getColor() != null ? color.getColor() : 0);
+    }
+
+    public static ChatFormatting convertColor(NamedTextColor color) {
+        return ChatFormatting.getByName(color.toString());
     }
 
     static {

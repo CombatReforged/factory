@@ -2,6 +2,7 @@ package com.combatreforged.factory.builder.implementation.world.scoreboard;
 
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import com.combatreforged.factory.api.world.scoreboard.ScoreboardObjective;
+import com.combatreforged.factory.builder.extension.world.scores.ObjectiveExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import net.kyori.adventure.text.Component;
@@ -20,7 +21,7 @@ public class WrappedScoreboardObjective extends Wrapped<Objective> implements Sc
 
     @Override
     public Scoreboard getScoreboard() {
-        return Wrapped.wrap(wrapped.getScoreboard(), WrappedScoreboard.class);
+        return Wrapped.wrap(((ObjectiveExtension) wrapped).getScoreboardServer(), WrappedScoreboard.class);
     }
 
     @Override
