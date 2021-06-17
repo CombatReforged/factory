@@ -11,6 +11,7 @@
     "nbt.StringTagMixin",
     "server.MinecraftServerMixin",
     "server.dedicated.DedicatedServerMixin",
+    "server.level.ServerPlayerMixin",
     "server.network.ServerGamePacketListenerImplMixin",
     "server.players.PlayerListMixin",
     "world.ServerLevelMixin",
