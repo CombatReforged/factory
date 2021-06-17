@@ -3,7 +3,7 @@ package com.combatreforged.factory.builder.implementation.world.effect;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.builder.exception.WrappingException;
-import com.combatreforged.factory.builder.extension.MobEffectExtension;
+import com.combatreforged.factory.builder.extension.world.effect.MobEffectExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import net.minecraft.core.Registry;

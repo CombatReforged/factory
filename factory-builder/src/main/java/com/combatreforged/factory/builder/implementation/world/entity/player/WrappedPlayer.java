@@ -5,7 +5,7 @@ import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import com.combatreforged.factory.api.world.util.Vector3D;
-import com.combatreforged.factory.builder.extension.FoodDataExtension;
+import com.combatreforged.factory.builder.extension.world.food.FoodDataExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedLivingEntity;

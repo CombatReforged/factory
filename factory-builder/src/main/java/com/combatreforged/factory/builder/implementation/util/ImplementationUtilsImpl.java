@@ -9,7 +9,7 @@ import com.combatreforged.factory.api.world.entity.EntityType;
 import com.combatreforged.factory.api.world.item.Enchantment;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.ItemType;
-import com.combatreforged.factory.builder.extension.MobEffectExtension;
+import com.combatreforged.factory.builder.extension.world.effect.MobEffectExtension;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;

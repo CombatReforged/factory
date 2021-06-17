@@ -1,6 +1,6 @@
 package com.combatreforged.factory.builder.mixin.world.food;
 
-import com.combatreforged.factory.builder.extension.FoodDataExtension;
+import com.combatreforged.factory.builder.extension.world.food.FoodDataExtension;
 import net.minecraft.world.food.FoodData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

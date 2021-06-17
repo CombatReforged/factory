@@ -1,6 +1,6 @@
 package com.combatreforged.factory.builder.mixin.world.effect;
 
-import com.combatreforged.factory.builder.extension.MobEffectExtension;
+import com.combatreforged.factory.builder.extension.world.effect.MobEffectExtension;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import org.spongepowered.asm.mixin.Final;

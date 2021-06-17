@@ -7,7 +7,7 @@ import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.api.world.util.Vector3D;
 import com.combatreforged.factory.builder.exception.WrappingException;
-import com.combatreforged.factory.builder.extension.EntityExtension;
+import com.combatreforged.factory.builder.extension.world.entity.EntityExtension;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
