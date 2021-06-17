@@ -11,6 +11,16 @@ public interface ScoreboardObjective {
     RenderType getRenderType();
     void setRenderType(RenderType type);
 
+    default boolean hasScore(String name) {
+        return this.getScoreboard().hasScore(name, this);
+    }
+    default ScoreboardScore getOrCreateScore(String name) {
+        return this.getScoreboard().getOrCreateScore(name, this);
+    }
+    default void resetScore(String name) {
+        this.getScoreboard().resetScore(name, this);
+    }
+
     enum RenderType {
         HEARTS, NUMBER
     }
