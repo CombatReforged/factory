@@ -2259,11 +2259,13 @@ public abstract class ObjectMappings {
     }
 
     public static net.kyori.adventure.text.Component convertComponent(Component mcComponent) {
+        if (mcComponent == null) return null;
         String mcCompString = net.minecraft.network.chat.Component.Serializer.toJson(mcComponent);
         return GsonComponentSerializer.gson().deserialize(mcCompString);
     }
 
     public static Component convertComponent(net.kyori.adventure.text.Component component) {
+        if (component == null) return null;
         String compString = GsonComponentSerializer.gson().serialize(component);
         return net.minecraft.network.chat.Component.Serializer.fromJson(compString);
     }

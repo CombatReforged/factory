@@ -30,6 +30,14 @@ public interface ScoreboardTeam {
     CollideWith getCollideWith();
     void setCollideWith(CollideWith collideWith);
 
+    default void add(String name) {
+        this.getScoreboard().setTeam(name, this);
+    }
+
+    default void remove(String name) {
+        this.getScoreboard().setTeam(name, null);
+    }
+
     enum VisibleFor {
         EVERYONE, NO_ONE, NON_MATES_ONLY, MATES_ONLY
     }

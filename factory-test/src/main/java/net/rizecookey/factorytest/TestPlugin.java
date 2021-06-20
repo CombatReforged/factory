@@ -17,16 +17,18 @@ import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.nbt.NBTList;
 import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
+import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
+import com.combatreforged.factory.api.world.scoreboard.ScoreboardObjective;
+import com.combatreforged.factory.api.world.scoreboard.ScoreboardTeam;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.api.world.util.Vector3D;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.UUID;
 
 public class TestPlugin implements FactoryPlugin {
     Logger logger = LogManager.getLogger();
@@ -101,10 +103,25 @@ public class TestPlugin implements FactoryPlugin {
             firework.setEntityNBT(obj);
             world.spawn(firework);
 
-            Player player1 = Player.createNPCPlayer(world, UUID.randomUUID(), "NPCPlayerLol");
+            player.sendTitle(Title.title(Component.text("Hewwo owo"), Component.text("cool innit").color(NamedTextColor.GOLD)));
+            player.sendActionBarMessage(Component.text("notice me uwu").color(NamedTextColor.GRAY));
 
-            player1.teleport(player.getLocation());
-            world.spawn(player1);
+            Scoreboard scoreboard = Scoreboard.create();
+
+            ScoreboardObjective objective = scoreboard.addObjective("test");
+            objective.getOrCreateScore(player.getRawName()).set(-1);
+            scoreboard.setDisplayedObjective(objective, "sidebar");
+
+            ScoreboardTeam team = scoreboard.addTeam("tester");
+            team.setPrefix(Component.text("[").color(NamedTextColor.DARK_GRAY)
+                    .append(Component.text("Tester").color(NamedTextColor.AQUA))
+                    .append(Component.text("] ").color(NamedTextColor.DARK_GRAY)));
+
+            team.setNameTagColor(NamedTextColor.GRAY);
+
+            team.add(player.getRawName());
+
+            player.setScoreboard(scoreboard);
         });
     }
 }

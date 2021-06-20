@@ -5,18 +5,26 @@ import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import com.combatreforged.factory.api.world.util.Vector3D;
+import com.combatreforged.factory.builder.exception.WrappingException;
+import com.combatreforged.factory.builder.extension.server.level.ServerPlayerExtension;
 import com.combatreforged.factory.builder.extension.world.food.FoodDataExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedLivingEntity;
 import com.combatreforged.factory.builder.implementation.world.item.container.WrappedPlayerInventory;
+import com.combatreforged.factory.builder.implementation.world.scoreboard.WrappedScoreboard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
+import net.minecraft.network.protocol.game.ClientboundSetTitlesPacket;
+import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.Objects;
 import java.util.UUID;
+
+import static com.combatreforged.factory.builder.implementation.util.ObjectMappings.convertComponent;
 
 public class WrappedPlayer extends WrappedLivingEntity implements Player {
     final ServerPlayer wrappedPlayer;
@@ -67,7 +75,39 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
 
     @Override
     public void sendTitle(Title title) {
-        //TODO
+        net.minecraft.network.chat.Component mcTitle = convertComponent(title.title());
+        net.minecraft.network.chat.Component mcSubTitle = convertComponent(title.subtitle());
+        Title.Times times = title.times();
+
+        if (times != null) {
+            int in = (int) (times.fadeIn().toMillis() / 50);
+            int stay = (int) (times.stay().toMillis() / 50);
+            int out = (int) (times.fadeOut().toMillis() / 50);
+            wrappedPlayer.connection.send(new ClientboundSetTitlesPacket(in, stay, out));
+        }
+
+        if (mcTitle != null) {
+            wrappedPlayer.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.TITLE, mcTitle));
+        }
+
+        if (mcSubTitle != null) {
+            wrappedPlayer.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.SUBTITLE, mcSubTitle));
+        }
+    }
+
+    @Override
+    public void clearTitle() {
+        wrappedPlayer.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.CLEAR, null));
+    }
+
+    @Override
+    public void resetTitle() {
+        wrappedPlayer.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.RESET, null));
+    }
+
+    @Override
+    public void sendActionBarMessage(Component component) {
+        wrappedPlayer.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.ACTIONBAR, convertComponent(component)));
     }
 
     @Override
@@ -81,23 +121,38 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
     }
 
     @Override
+    public String getRawName() {
+        return wrappedPlayer.getGameProfile().getName();
+    }
+
+    @Override
     public UUID getUUID() {
         return wrappedPlayer.getUUID();
     }
 
     @Override
     public Scoreboard getScoreboard() {
-        return null; //TODO
+        return Wrapped.wrap(((ServerPlayerExtension) wrappedPlayer).getScoreboard(), WrappedScoreboard.class);
     }
 
     @Override
     public void setScoreboard(Scoreboard scoreboard) {
-        //TODO
+        WrappedScoreboard wrappedScoreboard;
+        try {
+            wrappedScoreboard = (WrappedScoreboard) scoreboard;
+        } catch (ClassCastException e) {
+            throw new WrappingException("Scoreboard not a WrappedScoreboard");
+        }
+        if (!(wrappedScoreboard.unwrap() instanceof ServerScoreboard)) {
+            throw new IllegalStateException("Scoreboard is not a ServerScoreboard");
+        }
+        ((ServerPlayerExtension) wrappedPlayer).setScoreboard(((ServerScoreboard) wrappedScoreboard.unwrap()));
     }
 
     @Override
     public void setServerScoreboard() {
-        //TODO
+        ((ServerPlayerExtension) wrappedPlayer)
+                .setScoreboard(Objects.requireNonNull(wrappedPlayer.getServer()).getScoreboard());
     }
 
     @Override

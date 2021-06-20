@@ -24,27 +24,21 @@ import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.combatreforged.factory.builder.implementation.world.damage.WrappedDamageData;
 import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
-import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTList;
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTObject;
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTValue;
 import com.combatreforged.factory.builder.implementation.world.scoreboard.WrappedScoreboard;
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.minecraft.nbt.*;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerPlayerGameMode;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.ServerScoreboard;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
@@ -54,9 +48,11 @@ import java.util.UUID;
 
 public class BuilderImpl implements Builder {
     final Logger logger;
+    final MinecraftServer server;
 
-    public BuilderImpl(Logger logger) {
+    public BuilderImpl(MinecraftServer server, Logger logger) {
         this.logger = logger;
+        this.server = server;
     }
 
     @Override
@@ -75,14 +71,7 @@ public class BuilderImpl implements Builder {
 
     @Override
     public Player createNPCPlayer(World world, UUID uuid, String name) {
-        ServerLevel level = ((WrappedWorld) world).unwrap();
-        MinecraftServer server = level.getServer();
-
-        ServerPlayer mcPlayer = new ServerPlayer(server, level, new GameProfile(uuid, name), new ServerPlayerGameMode(level));
-        Connection connection = new Connection(PacketFlow.SERVERBOUND);
-        mcPlayer.connection = new ServerGamePacketListenerImpl(server, connection, mcPlayer);
-        //server.getPlayerList().placeNewPlayer(connection, mcPlayer); TODO fix
-        return Wrapped.wrap(mcPlayer, WrappedPlayer.class);
+        throw new NotImplementedException("Creating NPC players not supported yet");
     }
 
     @Override
@@ -230,7 +219,7 @@ public class BuilderImpl implements Builder {
 
     @Override
     public Scoreboard createScoreboard() {
-        return Wrapped.wrap(new net.minecraft.world.scores.Scoreboard(), WrappedScoreboard.class);
+        return Wrapped.wrap(new ServerScoreboard(server), WrappedScoreboard.class);
     }
 
     private NBTValue fromTag(Tag tag) {

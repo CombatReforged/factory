@@ -6,6 +6,7 @@ import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.LivingEntity;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 
 import java.util.UUID;
@@ -21,10 +22,14 @@ public interface Player extends LivingEntity, MessageReceiver {
     int getSelectedSlot();
 
     void sendTitle(Title title);
+    void clearTitle();
+    void resetTitle();
+    void sendActionBarMessage(Component component);
 
     GameModeType getGameMode();
     void setGameMode(GameModeType gameMode);
 
+    String getRawName();
     UUID getUUID();
 
     Scoreboard getScoreboard();

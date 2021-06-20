@@ -41,7 +41,7 @@ public abstract class DedicatedServerMixin extends MinecraftServer implements Wr
         FactoryBuilder.LOGGER.info("Injecting the API...");
 
         this.wrapped = new WrappedFactoryServer((DedicatedServer) (Object) this);
-        FactoryAPI api = new FactoryAPI(wrapped, new BuilderImpl(LogManager.getLogger("FactoryWrapBuilder")));
+        FactoryAPI api = new FactoryAPI(wrapped, new BuilderImpl((DedicatedServer) (Object) this, LogManager.getLogger("FactoryWrapBuilder")));
 
         FactoryBuilder.LOGGER.info("Initializing plugins...");
 

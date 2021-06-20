@@ -4,8 +4,10 @@ import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
+import com.combatreforged.factory.builder.implementation.world.scoreboard.WrappedScoreboard;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
@@ -56,6 +58,11 @@ public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements Fa
     public World getWorld(Identifier identifier) {
         return Wrapped.wrap(wrapped.getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY,
                         new ResourceLocation(identifier.getNamespace(), identifier.getId()))), WrappedWorld.class);
+    }
+
+    @Override
+    public Scoreboard getServerScoreboard() {
+        return Wrapped.wrap(wrapped.getScoreboard(), WrappedScoreboard.class);
     }
 
     @Override
