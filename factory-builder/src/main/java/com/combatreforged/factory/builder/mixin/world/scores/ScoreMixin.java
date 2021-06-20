@@ -3,9 +3,7 @@ package com.combatreforged.factory.builder.mixin.world.scores;
 import com.combatreforged.factory.api.world.scoreboard.ScoreboardScore;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.world.scoreboard.WrappedScoreboardScore;
-import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
-import net.minecraft.world.scores.Scoreboard;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -15,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ScoreMixin implements Wrap<ScoreboardScore> {
     private WrappedScoreboardScore wrapped;
 
-    @Inject(method = "<init>", at = @At("TAIL"))
-    public void injectWrapped(Scoreboard scoreboard, Objective objective, String string, CallbackInfo ci) {
+    @Inject(method = "<init>*", at = @At("TAIL"))
+    public void injectWrapped(CallbackInfo ci) {
         this.wrapped = new WrappedScoreboardScore((Score) (Object) this);
     }
 

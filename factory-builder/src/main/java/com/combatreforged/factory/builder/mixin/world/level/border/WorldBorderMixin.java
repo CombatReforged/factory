@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class WorldBorderMixin implements Wrap<com.combatreforged.factory.api.world.border.WorldBorder> {
     private WrappedWorldBorder wrapped;
 
-    @Inject(method = "<init>", at = @At("TAIL"))
+    @Inject(method = "<init>*", at = @At("TAIL"))
     public void injectWrapped(CallbackInfo ci) {
         wrapped = new WrappedWorldBorder((WorldBorder) (Object) this);
     }

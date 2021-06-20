@@ -13,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class DamageSourceMixin implements Wrap<DamageData> {
     private DamageData wrapped;
 
-    @Inject(method = "<init>", at = @At("TAIL"))
-    public void injectWrap(String string, CallbackInfo ci) {
+    @Inject(method = "<init>*", at = @At("TAIL"))
+    public void injectWrap(CallbackInfo ci) {
         this.wrapped = new WrappedDamageData((DamageSource) (Object) this);
     }
 

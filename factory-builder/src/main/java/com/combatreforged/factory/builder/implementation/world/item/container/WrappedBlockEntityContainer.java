@@ -3,11 +3,11 @@ package com.combatreforged.factory.builder.implementation.world.item.container;
 import com.combatreforged.factory.api.world.block.container.BlockEntityContainer;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.block.WrappedBlockEntity;
+import com.google.common.collect.ImmutableList;
 import net.kyori.adventure.text.Component;
 import net.minecraft.world.Container;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class WrappedBlockEntityContainer extends WrappedBlockEntity implements BlockEntityContainer, WrappedContainer {
@@ -29,12 +29,12 @@ public class WrappedBlockEntityContainer extends WrappedBlockEntity implements B
 
     @Override
     public List<Integer> getAvailableSlots() {
-        List<Integer> slots = new ArrayList<>();
+        ImmutableList.Builder<Integer> slots = ImmutableList.builder();
         for (int i = 0; i < wrappedBEC.getContainerSize(); i++) {
             slots.add(i);
         }
 
-        return slots;
+        return slots.build();
     }
 
     @Override

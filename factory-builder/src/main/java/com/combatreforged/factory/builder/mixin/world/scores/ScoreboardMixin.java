@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ScoreboardMixin implements Wrap<com.combatreforged.factory.api.world.scoreboard.Scoreboard> {
     private WrappedScoreboard wrapped;
 
-    @Inject(method = "<init>", at = @At("TAIL"))
+    @Inject(method = "<init>*", at = @At("TAIL"))
     public void injectWrapped(CallbackInfo ci) {
         this.wrapped = new WrappedScoreboard((Scoreboard) (Object) this);
     }

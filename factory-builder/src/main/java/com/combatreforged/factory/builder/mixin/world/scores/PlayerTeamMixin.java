@@ -18,8 +18,8 @@ public abstract class PlayerTeamMixin implements Wrap<ScoreboardTeam>, PlayerTea
     @Shadow @Final private Scoreboard scoreboard;
     private WrappedScoreboardTeam wrapped;
 
-    @Inject(method = "<init>", at = @At("TAIL"))
-    public void injectWrapped(Scoreboard scoreboard, String string, CallbackInfo ci) {
+    @Inject(method = "<init>*", at = @At("TAIL"))
+    public void injectWrapped(CallbackInfo ci) {
         this.wrapped = new WrappedScoreboardTeam((PlayerTeam) (Object) this);
     }
 

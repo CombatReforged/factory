@@ -3,7 +3,6 @@ package com.combatreforged.factory.builder.mixin.world.level.block.entity;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.world.block.WrappedBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class BlockEntityMixin implements Wrap<com.combatreforged.factory.api.world.block.BlockEntity> {
     private WrappedBlockEntity wrapped;
 
-    @Inject(method = "<init>", at = @At("TAIL"))
-    public void injectWrap(BlockEntityType<?> blockEntityType, CallbackInfo ci) {
+    @Inject(method = "<init>*", at = @At("TAIL"))
+    public void injectWrap(CallbackInfo ci) {
         this.wrapped = new WrappedBlockEntity((BlockEntity) (Object) this);
     }
 

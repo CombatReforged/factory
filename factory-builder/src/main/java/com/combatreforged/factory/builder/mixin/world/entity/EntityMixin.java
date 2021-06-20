@@ -13,11 +13,13 @@ import com.combatreforged.factory.builder.implementation.world.entity.projectile
 import net.minecraft.commands.CommandSource;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Nameable;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.AgableMob;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,8 +34,8 @@ yRot = yaw*/
 public abstract class EntityMixin implements Nameable, CommandSource, Wrap<com.combatreforged.factory.api.world.entity.Entity>, EntityExtension {
     private com.combatreforged.factory.api.world.entity.Entity wrapped;
 
-    @Inject(method = "<init>", at = @At("TAIL"))
-    public void injectWrapped(EntityType<?> entityType, Level level, CallbackInfo ci) {
+    @Inject(method = "<init>*", at = @At("TAIL"))
+    public void injectWrapped(CallbackInfo ci) {
         this.wrapped = createWrapped((Entity) (Object) this);
     }
 
