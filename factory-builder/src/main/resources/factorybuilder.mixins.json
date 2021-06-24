@@ -27,6 +27,7 @@
     "world.entity.player.InventoryMixin",
     "world.entity.vehicle.AbstractMinecartContainerMixin",
     "world.food.FoodDataMixin",
+    "world.inventory.AbstractContainerMenuAccessor",
     "world.inventory.CompoundContainerMixin",
     "world.inventory.CraftingContainerMixin",
     "world.inventory.MenuTypeMixin",
