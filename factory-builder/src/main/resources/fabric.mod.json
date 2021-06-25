@@ -31,5 +31,6 @@
     "minecraft": "1.16.x"
   },
   "suggests": {
-  }
+  },
+  "accessWidener": "factorybuilder.accesswidener"
 }

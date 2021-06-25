@@ -183,4 +183,9 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
         }
         wrappedPlayer.sendMessage(ObjectMappings.convertComponent(component), chatType, UUID.randomUUID());
     }
+
+    @Override
+    public ServerPlayer unwrap() {
+        return wrappedPlayer;
+    }
 }

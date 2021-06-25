@@ -11,7 +11,7 @@ import com.combatreforged.factory.api.world.entity.equipment.HandSlot;
 import com.combatreforged.factory.api.world.entity.player.GameModeType;
 import com.combatreforged.factory.api.world.item.Enchantment;
 import com.combatreforged.factory.api.world.item.ItemType;
-import com.combatreforged.factory.api.world.item.container.ContainerMenuType;
+import com.combatreforged.factory.api.world.item.container.menu.ContainerMenuType;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.google.common.collect.BiMap;

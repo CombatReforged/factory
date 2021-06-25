@@ -6,7 +6,9 @@ import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.entity.EntityType;
 import com.combatreforged.factory.api.world.entity.player.GameModeType;
 import com.combatreforged.factory.api.world.item.ItemStack;
-import com.combatreforged.factory.api.world.item.container.ContainerMenuType;
+import com.combatreforged.factory.api.world.item.container.PlayerInventory;
+import com.combatreforged.factory.api.world.item.container.menu.ContainerMenu;
+import com.combatreforged.factory.api.world.item.container.menu.ContainerMenuType;
 import com.google.errorprone.annotations.Immutable;
 
 public abstract class Minecraft {
@@ -2009,6 +2011,11 @@ public abstract class Minecraft {
         SMITHING,
         SMOKER,
         CARTOGROPHY,
-        STONECUTTER
+        STONECUTTER;
+
+        @Override
+        public ContainerMenu<?> createMenu(int containerID, PlayerInventory inventory) {
+            return utils.createMenu(this, containerID, inventory);
+        }
     }
 }

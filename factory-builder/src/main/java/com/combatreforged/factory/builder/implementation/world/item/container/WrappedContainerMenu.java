@@ -1,16 +1,16 @@
 package com.combatreforged.factory.builder.implementation.world.item.container;
 
 import com.combatreforged.factory.api.world.item.ItemStack;
-import com.combatreforged.factory.api.world.item.container.ContainerMenuType;
 import com.combatreforged.factory.api.world.item.container.menu.ContainerMenu;
+import com.combatreforged.factory.api.world.item.container.menu.ContainerMenuType;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
 import com.combatreforged.factory.builder.mixin.world.inventory.AbstractContainerMenuAccessor;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.DataSlot;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Map;
 
 public class WrappedContainerMenu<T extends ContainerMenuType> extends Wrapped<AbstractContainerMenu> implements ContainerMenu<T> {
@@ -62,29 +62,29 @@ public class WrappedContainerMenu<T extends ContainerMenuType> extends Wrapped<A
         return builder.build();
     }
 
-    @Override
+    @Override @Nullable
     public ItemStack getItem(int slot) {
         net.minecraft.world.item.ItemStack mcStack = wrapped.getSlot(slot).getItem();
         return Wrapped.wrap(mcStack.isEmpty() ? null : mcStack, WrappedItemStack.class);
     }
 
     @Override
-    public void setItem(int slot, ItemStack itemStack) {
-
+    public void setItem(int slot, @Nullable ItemStack itemStack) {
+        wrapped.setItem(slot, itemStack == null ? net.minecraft.world.item.ItemStack.EMPTY : ((WrappedItemStack) itemStack).unwrap());
     }
 
     @Override
     public int getData(int dataSlot) {
-        return 0;
+        return ((AbstractContainerMenuAccessor) wrapped).getDataSlots().get(dataSlot).get();
     }
 
     @Override
     public void setData(int dataSlot, int data) {
-
+        wrapped.setData(dataSlot, data);
     }
 
     @Override
     public boolean isEmpty(int slot) {
-        return false;
+        return wrapped.getSlot(slot).getItem().isEmpty();
     }
 }

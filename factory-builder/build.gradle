@@ -35,6 +35,7 @@ minecraft {
 	intermediaryUrl = { mcVersion ->
 		return "https://maven.combatreforged.com/net/fabricmc/intermediary/${mcVersion}/intermediary-${mcVersion}-v2.jar";
 	}
+	accessWidener = file("src/main/resources/factorybuilder.accesswidener")
 }
 
 processResources {
