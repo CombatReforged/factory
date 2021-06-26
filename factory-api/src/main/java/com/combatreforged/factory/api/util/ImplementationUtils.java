@@ -7,9 +7,9 @@ import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.item.Enchantment;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.ItemType;
-import com.combatreforged.factory.api.world.item.container.PlayerInventory;
-import com.combatreforged.factory.api.world.item.container.menu.ContainerMenu;
 import com.combatreforged.factory.api.world.item.container.menu.ContainerMenuType;
+import com.combatreforged.factory.api.world.item.container.menu.MenuHolder;
+import net.kyori.adventure.text.Component;
 
 public interface ImplementationUtils {
     int getMaxLevel(Enchantment enchantment);
@@ -25,7 +25,7 @@ public interface ImplementationUtils {
 
     Identifier getIdentifier(Namespaced namespaced);
 
-    ContainerMenu<?> createMenu(ContainerMenuType menuType, int containerID, PlayerInventory inventory);
+    MenuHolder createMenu(ContainerMenuType type, Component title);
 
     static ImplementationUtils getInstance() {
         return FactoryAPI.getInstance().getImplementationUtils();

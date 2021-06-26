@@ -5,8 +5,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public interface ContainerMenu<T extends ContainerMenuType> {
-    T getType();
+public interface ContainerMenu {
+    ContainerMenuType getType();
     int getSlotCount();
     int getDataSlotCount();
     int getContainerID();

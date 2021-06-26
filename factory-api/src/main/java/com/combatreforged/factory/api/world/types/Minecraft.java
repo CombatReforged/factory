@@ -6,10 +6,10 @@ import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.entity.EntityType;
 import com.combatreforged.factory.api.world.entity.player.GameModeType;
 import com.combatreforged.factory.api.world.item.ItemStack;
-import com.combatreforged.factory.api.world.item.container.PlayerInventory;
-import com.combatreforged.factory.api.world.item.container.menu.ContainerMenu;
 import com.combatreforged.factory.api.world.item.container.menu.ContainerMenuType;
+import com.combatreforged.factory.api.world.item.container.menu.MenuHolder;
 import com.google.errorprone.annotations.Immutable;
+import net.kyori.adventure.text.Component;
 
 public abstract class Minecraft {
     private static final ImplementationUtils utils = ImplementationUtils.getInstance();
@@ -2014,8 +2014,8 @@ public abstract class Minecraft {
         STONECUTTER;
 
         @Override
-        public ContainerMenu<?> createMenu(int containerID, PlayerInventory inventory) {
-            return utils.createMenu(this, containerID, inventory);
+        public MenuHolder createMenu(Component title) {
+            return utils.createMenu(this, title);
         }
     }
 }

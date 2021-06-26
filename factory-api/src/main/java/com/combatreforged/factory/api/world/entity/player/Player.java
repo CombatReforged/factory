@@ -5,6 +5,7 @@ import com.combatreforged.factory.api.interfaces.MessageReceiver;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.LivingEntity;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
+import com.combatreforged.factory.api.world.item.container.menu.MenuHolder;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
@@ -25,6 +26,8 @@ public interface Player extends LivingEntity, MessageReceiver {
     void clearTitle();
     void resetTitle();
     void sendActionBarMessage(Component component);
+
+    void openMenu(MenuHolder creator);
 
     GameModeType getGameMode();
     void setGameMode(GameModeType gameMode);

@@ -1,10 +1,15 @@
 package com.combatreforged.factory.builder.implementation.world.item.container;
 
 import com.combatreforged.factory.api.world.block.container.BlockEntityContainer;
+import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.item.container.menu.ContainerMenu;
+import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.block.WrappedBlockEntity;
+import com.combatreforged.factory.builder.implementation.world.item.container.menu.WrappedContainerMenu;
 import com.google.common.collect.ImmutableList;
 import net.kyori.adventure.text.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 
@@ -25,6 +30,13 @@ public class WrappedBlockEntityContainer extends WrappedBlockEntity implements B
     @Override
     public void setName(Component component) {
         wrappedBEC.setCustomName(ObjectMappings.convertComponent(component));
+    }
+
+    @Override
+    public ContainerMenu openToPlayer(Player player) {
+        ServerPlayer mcPlayer = (ServerPlayer) player;
+        mcPlayer.openMenu(wrappedBEC);
+        return Wrapped.wrap(mcPlayer.containerMenu, WrappedContainerMenu.class);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.combatreforged.factory.builder.implementation.world.item.container;
+package com.combatreforged.factory.builder.implementation.world.item.container.menu;
 
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.container.menu.ContainerMenu;
@@ -13,16 +13,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class WrappedContainerMenu<T extends ContainerMenuType> extends Wrapped<AbstractContainerMenu> implements ContainerMenu<T> {
-    private final T containerMenuType;
+public class WrappedContainerMenu extends Wrapped<AbstractContainerMenu> implements ContainerMenu {
+    private final ContainerMenuType containerMenuType;
 
-    public WrappedContainerMenu(AbstractContainerMenu wrapped, T type) {
+    public WrappedContainerMenu(AbstractContainerMenu wrapped, ContainerMenuType type) {
         super(wrapped);
         this.containerMenuType = type;
     }
 
     @Override
-    public T getType() {
+    public ContainerMenuType getType() {
         return containerMenuType;
     }
 

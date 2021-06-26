@@ -1,8 +1,8 @@
 package com.combatreforged.factory.api.world.item.container.menu;
 
 import com.combatreforged.factory.api.interfaces.ObjectMapped;
-import com.combatreforged.factory.api.world.item.container.PlayerInventory;
+import net.kyori.adventure.text.Component;
 
 public interface ContainerMenuType extends ObjectMapped {
-    ContainerMenu<?> createMenu(int containerID, PlayerInventory inventory);
+    MenuHolder createMenu(Component title);
 }

@@ -9,19 +9,22 @@ import com.combatreforged.factory.api.world.entity.EntityType;
 import com.combatreforged.factory.api.world.item.Enchantment;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.ItemType;
-import com.combatreforged.factory.api.world.item.container.PlayerInventory;
-import com.combatreforged.factory.api.world.item.container.menu.ContainerMenu;
 import com.combatreforged.factory.api.world.item.container.menu.ContainerMenuType;
+import com.combatreforged.factory.api.world.item.container.menu.MenuHolder;
 import com.combatreforged.factory.builder.extension.world.effect.MobEffectExtension;
 import com.combatreforged.factory.builder.extension.world.inventory.MenuTypeExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
-import com.combatreforged.factory.builder.implementation.world.item.container.WrappedContainerMenu;
-import com.combatreforged.factory.builder.implementation.world.item.container.WrappedPlayerInventory;
+import com.combatreforged.factory.builder.implementation.world.item.container.menu.WrappedMenuHolder;
+import net.kyori.adventure.text.Component;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+
+import static com.combatreforged.factory.builder.implementation.util.ObjectMappings.MENU_TYPES;
+import static com.combatreforged.factory.builder.implementation.util.ObjectMappings.convertComponent;
 
 public class ImplementationUtilsImpl implements ImplementationUtils {
     @Override
@@ -100,11 +103,10 @@ public class ImplementationUtilsImpl implements ImplementationUtils {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public ContainerMenu<?> createMenu(ContainerMenuType menuType, int containerID, PlayerInventory inventory) {
-        return Wrapped.wrap(((MenuTypeExtension) ObjectMappings.MENU_TYPES.get(menuType))
-                .create(containerID, ((WrappedPlayerInventory) inventory).unwrap()),
-        WrappedContainerMenu.class);
+    public MenuHolder createMenu(ContainerMenuType type, Component title) {
+       return Wrapped.wrap(new SimpleMenuProvider((i, inventory, player) ->
+               ((MenuTypeExtension) MENU_TYPES.get(type)).createServer(i, inventory),
+               convertComponent(title)), WrappedMenuHolder.class);
     }
 }

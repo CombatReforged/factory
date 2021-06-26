@@ -1,5 +1,6 @@
 package com.combatreforged.factory.builder.mixin.world.inventory;
 
+import com.combatreforged.factory.builder.extension.world.inventory.MenuSupplierExtension;
 import com.combatreforged.factory.builder.extension.world.inventory.MenuTypeExtension;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import net.minecraft.world.entity.player.Inventory;
@@ -22,7 +23,7 @@ public abstract class MenuTypeMixin<T extends AbstractContainerMenu> implements 
     }
 
     @Override
-    public AbstractContainerMenu create(int i, Inventory inventory) {
-        return constructor.create(i, inventory);
+    public AbstractContainerMenu createServer(int i, Inventory inventory) {
+        return ((MenuSupplierExtension<?>) constructor).createServer(i, inventory);
     }
 }
