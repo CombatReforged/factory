@@ -4,7 +4,6 @@ import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
-import com.combatreforged.factory.api.event.player.PlayerMoveEvent;
 import com.combatreforged.factory.api.world.Weather;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.block.Block;
@@ -22,7 +21,6 @@ import com.combatreforged.factory.api.world.scoreboard.ScoreboardObjective;
 import com.combatreforged.factory.api.world.scoreboard.ScoreboardTeam;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.combatreforged.factory.api.world.util.Location;
-import com.combatreforged.factory.api.world.util.Vector3D;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -36,24 +34,13 @@ public class TestPlugin implements FactoryPlugin {
     public void onFactoryLoad(FactoryAPI api, FactoryServer server) {
         logger.info("Hello! I was loaded within Factory!");
 
-        PlayerMoveEvent.BACKEND.register(event -> {
-            Player player = event.getPlayer();
-
-            Vector3D old = event.getOldPosition().toVector();
-            Vector3D new_ = event.getNewPosition().toVector();
-            Vector3D diff = new_.subtract(old);
-            if (player.isSneaking()
-                    && (diff.getX() != 0.0
-                    || diff.getY() != 0.0
-                    || diff.getZ() != 0.0)) player.addVelocity(new Vector3D(0.0, 0.2, 0.0));
-        });
-
         PlayerJoinEvent.BACKEND.register(event -> {
             Player player = event.getPlayer();
             World world = player.getWorld();
             Block block = world.getBlockAt(player.getLocation());
 
-            player.setGameMode(Minecraft.GameMode.CREATIVE);
+            player.setGameMode(Minecraft.GameMode.ADVENTURE);
+
             player.getInventory().clear();
             player.getInventory().addItemStack(ItemStack.create(Minecraft.Item.NETHERITE_SWORD));
             player.setEquipmentStack(ArmorSlot.HEAD, ItemStack.create(Minecraft.Item.NETHERITE_HELMET));
@@ -72,6 +59,8 @@ public class TestPlugin implements FactoryPlugin {
                     .build());
 
             player.getInventory().setItemStack(4, stick);
+
+            player.getInventory().setItemStack(1, ItemStack.create(Minecraft.Item.OAK_LOG, 16));
 
             world.setDayTime(0);
             world.setWeather(Weather.THUNDER, 60);
@@ -106,7 +95,7 @@ public class TestPlugin implements FactoryPlugin {
             player.sendTitle(Title.title(Component.text("Hewwo owo"), Component.text("cool innit").color(NamedTextColor.GOLD)));
             player.sendActionBarMessage(Component.text("notice me uwu").color(NamedTextColor.GRAY));
 
-            player.openMenu(Minecraft.MenuType.ENCHANTMENT.createMenu(Component.text("Test lol")));
+            player.openMenu(Minecraft.MenuType.CRAFTING.createMenu(Component.text("Test lol")));
 
             Scoreboard scoreboard = Scoreboard.create();
 

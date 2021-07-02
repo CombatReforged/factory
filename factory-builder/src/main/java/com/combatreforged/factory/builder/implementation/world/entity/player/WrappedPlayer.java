@@ -4,6 +4,7 @@ import com.combatreforged.factory.api.world.entity.player.GameModeType;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 import com.combatreforged.factory.api.world.item.container.menu.MenuHolder;
+import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import com.combatreforged.factory.api.world.util.Vector3D;
 import com.combatreforged.factory.builder.exception.WrappingException;
@@ -34,6 +35,12 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
     public WrappedPlayer(ServerPlayer wrappedPlayer) {
         super(wrappedPlayer);
         this.wrappedPlayer = wrappedPlayer;
+    }
+
+    @Override
+    public void setEntityNBT(NBTObject nbt) {
+        super.setEntityNBT(nbt);
+        wrappedPlayer.onUpdateAbilities();
     }
 
     @Override

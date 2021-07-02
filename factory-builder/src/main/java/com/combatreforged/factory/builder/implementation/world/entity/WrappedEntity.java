@@ -202,6 +202,11 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
     }
 
     @Override
+    public boolean isOnGround() {
+        return wrapped.isOnGround();
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (other == null)
             return false;

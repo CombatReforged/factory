@@ -76,6 +76,8 @@ public interface Entity extends CommandSource {
 
     void setEntityNBT(NBTObject nbt);
 
+    boolean isOnGround();
+
     static Entity create(EntityType type, World world) {
         return Builder.getInstance().createEntity(type, world);
     }

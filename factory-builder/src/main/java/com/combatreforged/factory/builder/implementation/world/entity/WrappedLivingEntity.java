@@ -5,12 +5,15 @@ import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.api.world.entity.LivingEntity;
 import com.combatreforged.factory.api.world.entity.equipment.EquipmentSlot;
 import com.combatreforged.factory.api.world.item.ItemStack;
+import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
+import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTObject;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 
@@ -23,6 +26,19 @@ public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
     public WrappedLivingEntity(net.minecraft.world.entity.LivingEntity wrappedLiving) {
         super(wrappedLiving);
         this.wrappedLiving = wrappedLiving;
+    }
+
+    @Override
+    public NBTObject getEntityNBT() {
+        CompoundTag tag = ((WrappedNBTObject) super.getEntityNBT()).unwrap();
+        wrappedLiving.addAdditionalSaveData(tag);
+        return Wrapped.wrap(tag, WrappedNBTObject.class);
+    }
+
+    @Override
+    public void setEntityNBT(NBTObject nbt) {
+        super.setEntityNBT(nbt);
+        wrappedLiving.readAdditionalSaveData(((WrappedNBTObject) nbt).unwrap());
     }
 
     @Override
