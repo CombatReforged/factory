@@ -8,6 +8,8 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(FoodData.class)
 public abstract class FoodDataMixin implements FoodDataExtension {
     @Shadow private float exhaustionLevel;
+    @Shadow @SuppressWarnings("unused")
+    private float saturationLevel;
 
     @Override
     public void setExhaustion(float exhaustion) {
@@ -17,5 +19,10 @@ public abstract class FoodDataMixin implements FoodDataExtension {
     @Override
     public float getExhaustion() {
         return this.exhaustionLevel;
+    }
+
+    @Override
+    public void setSaturationServer(float saturation) {
+        this.saturationLevel = saturation;
     }
 }

@@ -60,7 +60,7 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
 
     @Override
     public void setSaturation(float saturation) {
-        wrappedPlayer.getFoodData().setSaturation(saturation);
+        ((FoodDataExtension) wrappedPlayer.getFoodData()).setSaturationServer(saturation);
     }
 
     @Override

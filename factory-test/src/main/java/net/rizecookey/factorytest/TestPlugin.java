@@ -8,6 +8,7 @@ import com.combatreforged.factory.api.world.Weather;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.block.Block;
 import com.combatreforged.factory.api.world.block.BlockEntity;
+import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.equipment.ArmorSlot;
 import com.combatreforged.factory.api.world.entity.equipment.HandSlot;
@@ -49,18 +50,23 @@ public class TestPlugin implements FactoryPlugin {
             player.setEquipmentStack(ArmorSlot.FEET, ItemStack.create(Minecraft.Item.IRON_BOOTS));
             player.setEquipmentStack(HandSlot.OFF_HAND, ItemStack.create(Minecraft.Item.GOLDEN_APPLE, 16));
 
+            player.addEffectInstance(StatusEffectInstance
+                    .create(Minecraft.Effect.HEALTH_BOOST, 1000000, 4, false));
+            player.addEffectInstance(StatusEffectInstance
+                    .create(Minecraft.Effect.INSTANT_HEALTH, 1, 9, false));
+            player.setFoodLevel(20);
+            player.setSaturation(5);
+
             ItemStack stick = ItemStack.create(Minecraft.Item.STICK);
             stick.enchant(Minecraft.Enchantment.KNOCKBACK, 2);
             stick.getEnchantments().forEach(ench -> System.out.println(ench + " (lvl: " + stick.getLevel(ench) + ")"));
             stick.setLore(Component.text()
-                    .content("Haha Gomme cool xDdDdDD")
+                    .content("GommeHD hmm?")
                     .decoration(TextDecoration.ITALIC, false)
                     .color(NamedTextColor.RED)
                     .build());
 
             player.getInventory().setItemStack(4, stick);
-
-            player.getInventory().setItemStack(1, ItemStack.create(Minecraft.Item.OAK_LOG, 16));
 
             world.setDayTime(0);
             world.setWeather(Weather.THUNDER, 60);

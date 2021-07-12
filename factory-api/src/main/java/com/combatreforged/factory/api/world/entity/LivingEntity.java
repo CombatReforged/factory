@@ -27,6 +27,8 @@ public interface LivingEntity extends Entity {
 
     void removeEffect(StatusEffect statusEffect);
 
+    void clearEffects();
+
     boolean isSprinting();
     void setSprinting(boolean sprinting);
     boolean isSneaking();

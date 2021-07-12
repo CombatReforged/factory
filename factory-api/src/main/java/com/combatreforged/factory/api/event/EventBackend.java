@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class EventBackend<T extends Event> {
     public static final Logger LOGGER = LogManager.getLogger("EventBackend");
@@ -19,11 +20,11 @@ public class EventBackend<T extends Event> {
         listeners = new ArrayList<>();
     }
 
-    public void register(Listener<T> listener) {
+    public void register(final Listener<T> listener) {
         register(listener, 0);
     }
 
-    public void register(Listener<T> listener, int priority) {
+    public void register(final Listener<T> listener, int priority) {
         if (priority < -100 || priority > 100) {
             LOGGER.error("Listener " + listener.toString() + " tried to register with an invalid priority of " + priority + " (has to be between -100 and 100)!");
         }
@@ -43,6 +44,18 @@ public class EventBackend<T extends Event> {
         else if (listeners.contains(listener)) {
             LOGGER.warn("Listener " + listener.toString() + " is already registered!");
         }
+    }
+
+    public void register(final Listener<T> listener, Predicate<T> filter) {
+        this.register(listener, filter, 0);
+    }
+
+    public void register(final Listener<T> listener, final Predicate<T> filter, int priority) {
+        this.register((event) -> {
+            if (filter.test(event)) {
+                listener.onEvent(event);
+            }
+        }, priority);
     }
 
     public void unregister(Listener<T> listener) {
