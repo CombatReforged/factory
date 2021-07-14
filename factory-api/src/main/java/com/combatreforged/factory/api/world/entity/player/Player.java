@@ -22,6 +22,11 @@ public interface Player extends LivingEntity, MessageReceiver {
     PlayerInventory getInventory();
     int getSelectedSlot();
 
+    void setExperienceLevel(int level);
+    void setExperiencePoints(int points);
+    int getExperienceLevel();
+    int getExperiencePoints();
+
     void sendTitle(Title title);
     void clearTitle();
     void resetTitle();

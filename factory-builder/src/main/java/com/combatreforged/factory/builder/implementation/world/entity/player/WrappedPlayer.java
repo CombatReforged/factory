@@ -84,6 +84,26 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
     }
 
     @Override
+    public void setExperienceLevel(int level) {
+        wrappedPlayer.setExperienceLevels(level);
+    }
+
+    @Override
+    public void setExperiencePoints(int points) {
+        wrappedPlayer.setExperiencePoints(points);
+    }
+
+    @Override
+    public int getExperienceLevel() {
+        return wrappedPlayer.experienceLevel;
+    }
+
+    @Override
+    public int getExperiencePoints() {
+        return (int) (wrappedPlayer.experienceProgress * wrappedPlayer.getXpNeededForNextLevel());
+    }
+
+    @Override
     public void sendTitle(Title title) {
         net.minecraft.network.chat.Component mcTitle = convertComponent(title.title());
         net.minecraft.network.chat.Component mcSubTitle = convertComponent(title.subtitle());

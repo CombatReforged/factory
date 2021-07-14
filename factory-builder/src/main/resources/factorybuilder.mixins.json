@@ -31,6 +31,7 @@
     "world.inventory.AbstractContainerMenuAccessor",
     "world.inventory.CompoundContainerMixin",
     "world.inventory.CraftingContainerMixin",
+    "world.inventory.EnchantmentMenuMixin",
     "world.inventory.MenuSupplierMixin",
     "world.inventory.MenuTypeMixin",
     "world.inventory.MerchantContainerMixin",

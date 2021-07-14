@@ -44,6 +44,7 @@ public class TestPlugin implements FactoryPlugin {
 
             player.getInventory().clear();
             player.getInventory().addItemStack(ItemStack.create(Minecraft.Item.NETHERITE_SWORD));
+            player.getInventory().addItemStack(ItemStack.create(Minecraft.Item.LAPIS_LAZULI, 16));
             player.setEquipmentStack(ArmorSlot.HEAD, ItemStack.create(Minecraft.Item.NETHERITE_HELMET));
             player.setEquipmentStack(ArmorSlot.CHEST, ItemStack.create(Minecraft.Item.DIAMOND_CHESTPLATE));
             player.setEquipmentStack(ArmorSlot.LEGS, ItemStack.create(Minecraft.Item.GOLDEN_LEGGINGS));
@@ -101,7 +102,9 @@ public class TestPlugin implements FactoryPlugin {
             player.sendTitle(Title.title(Component.text("Hewwo owo"), Component.text("cool innit").color(NamedTextColor.GOLD)));
             player.sendActionBarMessage(Component.text("notice me uwu").color(NamedTextColor.GRAY));
 
-            player.openMenu(Minecraft.MenuType.CRAFTING.createMenu(Component.text("Test lol")));
+            player.openMenu(Minecraft.MenuType.ENCHANTMENT.createMenu(Component.text("Test lol")));
+            player.setExperienceLevel(16);
+            player.setExperiencePoints(0);
 
             Scoreboard scoreboard = Scoreboard.create();
 
