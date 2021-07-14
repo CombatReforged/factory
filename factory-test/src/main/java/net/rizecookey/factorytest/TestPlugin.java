@@ -102,7 +102,7 @@ public class TestPlugin implements FactoryPlugin {
             player.sendTitle(Title.title(Component.text("Hewwo owo"), Component.text("cool innit").color(NamedTextColor.GOLD)));
             player.sendActionBarMessage(Component.text("notice me uwu").color(NamedTextColor.GRAY));
 
-            player.openMenu(Minecraft.MenuType.ENCHANTMENT.createMenu(Component.text("Test lol")));
+            player.openMenu(Minecraft.MenuType.CRAFTING.createMenu(Component.text("Test lol")));
             player.setExperienceLevel(16);
             player.setExperiencePoints(0);
 
