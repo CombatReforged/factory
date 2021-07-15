@@ -14,6 +14,7 @@ import com.combatreforged.factory.api.world.entity.equipment.ArmorSlot;
 import com.combatreforged.factory.api.world.entity.equipment.HandSlot;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.item.ItemStack;
+import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 import com.combatreforged.factory.api.world.nbt.NBTList;
 import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
@@ -42,9 +43,10 @@ public class TestPlugin implements FactoryPlugin {
 
             player.setGameMode(Minecraft.GameMode.ADVENTURE);
 
-            player.getInventory().clear();
-            player.getInventory().addItemStack(ItemStack.create(Minecraft.Item.NETHERITE_SWORD));
-            player.getInventory().addItemStack(ItemStack.create(Minecraft.Item.LAPIS_LAZULI, 16));
+            PlayerInventory inventory = player.getInventory();
+            inventory.clear();
+            inventory.addItemStack(ItemStack.create(Minecraft.Item.NETHERITE_SWORD));
+            inventory.setItemStack(18, ItemStack.create(Minecraft.Item.LAPIS_LAZULI, 16));
             player.setEquipmentStack(ArmorSlot.HEAD, ItemStack.create(Minecraft.Item.NETHERITE_HELMET));
             player.setEquipmentStack(ArmorSlot.CHEST, ItemStack.create(Minecraft.Item.DIAMOND_CHESTPLATE));
             player.setEquipmentStack(ArmorSlot.LEGS, ItemStack.create(Minecraft.Item.GOLDEN_LEGGINGS));
@@ -60,14 +62,13 @@ public class TestPlugin implements FactoryPlugin {
 
             ItemStack stick = ItemStack.create(Minecraft.Item.STICK);
             stick.enchant(Minecraft.Enchantment.KNOCKBACK, 2);
-            stick.getEnchantments().forEach(ench -> System.out.println(ench + " (lvl: " + stick.getLevel(ench) + ")"));
             stick.setLore(Component.text()
                     .content("GommeHD hmm?")
                     .decoration(TextDecoration.ITALIC, false)
                     .color(NamedTextColor.RED)
                     .build());
 
-            player.getInventory().setItemStack(4, stick);
+            inventory.setItemStack(4, stick);
 
             world.setDayTime(0);
             world.setWeather(Weather.THUNDER, 60);
@@ -102,7 +103,14 @@ public class TestPlugin implements FactoryPlugin {
             player.sendTitle(Title.title(Component.text("Hewwo owo"), Component.text("cool innit").color(NamedTextColor.GOLD)));
             player.sendActionBarMessage(Component.text("notice me uwu").color(NamedTextColor.GRAY));
 
-            player.openMenu(Minecraft.MenuType.CRAFTING.createMenu(Component.text("Test lol")));
+            player.openMenu(Minecraft.MenuType.BREWING_STAND.createMenu(Component.text("Test lol")));
+            inventory.setItemStack(9, ItemStack.create(Minecraft.Item.COAL, 16));
+            inventory.setItemStack(10, ItemStack.create(Minecraft.Item.BEEF, 16));
+            NBTObject nbt = NBTObject.create();
+            nbt.set("Potion", NBTValue.of("minecraft:water"));
+            inventory.setItemStack(18, ItemStack.create(Minecraft.Item.POTION, 1, 0, nbt));
+            inventory.setItemStack(19, ItemStack.create(Minecraft.Item.BLAZE_POWDER, 16));
+            inventory.setItemStack(20, ItemStack.create(Minecraft.Item.GUNPOWDER, 16));
             player.setExperienceLevel(16);
             player.setExperiencePoints(0);
 

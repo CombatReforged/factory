@@ -1,4 +1,4 @@
-package com.combatreforged.factory.builder.implementation.util;
+package com.combatreforged.factory.builder.mixin_interfaces;
 
 import net.minecraft.world.inventory.ContainerLevelAccess;
 
