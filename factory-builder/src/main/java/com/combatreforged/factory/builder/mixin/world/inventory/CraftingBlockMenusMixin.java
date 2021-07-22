@@ -2,6 +2,7 @@ package com.combatreforged.factory.builder.mixin.world.inventory;
 
 import com.combatreforged.factory.builder.mixin_interfaces.BlockDependentMenu;
 import com.combatreforged.factory.builder.mixin_interfaces.LevelAccessOwner;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -50,7 +51,7 @@ public abstract class CraftingBlockMenusMixin implements BlockDependentMenu, Lev
         this.independent = independent;
         if (independent) {
             this.prevAccess = this.getContainerLevelAccess();
-            this.setContainerLevelAccess(ContainerLevelAccess.create(player.level, player.blockPosition()));
+            this.setContainerLevelAccess(ContainerLevelAccess.create(player.level, BlockPos.ZERO));
         } else {
             this.setContainerLevelAccess(prevAccess);
             this.prevAccess = null;
@@ -63,5 +64,5 @@ public abstract class CraftingBlockMenusMixin implements BlockDependentMenu, Lev
     }
 
     //TODO add enchantment level customization
-    //TODO fix items disappearing after close
+    //TODO add ticking to independent block processors
 }

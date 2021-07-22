@@ -103,7 +103,7 @@ public class TestPlugin implements FactoryPlugin {
             player.sendTitle(Title.title(Component.text("Hewwo owo"), Component.text("cool innit").color(NamedTextColor.GOLD)));
             player.sendActionBarMessage(Component.text("notice me uwu").color(NamedTextColor.GRAY));
 
-            player.openMenu(Minecraft.MenuType.BREWING_STAND.createMenu(Component.text("Test lol")));
+            player.openMenu(Minecraft.MenuType.FURNACE.createMenu(Component.text("Test lol")));
             inventory.setItemStack(9, ItemStack.create(Minecraft.Item.COAL, 16));
             inventory.setItemStack(10, ItemStack.create(Minecraft.Item.BEEF, 16));
             NBTObject nbt = NBTObject.create();
