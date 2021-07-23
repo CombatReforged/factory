@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.6-SNAPSHOT'
+	id 'fabric-loom' version '0.8-SNAPSHOT'
 	id 'maven-publish'
 	id 'java'
 }
@@ -11,18 +11,13 @@ archivesBaseName = "factory-builder"
 version = "0.1.0"
 group = parent.group
 
-// Repo for CT intermediary mappings
 repositories {
-	maven {
-		name "CombatReforged"
-		url "https://maven.combatreforged.com"
-	}
 }
 
 dependencies {
 	minecraft "com.mojang:minecraft:1.16_combat-6"
 	mappings minecraft.officialMojangMappings()
-	modImplementation "net.fabricmc:fabric-loader:0.11.3"
+	modImplementation "net.fabricmc:fabric-loader:0.11.6"
 
 	implementation include(project(":factory-api"))
 	implementation(project(":factory-test")) {
@@ -32,22 +27,15 @@ dependencies {
 
 minecraft {
 	customManifest = "https://gist.githubusercontent.com/rizecookey/4c6142baaccc3875f9b227fe22f2ace5/raw/c8ed74b19f7a5315813c9d4b199798b692a8f359/1.16_combat-6.json"
-	intermediaryUrl = { mcVersion ->
-		return "https://maven.combatreforged.com/net/fabricmc/intermediary/${mcVersion}/intermediary-${mcVersion}-v2.jar";
-	}
+	intermediaryUrl = (mcVer) -> "https://maven.combatreforged.com/net/fabricmc/intermediary/" + mcVer + "/intermediary-" + mcVer + "-v2.jar"
 	accessWidener = file("src/main/resources/factorybuilder.accesswidener")
 }
 
 processResources {
 	inputs.property "version", project.version
 
-	from(sourceSets.main.resources.srcDirs) {
-		include "fabric.mod.json"
+	filesMatching("fabric.mod.json") {
 		expand "version": project.version
-	}
-
-	from(sourceSets.main.resources.srcDirs) {
-		exclude "fabric.mod.json"
 	}
 }
 
@@ -55,32 +43,12 @@ tasks.withType(JavaCompile) {
 	options.encoding = "UTF-8"
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-	archiveClassifier = "sources"
-	from sourceSets.main.allSource
+java {
+	withSourcesJar()
 }
 
 jar {
-	from "LICENSE"
-}
-
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
-		}
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName}"}
 	}
-
-	repositories {
-		mavenLocal()
-	}
-}
-
-test {
-	useJUnitPlatform()
 }
