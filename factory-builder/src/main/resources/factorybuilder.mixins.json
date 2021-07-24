@@ -4,7 +4,6 @@
   "package": "com.combatreforged.factory.builder.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "debug.BrewingStandBlockEntityMixin",
     "nbt.CollectionTagMixin",
     "nbt.CompoundTagMixin",
     "nbt.ListTagMixin",
@@ -31,8 +30,6 @@
     "world.food.FoodDataMixin",
     "world.inventory.AbstractContainerMenuAccessor",
     "world.inventory.AbstractFurnaceMenuAccessor",
-    "world.inventory.AbstractFurnaceMenuMixin",
-    "world.inventory.BrewingStandMenuMixin",
     "world.inventory.CartographyMenuMixin",
     "world.inventory.CompoundContainerMixin",
     "world.inventory.CraftingBlockMenusMixin",
