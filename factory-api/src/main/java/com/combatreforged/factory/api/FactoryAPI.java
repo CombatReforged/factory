@@ -2,8 +2,12 @@ package com.combatreforged.factory.api;
 
 import com.combatreforged.factory.api.builder.Builder;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
+import com.combatreforged.factory.api.event.server.tick.ServerEndTickEvent;
 import com.combatreforged.factory.api.exception.FactoryPluginException;
+import com.combatreforged.factory.api.scheduler.TaskScheduler;
+import com.combatreforged.factory.api.scheduler.TickFunction;
 import com.combatreforged.factory.api.util.ImplementationUtils;
+import com.combatreforged.factory.api.world.util.Pair;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -15,16 +19,23 @@ public class FactoryAPI {
     private final Builder builder;
     private final ImplementationUtils implementationUtils;
     private final FactoryServer server;
+    private final TaskScheduler scheduler;
+    private final TickFunction tickFunction;
 
     public FactoryAPI(FactoryServer server, Builder builder) {
         this.builder = builder;
         this.implementationUtils = builder.createImplementationUtils();
         this.server = server;
+        Pair<TaskScheduler, TickFunction> sched = TaskScheduler.create();
+        this.scheduler = sched.a();
+        this.tickFunction = sched.b();
+
+        ServerEndTickEvent.BACKEND.register(event -> tickFunction.tick());
 
         INSTANCE = this;
     }
 
-    public void initPlugins(List<FactoryPlugin> plugins) {
+    public void init(List<FactoryPlugin> plugins) {
         plugins.forEach(pluginType -> {
             Class<? extends FactoryPlugin> pluginClass = pluginType.getClass();
             try {
@@ -50,5 +61,9 @@ public class FactoryAPI {
 
     public static FactoryAPI getInstance() {
         return INSTANCE;
+    }
+
+    public TaskScheduler getScheduler() {
+        return scheduler;
     }
 }

@@ -4,6 +4,11 @@ import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
+import com.combatreforged.factory.api.event.server.tick.ServerEndTickEvent;
+import com.combatreforged.factory.api.event.server.tick.ServerStartTickEvent;
+import com.combatreforged.factory.api.scheduler.ScheduledRepeatingTask;
+import com.combatreforged.factory.api.scheduler.TaskPointer;
+import com.combatreforged.factory.api.scheduler.TaskScheduler;
 import com.combatreforged.factory.api.world.Weather;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.block.Block;
@@ -32,11 +37,26 @@ import org.apache.logging.log4j.Logger;
 
 public class TestPlugin implements FactoryPlugin {
     Logger logger = LogManager.getLogger();
+
+    TaskPointer<ScheduledRepeatingTask> villagerSoundTask;
+    long tickStartTime;
+
     @Override
     public void onFactoryLoad(FactoryAPI api, FactoryServer server) {
         logger.info("Hello! I was loaded within Factory!");
 
+        TaskScheduler scheduler = api.getScheduler();
+        villagerSoundTask = scheduler.scheduleRepeating(() -> server.getPlayers().forEach(player ->
+                    player.runCommand("playsound minecraft:entity.villager.ambient master @s", 4, false)), 0, 40);
+
+        ServerStartTickEvent.BACKEND.register(event -> this.tickStartTime = System.currentTimeMillis());
+
+        ServerEndTickEvent.BACKEND.register(event -> event.getServer().getPlayers()
+                .forEach(player -> player.sendActionBarMessage(Component.text("Tick time: " + (System.currentTimeMillis() - tickStartTime) + "ms").color(NamedTextColor.GRAY))));
+
         PlayerJoinEvent.BACKEND.register(event -> {
+            api.getScheduler().schedule(() -> villagerSoundTask.cancel(), 320);
+
             Player player = event.getPlayer();
             World world = player.getWorld();
             Block block = world.getBlockAt(player.getLocation());
@@ -101,7 +121,6 @@ public class TestPlugin implements FactoryPlugin {
             world.spawn(firework);
 
             player.sendTitle(Title.title(Component.text("Hewwo owo"), Component.text("cool innit").color(NamedTextColor.GOLD)));
-            player.sendActionBarMessage(Component.text("notice me uwu").color(NamedTextColor.GRAY));
 
             player.openMenu(Minecraft.MenuType.FURNACE.createMenu(Component.text("Test lol")));
             inventory.setItemStack(9, ItemStack.create(Minecraft.Item.COAL, 16));

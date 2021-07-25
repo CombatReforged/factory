@@ -31,7 +31,7 @@ public class EventBackend<T extends Event> {
         else if (!listeners.contains(listener)) {
             int index;
             for (index = 0; index < listeners.size(); index++) {
-                if (!priorityMap.containsKey(listener)) {
+                if (!priorityMap.containsKey(listeners.get(index))) {
                     LOGGER.error("Priority map doesn't contain entry for registered listener "  + listener.toString() + "!");
                 }
                 else if (priorityMap.get(listeners.get(index)) < priority) {

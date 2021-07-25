@@ -53,7 +53,7 @@ public abstract class DedicatedServerMixin extends MinecraftServer implements Wr
             if (i < (plugins.size() - 1)) sB.append(",");
         }
         FactoryBuilder.LOGGER.info(sB.toString());
-        api.initPlugins(plugins);
+        api.init(plugins);
 
         FactoryBuilder.LOGGER.info("Done.");
     }
