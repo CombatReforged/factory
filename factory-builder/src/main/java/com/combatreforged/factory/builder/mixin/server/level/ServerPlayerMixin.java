@@ -1,6 +1,10 @@
 package com.combatreforged.factory.builder.mixin.server.level;
 
+import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.builder.extension.server.level.ServerPlayerExtension;
+import com.combatreforged.factory.builder.extension.wrap.ChangeableWrap;
+import com.combatreforged.factory.builder.implementation.Wrapped;
+import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import com.combatreforged.factory.builder.mixin.server.players.PlayerListAccessor;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
@@ -24,6 +28,15 @@ public abstract class ServerPlayerMixin implements ServerPlayerExtension {
     @Shadow public ServerGamePacketListenerImpl connection;
     @Shadow @Final public MinecraftServer server;
     private ServerScoreboard scoreboard;
+
+    @Inject(method = "restoreFrom", at = @At("TAIL"))
+    public void copyWrappedOver(ServerPlayer serverPlayer, boolean bl, CallbackInfo ci) {
+        @SuppressWarnings("unchecked") ChangeableWrap<Entity> wrap = (ChangeableWrap<Entity>) this;
+        wrap.setWrap(Wrapped.wrap(serverPlayer, WrappedPlayer.class));
+        if (wrap.wrap() instanceof WrappedPlayer) {
+            ((WrappedPlayer) wrap.wrap()).updatePlayer((ServerPlayer) (Object) this);
+        }
+    }
 
     @Inject(method = "<init>", at = @At("TAIL"))
     public void injectScoreboard(MinecraftServer minecraftServer, ServerLevel serverLevel, GameProfile gameProfile, ServerPlayerGameMode serverPlayerGameMode, CallbackInfo ci) {

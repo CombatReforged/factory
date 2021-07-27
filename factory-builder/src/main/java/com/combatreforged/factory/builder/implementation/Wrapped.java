@@ -4,7 +4,7 @@ import com.combatreforged.factory.builder.exception.NotAWrappedObjectException;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 
 public abstract class Wrapped<T> {
-    public final T wrapped;
+    protected T wrapped;
 
     public Wrapped(T wrapped) {
         this.wrapped = wrapped;

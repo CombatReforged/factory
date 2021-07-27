@@ -1,6 +1,7 @@
 package com.combatreforged.factory.builder.mixin.world.entity;
 
 import com.combatreforged.factory.builder.extension.world.entity.EntityExtension;
+import com.combatreforged.factory.builder.extension.wrap.ChangeableWrap;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedAgeable;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
@@ -31,7 +32,7 @@ yRot = yaw*/
 
 
 @Mixin(Entity.class)
-public abstract class EntityMixin implements Nameable, CommandSource, Wrap<com.combatreforged.factory.api.world.entity.Entity>, EntityExtension {
+public abstract class EntityMixin implements Nameable, CommandSource, ChangeableWrap<com.combatreforged.factory.api.world.entity.Entity>, EntityExtension {
     private com.combatreforged.factory.api.world.entity.Entity wrapped;
 
     @Inject(method = "<init>*", at = @At("TAIL"))
@@ -68,6 +69,11 @@ public abstract class EntityMixin implements Nameable, CommandSource, Wrap<com.c
     @Override
     public com.combatreforged.factory.api.world.entity.Entity wrap() {
         return this.wrapped;
+    }
+
+    @Override
+    public void setWrap(com.combatreforged.factory.api.world.entity.Entity wrap) {
+        this.wrapped = wrap;
     }
 
     @Invoker @Override

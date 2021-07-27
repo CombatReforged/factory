@@ -44,6 +44,8 @@ public interface Player extends LivingEntity, MessageReceiver {
     void setScoreboard(Scoreboard scoreboard);
     void setServerScoreboard();
 
+    void respawn();
+
     static Player createNPCPlayer(World world, UUID uuid, String name) {
         return Builder.getInstance().createNPCPlayer(world, uuid, name);
     }

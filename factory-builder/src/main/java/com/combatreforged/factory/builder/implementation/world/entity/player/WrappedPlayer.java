@@ -21,6 +21,7 @@ import net.kyori.adventure.title.Title;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesPacket;
+import net.minecraft.network.protocol.game.ServerboundClientCommandPacket;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
@@ -31,7 +32,7 @@ import java.util.UUID;
 import static com.combatreforged.factory.builder.implementation.util.ObjectMappings.convertComponent;
 
 public class WrappedPlayer extends WrappedLivingEntity implements Player {
-    final ServerPlayer wrappedPlayer;
+    ServerPlayer wrappedPlayer;
     public WrappedPlayer(ServerPlayer wrappedPlayer) {
         super(wrappedPlayer);
         this.wrappedPlayer = wrappedPlayer;
@@ -189,6 +190,18 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
     public void setServerScoreboard() {
         ((ServerPlayerExtension) wrappedPlayer)
                 .setScoreboard(Objects.requireNonNull(wrappedPlayer.getServer()).getScoreboard());
+    }
+
+    public void updatePlayer(ServerPlayer player) {
+        this.wrapped = player;
+        this.wrappedPlayer = player;
+    }
+
+    @Override
+    public void respawn() {
+        if (this.wrappedPlayer.isDeadOrDying()) {
+            wrappedPlayer.connection.handleClientCommand(new ServerboundClientCommandPacket(ServerboundClientCommandPacket.Action.PERFORM_RESPAWN));
+        }
     }
 
     @Override
