@@ -12,7 +12,7 @@ public class LivingEntityDamageEvent implements Event, Cancellable {
     private boolean cancelled;
 
     private final LivingEntity entity;
-    private final DamageData cause;
+    private DamageData cause;
     private float damage;
 
     public LivingEntityDamageEvent(LivingEntity entity, DamageData cause, float damage) {
@@ -29,6 +29,10 @@ public class LivingEntityDamageEvent implements Event, Cancellable {
 
     public DamageData getCause() {
         return cause;
+    }
+
+    public void setCause(DamageData cause) {
+        this.cause = cause;
     }
 
     public float getDamage() {

@@ -59,7 +59,11 @@ public class TestPlugin implements FactoryPlugin {
         LivingEntityDamageEvent.BACKEND.register(event -> {
             if (event.getEntity() instanceof Player) {
                 if (event.getCause().getType() != DamageData.Type.VOID) {
-                    event.setCancelled(true);
+                    if (event.getCause().getType() == DamageData.Type.ENTITY_ATTACK) {
+                        event.setCause(DamageData.create(DamageData.Type.GENERIC));
+                    } else {
+                        event.setCancelled(true);
+                    }
                 }
             }
         });
