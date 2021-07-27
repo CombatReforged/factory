@@ -49,7 +49,6 @@ public abstract class ObjectMappings {
     public static final BiMap<ContainerMenuType, MenuType<?>> MENU_TYPES = HashBiMap.create();
 
     public static void initIndependent() {
-        setupDamageTypes();
         setupStatePropertyEnums();
         setupGameModes();
         setupEquipmentSlots();

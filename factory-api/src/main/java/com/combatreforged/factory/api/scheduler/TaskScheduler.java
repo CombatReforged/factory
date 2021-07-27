@@ -4,14 +4,19 @@ import com.combatreforged.factory.api.exception.TaskException;
 import com.combatreforged.factory.api.world.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TaskScheduler {
+    private boolean ticking;
     private final Map<TaskPointer<? extends Task>, Task> tasks;
+    private final List<TaskPointer<? extends Task>> cleanup;
 
     private TaskScheduler() {
         tasks = new HashMap<>();
+        cleanup = new ArrayList<>();
     }
 
     public static Pair<TaskScheduler, TickFunction> create() {
@@ -37,7 +42,11 @@ public class TaskScheduler {
     }
 
     public <T extends Task> void cancelTask(TaskPointer<T> task) {
-        this.tasks.remove(task);
+        if (this.ticking) {
+            this.cleanup.add(task);
+        } else {
+            this.tasks.remove(task);
+        }
         task.deleteReference();
     }
 
@@ -47,12 +56,20 @@ public class TaskScheduler {
     }
 
     private void tick() {
+        this.ticking = true;
         for (Task task : tasks.values()) {
             try {
-                task.tick();
+                if (task.isActive()) {
+                    task.tick();
+                }
             } catch (Exception e) {
                 throw new TaskException();
             }
+        }
+        this.ticking = false;
+
+        for (TaskPointer<? extends Task> taskPointer : this.cleanup) {
+            this.tasks.remove(taskPointer);
         }
     }
 }

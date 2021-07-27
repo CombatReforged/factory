@@ -3,6 +3,7 @@ package net.rizecookey.factorytest;
 import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
+import com.combatreforged.factory.api.event.entity.LivingEntityDamageEvent;
 import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
 import com.combatreforged.factory.api.event.server.tick.ServerEndTickEvent;
 import com.combatreforged.factory.api.event.server.tick.ServerStartTickEvent;
@@ -13,6 +14,7 @@ import com.combatreforged.factory.api.world.Weather;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.block.Block;
 import com.combatreforged.factory.api.world.block.BlockEntity;
+import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.equipment.ArmorSlot;
@@ -53,6 +55,14 @@ public class TestPlugin implements FactoryPlugin {
 
         ServerEndTickEvent.BACKEND.register(event -> event.getServer().getPlayers()
                 .forEach(player -> player.sendActionBarMessage(Component.text("Tick time: " + (System.currentTimeMillis() - tickStartTime) + "ms").color(NamedTextColor.GRAY))));
+
+        LivingEntityDamageEvent.BACKEND.register(event -> {
+            if (event.getEntity() instanceof Player) {
+                if (event.getCause().getType() != DamageData.Type.VOID) {
+                    event.setCancelled(true);
+                }
+            }
+        });
 
         PlayerJoinEvent.BACKEND.register(event -> {
             api.getScheduler().schedule(() -> villagerSoundTask.cancel(), 320);

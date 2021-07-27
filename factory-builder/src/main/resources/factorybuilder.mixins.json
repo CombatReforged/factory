@@ -24,6 +24,7 @@
     "world.effect.MobEffectsMixin",
     "world.entity.EntityMixin",
     "world.entity.EntityTypeMixin",
+    "world.entity.LivingEntityMixin",
     "world.entity.player.InventoryAccessor",
     "world.entity.player.InventoryMixin",
     "world.entity.vehicle.AbstractMinecartContainerMixin",
