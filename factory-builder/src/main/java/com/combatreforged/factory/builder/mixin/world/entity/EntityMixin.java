@@ -2,7 +2,6 @@ package com.combatreforged.factory.builder.mixin.world.entity;
 
 import com.combatreforged.factory.builder.extension.world.entity.EntityExtension;
 import com.combatreforged.factory.builder.extension.wrap.ChangeableWrap;
-import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedAgeable;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedLivingEntity;

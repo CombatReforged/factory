@@ -27,6 +27,7 @@
     "world.entity.LivingEntityMixin",
     "world.entity.player.InventoryAccessor",
     "world.entity.player.InventoryMixin",
+    "world.entity.player.PlayerMixin",
     "world.entity.vehicle.AbstractMinecartContainerMixin",
     "world.food.FoodDataMixin",
     "world.inventory.AbstractContainerMenuAccessor",

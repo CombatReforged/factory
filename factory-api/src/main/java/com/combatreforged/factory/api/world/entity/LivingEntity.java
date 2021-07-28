@@ -15,6 +15,8 @@ public interface LivingEntity extends Entity {
 
     void setHealth(float health);
 
+    boolean isDead();
+
     int getInvulnerabilityTime();
 
     void setInvulnerabilityTime(int ticks);

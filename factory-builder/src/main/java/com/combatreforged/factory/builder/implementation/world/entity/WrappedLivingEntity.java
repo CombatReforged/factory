@@ -51,6 +51,11 @@ public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
     }
 
     @Override
+    public boolean isDead() {
+        return wrappedLiving.isDeadOrDying();
+    }
+
+    @Override
     public int getInvulnerabilityTime() {
         return wrappedLiving.invulnerableTime;
     }

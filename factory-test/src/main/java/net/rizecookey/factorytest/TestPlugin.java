@@ -4,6 +4,7 @@ import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.combatreforged.factory.api.event.entity.LivingEntityDamageEvent;
+import com.combatreforged.factory.api.event.entity.LivingEntityDeathEvent;
 import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
 import com.combatreforged.factory.api.event.server.tick.ServerEndTickEvent;
 import com.combatreforged.factory.api.event.server.tick.ServerStartTickEvent;
@@ -49,7 +50,7 @@ public class TestPlugin implements FactoryPlugin {
 
         TaskScheduler scheduler = api.getScheduler();
         villagerSoundTask = scheduler.scheduleRepeating(() -> server.getPlayers().forEach(player ->
-                    player.runCommand("playsound minecraft:entity.villager.ambient master @s", 4, false)), 0, 40);
+                player.runCommand("playsound minecraft:entity.villager.ambient master @s", 4, false)), 0, 40);
 
         ServerStartTickEvent.BACKEND.register(event -> this.tickStartTime = System.currentTimeMillis());
 
@@ -57,16 +58,28 @@ public class TestPlugin implements FactoryPlugin {
                 .forEach(player -> player.sendActionBarMessage(Component.text("Tick time: " + (System.currentTimeMillis() - tickStartTime) + "ms").color(NamedTextColor.GRAY))));
 
         LivingEntityDamageEvent.BACKEND.register(event -> {
-            if (event.getEntity() instanceof Player) {
-                if (event.getCause().getType() != DamageData.Type.VOID) {
-                    if (event.getCause().getType() == DamageData.Type.ENTITY_ATTACK) {
-                        event.setCause(DamageData.create(DamageData.Type.GENERIC));
-                    } else {
-                        event.setCancelled(true);
-                    }
+            DamageData cause = event.getCause();
+            if (cause.getType() != DamageData.Type.VOID) {
+                if (cause.getType() == DamageData.Type.ENTITY_ATTACK) {
+                    event.setCause(DamageData.create(DamageData.Type.GENERIC));
+                } else {
+                    event.setCancelled(true);
                 }
             }
-        });
+        }, event -> event.getEntity() instanceof Player);
+
+        LivingEntityDeathEvent.BACKEND.register(event -> event.setDropLoot(false));
+        LivingEntityDeathEvent.BACKEND.register(event -> {
+            final Player player = (Player) event.getEntity();
+            event.setDropExperience(false);
+            event.setDropEquipment(false);
+            scheduler.schedule(() -> {
+                if (player.isDead()) {
+                    player.respawn();
+                    System.out.println("Respawning...");
+                }
+            }, 15);
+        }, event -> event.getEntity() instanceof Player);
 
         PlayerJoinEvent.BACKEND.register(event -> {
             api.getScheduler().schedule(() -> villagerSoundTask.cancel(), 320);
