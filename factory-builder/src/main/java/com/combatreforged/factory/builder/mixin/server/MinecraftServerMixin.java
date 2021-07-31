@@ -1,8 +1,7 @@
 package com.combatreforged.factory.builder.mixin.server;
 
 import com.combatreforged.factory.api.FactoryServer;
-import com.combatreforged.factory.api.event.server.tick.ServerEndTickEvent;
-import com.combatreforged.factory.api.event.server.tick.ServerStartTickEvent;
+import com.combatreforged.factory.api.event.server.tick.ServerTickEvent;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -15,6 +14,7 @@ import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 import net.minecraft.world.SnooperPopulator;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -47,6 +47,7 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
         cir.setReturnValue(string);
     }
 
+    @Unique private ServerTickEvent tickEvent;
     @Inject(method = "tickServer",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/server/MinecraftServer;tickChildren(Ljava/util/function/BooleanSupplier;)V",
@@ -55,7 +56,8 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
     public void callServerStartTickEvent(BooleanSupplier booleanSupplier, CallbackInfo ci) {
         if (this.isDedicatedServer()) {
             FactoryServer server = Wrapped.wrap(this, WrappedFactoryServer.class);
-            ServerStartTickEvent.BACKEND.invoke(new ServerStartTickEvent(server, this.tickCount));
+            this.tickEvent = new ServerTickEvent(server, this.tickCount);
+            ServerTickEvent.BACKEND.invoke(tickEvent);
         }
     }
 
@@ -66,8 +68,8 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
     )
     public void callServerEndTickEvent(BooleanSupplier booleanSupplier, CallbackInfo ci) {
         if (this.isDedicatedServer()) {
-            WrappedFactoryServer server = Wrapped.wrap(this, WrappedFactoryServer.class);
-            ServerEndTickEvent.BACKEND.invoke(new ServerEndTickEvent(server, this.tickCount));
+            ServerTickEvent.BACKEND.invokeEndFunctions(tickEvent);
+            tickEvent = null;
         }
     }
 }

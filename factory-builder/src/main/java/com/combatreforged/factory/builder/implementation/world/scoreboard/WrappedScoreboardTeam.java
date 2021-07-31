@@ -18,8 +18,8 @@ import static com.combatreforged.factory.builder.implementation.util.ObjectMappi
 import static com.combatreforged.factory.builder.implementation.util.ObjectMappings.convertComponent;
 
 public class WrappedScoreboardTeam extends Wrapped<PlayerTeam> implements ScoreboardTeam {
-    private static final BiMap<VisibleFor, Team.Visibility> VISIBLE_MAP = HashBiMap.create();
-    private static final BiMap<CollideWith, Team.CollisionRule> COLLIDE_MAP = HashBiMap.create();
+    public static final BiMap<VisibleFor, Team.Visibility> VISIBLE_MAP = HashBiMap.create();
+    public static final BiMap<CollideWith, Team.CollisionRule> COLLIDE_MAP = HashBiMap.create();
 
     static {
         VISIBLE_MAP.put(VisibleFor.EVERYONE, Team.Visibility.ALWAYS);

@@ -74,6 +74,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityEx
 
     @Inject(method = "hurt", at = @At("TAIL"))
     public void nullifyDamageEvent(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
+        LivingEntityDamageEvent.BACKEND.invokeEndFunctions(this.damageEvent);
         this.damageEvent = null;
     }
     //END: LivingEntityDamageEvent
@@ -130,6 +131,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityEx
 
     @Inject(method = "die", at = @At("TAIL"))
     public void nullifyEvent(DamageSource damageSource, CallbackInfo ci) {
+        LivingEntityDeathEvent.BACKEND.invokeEndFunctions(this.deathEvent);
         this.deathEvent = null;
     }
 

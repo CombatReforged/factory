@@ -1,21 +1,19 @@
 package com.combatreforged.factory.api.event.player;
 
 import com.combatreforged.factory.api.event.Cancellable;
-import com.combatreforged.factory.api.event.Event;
 import com.combatreforged.factory.api.event.EventBackend;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.util.Location;
 
-public class PlayerMoveEvent implements Event, Cancellable {
+public class PlayerMoveEvent extends PlayerEvent implements Cancellable {
     public static final EventBackend<PlayerMoveEvent> BACKEND = EventBackend.create(PlayerMoveEvent.class);
 
-    private final Player player;
     private final Location oldPosition;
     private Location newPosition;
     private boolean cancelled;
 
     public PlayerMoveEvent(Player player, Location oldPosition, Location newPosition, boolean cancelled) {
-        this.player = player;
+        super(player);
         this.oldPosition = oldPosition;
         this.newPosition = newPosition;
         this.cancelled = cancelled;
@@ -29,10 +27,6 @@ public class PlayerMoveEvent implements Event, Cancellable {
     @Override
     public boolean isCancelled() {
         return cancelled;
-    }
-
-    public Player getPlayer() {
-        return player;
     }
 
     public Location getOldPosition() {

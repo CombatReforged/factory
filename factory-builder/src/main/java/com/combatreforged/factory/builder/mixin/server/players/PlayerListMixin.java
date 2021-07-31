@@ -25,7 +25,6 @@ public abstract class PlayerListMixin {
 
     // BEGIN: JOIN EVENT
     Component joinMessage;
-
     @Redirect(method = "placeNewPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V", ordinal = 0))
     public void catchJoinMessage(PlayerList playerList, Component component, ChatType chatType, UUID uUID) {
         joinMessage = component;
@@ -33,14 +32,15 @@ public abstract class PlayerListMixin {
 
     @Inject(method = "placeNewPlayer", at = @At("TAIL"))
     public void callPlayerJoinEvent(Connection connection, ServerPlayer serverPlayer, CallbackInfo ci) {
-        PlayerJoinEvent event = new PlayerJoinEvent(Wrapped.wrap(serverPlayer, WrappedPlayer.class),
+        PlayerJoinEvent joinEvent = new PlayerJoinEvent(Wrapped.wrap(serverPlayer, WrappedPlayer.class),
                 ObjectMappings.convertComponent(joinMessage));
-        PlayerJoinEvent.BACKEND.invoke(event);
+        PlayerJoinEvent.BACKEND.invoke(joinEvent);
 
-        if (event.getJoinMessage() != null) {
-            this.broadcastMessage(ObjectMappings.convertComponent(event.getJoinMessage()), ChatType.SYSTEM, Util.NIL_UUID);
+        if (joinEvent.getJoinMessage() != null) {
+            this.broadcastMessage(ObjectMappings.convertComponent(joinEvent.getJoinMessage()), ChatType.SYSTEM, Util.NIL_UUID);
         }
-    }
 
+        PlayerJoinEvent.BACKEND.invokeEndFunctions(joinEvent);
+    }
     // END: JOIN EVENT
 }

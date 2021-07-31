@@ -72,6 +72,16 @@ public class EventBackend<T extends Event> {
         }
     }
 
+    public void invokeEndFunctions(T event) {
+        for (Runnable runnable : event.getAfterEventFunctions()) {
+            try {
+                runnable.run();
+            } catch (Exception e) {
+                LOGGER.error("An error occured while executing after event functions for event " + event.getClass().getSimpleName() + " in runnable " + runnable.toString() + ":", e);
+            }
+        }
+    }
+
     public static <T extends Event> EventBackend<T> create(Class<T> eventClass) {
         return new EventBackend<>();
     }

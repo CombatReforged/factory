@@ -2,7 +2,7 @@ package com.combatreforged.factory.api;
 
 import com.combatreforged.factory.api.builder.Builder;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
-import com.combatreforged.factory.api.event.server.tick.ServerEndTickEvent;
+import com.combatreforged.factory.api.event.server.tick.ServerTickEvent;
 import com.combatreforged.factory.api.exception.FactoryPluginException;
 import com.combatreforged.factory.api.scheduler.TaskScheduler;
 import com.combatreforged.factory.api.scheduler.TickFunction;
@@ -30,7 +30,7 @@ public class FactoryAPI {
         this.scheduler = sched.a();
         this.tickFunction = sched.b();
 
-        ServerEndTickEvent.BACKEND.register(event -> tickFunction.tick());
+        ServerTickEvent.BACKEND.register(event -> event.runAfterwards(tickFunction::tick));
 
         INSTANCE = this;
     }

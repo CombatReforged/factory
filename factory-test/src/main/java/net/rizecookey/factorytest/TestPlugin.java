@@ -5,9 +5,9 @@ import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.combatreforged.factory.api.event.entity.LivingEntityDamageEvent;
 import com.combatreforged.factory.api.event.entity.LivingEntityDeathEvent;
+import com.combatreforged.factory.api.event.player.PlayerDeathEvent;
 import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
-import com.combatreforged.factory.api.event.server.tick.ServerEndTickEvent;
-import com.combatreforged.factory.api.event.server.tick.ServerStartTickEvent;
+import com.combatreforged.factory.api.event.server.tick.ServerTickEvent;
 import com.combatreforged.factory.api.scheduler.ScheduledRepeatingTask;
 import com.combatreforged.factory.api.scheduler.TaskPointer;
 import com.combatreforged.factory.api.scheduler.TaskScheduler;
@@ -52,10 +52,12 @@ public class TestPlugin implements FactoryPlugin {
         villagerSoundTask = scheduler.scheduleRepeating(() -> server.getPlayers().forEach(player ->
                 player.runCommand("playsound minecraft:entity.villager.ambient master @s", 4, false)), 0, 40);
 
-        ServerStartTickEvent.BACKEND.register(event -> this.tickStartTime = System.currentTimeMillis());
+        ServerTickEvent.BACKEND.register(event -> {
+            this.tickStartTime = System.currentTimeMillis();
 
-        ServerEndTickEvent.BACKEND.register(event -> event.getServer().getPlayers()
-                .forEach(player -> player.sendActionBarMessage(Component.text("Tick time: " + (System.currentTimeMillis() - tickStartTime) + "ms").color(NamedTextColor.GRAY))));
+            event.runAfterwards(() -> event.getServer().getPlayers()
+                    .forEach(player -> player.sendActionBarMessage(Component.text("Tick time: " + (System.currentTimeMillis() - tickStartTime) + "ms").color(NamedTextColor.GRAY))));
+        });
 
         LivingEntityDamageEvent.BACKEND.register(event -> {
             DamageData cause = event.getCause();
@@ -69,17 +71,19 @@ public class TestPlugin implements FactoryPlugin {
         }, event -> event.getEntity() instanceof Player);
 
         LivingEntityDeathEvent.BACKEND.register(event -> event.setDropLoot(false));
-        LivingEntityDeathEvent.BACKEND.register(event -> {
-            final Player player = (Player) event.getEntity();
+        PlayerDeathEvent.BACKEND.register(event -> {
+            final Player player = event.getPlayer();
             event.setDropExperience(false);
             event.setDropEquipment(false);
+            event.setDeathMessage(player.getName().append(Component.text(" took the L.").color(NamedTextColor.GRAY)));
+            event.setVisibleFor(ScoreboardTeam.VisibleFor.NO_ONE);
             scheduler.schedule(() -> {
                 if (player.isDead()) {
                     player.respawn();
                     System.out.println("Respawning...");
                 }
             }, 15);
-        }, event -> event.getEntity() instanceof Player);
+        });
 
         PlayerJoinEvent.BACKEND.register(event -> {
             api.getScheduler().schedule(() -> villagerSoundTask.cancel(), 320);

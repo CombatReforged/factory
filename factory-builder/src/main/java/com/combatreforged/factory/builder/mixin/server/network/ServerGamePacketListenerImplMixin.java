@@ -16,6 +16,7 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.server.players.PlayerList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -35,21 +36,28 @@ public abstract class ServerGamePacketListenerImplMixin {
     @Shadow public abstract void teleport(double d, double e, double f, float g, float h);
 
     // BEGIN: DISCONNECT EVENT
+    @Unique private PlayerDisconnectEvent disconnectEvent;
     @Redirect(method = "onDisconnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     public void callPlayerDisconnectEvent(PlayerList playerList, Component component, ChatType chatType, UUID uUID, Component component2) {
-        PlayerDisconnectEvent event = new PlayerDisconnectEvent(Wrapped.wrap(this.player, WrappedPlayer.class),
+        this.disconnectEvent = new PlayerDisconnectEvent(Wrapped.wrap(this.player, WrappedPlayer.class),
                 ObjectMappings.convertComponent(component),
                 ObjectMappings.convertComponent(component2));
-        PlayerDisconnectEvent.BACKEND.invoke(event);
+        PlayerDisconnectEvent.BACKEND.invoke(disconnectEvent);
 
-        if (event.getLeaveMessage() != null) {
-            playerList.broadcastMessage(ObjectMappings.convertComponent(event.getDisconnectReason()), ChatType.SYSTEM, Util.NIL_UUID);
+        if (disconnectEvent.getLeaveMessage() != null) {
+            playerList.broadcastMessage(ObjectMappings.convertComponent(disconnectEvent.getDisconnectReason()), ChatType.SYSTEM, Util.NIL_UUID);
         }
+    }
+
+    @Inject(method = "onDisconnect", at = @At("TAIL"))
+    public void nullifyDisconnectEvent(Component component, CallbackInfo ci) {
+        PlayerDisconnectEvent.BACKEND.invokeEndFunctions(this.disconnectEvent);
+        this.disconnectEvent = null;
     }
     // END: DISCONNECT EVENT
 
     // BEGIN: MOVE EVENT
-
+    @Unique private PlayerMoveEvent moveEvent;
     boolean inject = true;
     Location oldLocation;
     @Inject(method = "handleMovePlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V", shift = At.Shift.AFTER))
@@ -78,21 +86,29 @@ public abstract class ServerGamePacketListenerImplMixin {
 
             oldLocation = player.getLocation().copy();
 
-            PlayerMoveEvent event = new PlayerMoveEvent(player, oldLocation, newLocation.copy(), false);
-            PlayerMoveEvent.BACKEND.invoke(event);
+            this.moveEvent = new PlayerMoveEvent(player, oldLocation, newLocation.copy(), false);
+            PlayerMoveEvent.BACKEND.invoke(moveEvent);
 
-            if (event.isCancelled()) {
+            if (moveEvent.isCancelled()) {
                 inject = false;
                 player.teleport(oldLocation);
             }
-            else if (!event.getNewPosition().equals(newLocation)) {
+            else if (!moveEvent.getNewPosition().equals(newLocation)) {
                 inject = false;
-                Location eventLocation = event.getNewPosition();
+                Location eventLocation = moveEvent.getNewPosition();
                 this.teleport(eventLocation.getX(), eventLocation.getY(), eventLocation.getZ(), eventLocation.getYaw(), eventLocation.getPitch());
             }
         }
         else {
             inject = true;
+        }
+    }
+
+    @Inject(method = "handleMovePlayer", at = @At("TAIL"))
+    public void nullifyMoveEvent(ServerboundMovePlayerPacket serverboundMovePlayerPacket, CallbackInfo ci) {
+        if (inject && moveEvent != null) {
+            PlayerMoveEvent.BACKEND.invokeEndFunctions(moveEvent);
+            this.moveEvent = null;
         }
     }
     
