@@ -1,7 +1,7 @@
 package com.combatreforged.factory.builder.mixin.server;
 
 import com.combatreforged.factory.api.FactoryServer;
-import com.combatreforged.factory.api.event.server.tick.ServerTickEvent;
+import com.combatreforged.factory.api.event.server.ServerTickEvent;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
 import net.fabricmc.loader.api.FabricLoader;

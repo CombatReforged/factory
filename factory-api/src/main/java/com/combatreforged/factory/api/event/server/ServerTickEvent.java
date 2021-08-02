@@ -1,4 +1,4 @@
-package com.combatreforged.factory.api.event.server.tick;
+package com.combatreforged.factory.api.event.server;
 
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.event.Event;
