@@ -1,7 +1,8 @@
 package com.combatreforged.factory.api.scheduler;
 
-import com.combatreforged.factory.api.exception.TaskException;
 import com.combatreforged.factory.api.world.util.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 public class TaskScheduler {
+    public static final Logger LOGGER = LogManager.getLogger("TaskScheduler");
+
     private boolean ticking;
     private final Map<TaskPointer<? extends Task>, Task> tasks;
     private final List<TaskPointer<? extends Task>> cleanup;
@@ -63,7 +66,7 @@ public class TaskScheduler {
                     task.tick();
                 }
             } catch (Exception e) {
-                throw new TaskException();
+                LOGGER.error("An error occurred while executing task " + task.toString() + ": ", e);
             }
         }
         this.ticking = false;

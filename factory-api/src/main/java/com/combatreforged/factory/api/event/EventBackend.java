@@ -67,7 +67,7 @@ public class EventBackend<T extends Event> {
         for (Listener<T> listener : listeners) {
             try { listener.onEvent(event); }
             catch (Exception e) {
-                LOGGER.error("An error occured while executing event " + event.getClass().getSimpleName() + " in listener " + listener.toString() + ":", e);
+                LOGGER.error("An error occurred while executing event " + event.getClass().getSimpleName() + " in listener " + listener.toString() + ": ", e);
             }
         }
     }
@@ -77,7 +77,7 @@ public class EventBackend<T extends Event> {
             try {
                 runnable.run();
             } catch (Exception e) {
-                LOGGER.error("An error occured while executing after event functions for event " + event.getClass().getSimpleName() + " in runnable " + runnable.toString() + ":", e);
+                LOGGER.error("An error occurred while executing after event functions for event " + event.getClass().getSimpleName() + " in runnable " + runnable.toString() + ": ", e);
             }
         }
     }

@@ -7,10 +7,12 @@ import com.combatreforged.factory.api.event.entity.LivingEntityDamageEvent;
 import com.combatreforged.factory.api.event.entity.LivingEntityDeathEvent;
 import com.combatreforged.factory.api.event.player.PlayerDeathEvent;
 import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
+import com.combatreforged.factory.api.event.player.PlayerRespawnEvent;
 import com.combatreforged.factory.api.event.server.tick.ServerTickEvent;
 import com.combatreforged.factory.api.scheduler.ScheduledRepeatingTask;
 import com.combatreforged.factory.api.scheduler.TaskPointer;
 import com.combatreforged.factory.api.scheduler.TaskScheduler;
+import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.Weather;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.block.Block;
@@ -180,6 +182,11 @@ public class TestPlugin implements FactoryPlugin {
             team.add(player.getRawName());
 
             player.setScoreboard(scoreboard);
+        });
+
+        PlayerRespawnEvent.BACKEND.register(event -> {
+            event.setSpawnpointForced(true);
+            event.setSpawnpoint(new Location(-13, 76, 12, server.getWorld(new Identifier("minecraft", "the_nether"))));
         });
     }
 }
