@@ -22,7 +22,7 @@ public interface DamageData {
         STARVING, CACTUS, FALLING, CRASHING, VOID, GENERIC, MAGIC, WITHERING,
         FALLING_ANVIL, FALLING_BLOCK, DRAGON_BREATH, DRY_OUT, SWEET_BERRY_BUSH,
         EXPLOSION, ENTITY_ATTACK, PROJECTILE
-    } //TODO MAKE WORK
+    }
 
     static DamageData create(Type type, Entity cause, boolean isIndirect) {
         return Builder.getInstance().createDamageData(type, cause, isIndirect);
