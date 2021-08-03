@@ -5,6 +5,7 @@ import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.combatreforged.factory.api.event.entity.LivingEntityDamageEvent;
 import com.combatreforged.factory.api.event.entity.LivingEntityDeathEvent;
+import com.combatreforged.factory.api.event.player.PlayerBreakBlockEvent;
 import com.combatreforged.factory.api.event.player.PlayerDeathEvent;
 import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
 import com.combatreforged.factory.api.event.player.PlayerRespawnEvent;
@@ -187,6 +188,14 @@ public class TestPlugin implements FactoryPlugin {
         PlayerRespawnEvent.BACKEND.register(event -> {
             event.setSpawnpointForced(true);
             event.setSpawnpoint(new Location(-13, 76, 12, server.getWorld(new Identifier("minecraft", "the_nether"))));
+        });
+
+        PlayerBreakBlockEvent.BACKEND.register(event -> {
+            if (event.getBlock().getType() == Minecraft.Block.GRASS || event.getBlock().getType() == Minecraft.Block.GRASS_BLOCK) {
+                event.setCancelled(true);
+            } else {
+                event.setDrop(false);
+            }
         });
     }
 }

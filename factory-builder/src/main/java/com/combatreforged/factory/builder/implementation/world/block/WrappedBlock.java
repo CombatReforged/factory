@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.List;
+import java.util.Objects;
 
 public class WrappedBlock implements Block {
     private final Location location;
@@ -89,6 +90,19 @@ public class WrappedBlock implements Block {
 
         BlockState state = state().setValue(mcProperty, mcValue);
         this.update(state);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof WrappedBlock)) return false;
+        WrappedBlock that = (WrappedBlock) o;
+        return location.equals(that.location) && mcLevel.equals(that.mcLevel);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(location, mcLevel);
     }
 
     public void update(BlockState state) {
