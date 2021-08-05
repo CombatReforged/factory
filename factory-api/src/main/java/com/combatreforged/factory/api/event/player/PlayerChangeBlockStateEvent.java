@@ -38,11 +38,7 @@ public class PlayerChangeBlockStateEvent extends PlayerEvent implements Cancella
     }
 
     public void setNewBlockState(BlockState newBlockState) {
-        if (newBlockState.getType() == getCurrentBlockState().getType()) {
-            this.newBlockState = newBlockState;
-        } else {
-            throw new IllegalArgumentException("New block state must be of the same block type");
-        }
+        this.newBlockState = newBlockState;
     }
 
     public Action getAction() {
@@ -60,6 +56,6 @@ public class PlayerChangeBlockStateEvent extends PlayerEvent implements Cancella
     }
 
     public enum Action {
-        OPEN_CLOSE, STRIP_BLOCK, FLIP_LEVER, ACTIVATE_BUTTON, TRAMPLE_ON_FARMLAND //TODO those aint all of them are they
+        OPEN_CLOSE, STRIP_BLOCK, PULL_LEVER, PRESS_BUTTON, TRAMPLE_ON_FARMLAND //TODO those aint all of them are they
     }
 }
