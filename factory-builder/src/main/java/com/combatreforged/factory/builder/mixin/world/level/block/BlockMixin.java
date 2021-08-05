@@ -20,7 +20,7 @@ public abstract class BlockMixin implements BlockExtension {
     @Redirect(method = "*", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/GameRules;getBoolean(Lnet/minecraft/world/level/GameRules$Key;)Z"))
     public boolean shouldDropBlock(GameRules gameRules, GameRules.Key<GameRules.BooleanValue> key) {
         if (key.equals(GameRules.RULE_DOBLOCKDROPS) && currentBreakBlockEvent != null) {
-            return currentBreakBlockEvent.isDrop();
+            return currentBreakBlockEvent.isDropBlock();
         } else {
             return gameRules.getBoolean(key);
         }

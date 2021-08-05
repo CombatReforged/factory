@@ -3,6 +3,9 @@ package com.combatreforged.factory.api.builder;
 import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.util.ImplementationUtils;
 import com.combatreforged.factory.api.world.World;
+import com.combatreforged.factory.api.world.block.Block;
+import com.combatreforged.factory.api.world.block.BlockState;
+import com.combatreforged.factory.api.world.block.BlockType;
 import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
@@ -15,6 +18,7 @@ import com.combatreforged.factory.api.world.nbt.NBTList;
 import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
+import com.combatreforged.factory.api.world.util.Location;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,6 +58,9 @@ public interface Builder {
     ItemStack createItemStack(ItemType itemType, int count, int damage, NBTObject nbt);
 
     Scoreboard createScoreboard();
+
+    BlockState createBlockState(BlockType type, Location location);
+    BlockState blockStateOfBlock(Block block);
 
     static Builder getInstance() {
         return FactoryAPI.getInstance().getBuilder();

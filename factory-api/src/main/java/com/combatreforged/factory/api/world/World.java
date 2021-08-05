@@ -3,6 +3,7 @@ package com.combatreforged.factory.api.world;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.world.block.Block;
 import com.combatreforged.factory.api.world.block.BlockEntity;
+import com.combatreforged.factory.api.world.block.BlockState;
 import com.combatreforged.factory.api.world.border.WorldBorder;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.player.GameModeType;
@@ -15,6 +16,7 @@ import java.util.function.Predicate;
 
 public interface World {
     Block getBlockAt(Location location);
+    void setBlockAt(Location location, BlockState state);
     default boolean isBlockEntity(Location location) {
         return getBlockEntity(location) != null;
     }

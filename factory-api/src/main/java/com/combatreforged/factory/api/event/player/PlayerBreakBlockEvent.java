@@ -17,15 +17,15 @@ public class PlayerBreakBlockEvent extends PlayerEvent implements Cancellable {
     private final Location location;
     private final World world;
     private final ItemStack miningStack;
-    private boolean drop;
+    private boolean dropBlock;
 
-    public PlayerBreakBlockEvent(Player player, Block block, Location location, World world, ItemStack miningStack, boolean drop) {
+    public PlayerBreakBlockEvent(Player player, Block block, Location location, World world, ItemStack miningStack, boolean dropBlock) {
         super(player);
         this.block = block;
         this.location = location;
         this.world = world;
         this.miningStack = miningStack;
-        this.drop = drop;
+        this.dropBlock = dropBlock;
     }
 
     public ItemStack getMiningStack() {
@@ -44,12 +44,12 @@ public class PlayerBreakBlockEvent extends PlayerEvent implements Cancellable {
         return world;
     }
 
-    public boolean isDrop() {
-        return drop;
+    public boolean isDropBlock() {
+        return dropBlock;
     }
 
-    public void setDrop(boolean drop) {
-        this.drop = drop;
+    public void setDropBlock(boolean dropBlock) {
+        this.dropBlock = dropBlock;
     }
 
     @Override

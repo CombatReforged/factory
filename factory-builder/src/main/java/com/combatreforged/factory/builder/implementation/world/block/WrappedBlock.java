@@ -109,11 +109,11 @@ public class WrappedBlock implements Block {
         mcLevel.setBlockAndUpdate(blockPos(), state);
     }
 
-    private BlockPos blockPos() {
+    public BlockPos blockPos() {
         return new BlockPos(location.getX(), location.getY(), location.getZ());
     }
 
-    private BlockState state() {
+    public BlockState state() {
         return mcLevel.getBlockState(blockPos());
     }
 }

@@ -3,6 +3,9 @@ package com.combatreforged.factory.builder.implementation.builder;
 import com.combatreforged.factory.api.builder.Builder;
 import com.combatreforged.factory.api.util.ImplementationUtils;
 import com.combatreforged.factory.api.world.World;
+import com.combatreforged.factory.api.world.block.Block;
+import com.combatreforged.factory.api.world.block.BlockState;
+import com.combatreforged.factory.api.world.block.BlockType;
 import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
@@ -16,11 +19,13 @@ import com.combatreforged.factory.api.world.nbt.NBTList;
 import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
+import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.builder.exception.NBTParsingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ImplementationUtilsImpl;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
+import com.combatreforged.factory.builder.implementation.world.block.WrappedBlockState;
 import com.combatreforged.factory.builder.implementation.world.damage.WrappedDamageData;
 import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
@@ -31,6 +36,7 @@ import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTVal
 import com.combatreforged.factory.builder.implementation.world.scoreboard.WrappedScoreboard;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
@@ -38,6 +44,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.Logger;
 
@@ -220,6 +227,19 @@ public class BuilderImpl implements Builder {
     @Override
     public Scoreboard createScoreboard() {
         return Wrapped.wrap(new ServerScoreboard(server), WrappedScoreboard.class);
+    }
+
+    @Override
+    public BlockState createBlockState(BlockType type, Location location) {
+        return new WrappedBlockState(location, ObjectMappings.BLOCKS.get(type).defaultBlockState());
+    }
+
+    @Override
+    public BlockState blockStateOfBlock(Block block) {
+        Location loc = block.getLocation();
+        BlockPos pos = new BlockPos(loc.getX(), loc.getY(), loc.getZ());
+        Level level = ((WrappedWorld) loc.getWorld()).unwrap();
+        return new WrappedBlockState(block.getLocation(), level.getBlockState(pos));
     }
 
     private NBTValue fromTag(Tag tag) {

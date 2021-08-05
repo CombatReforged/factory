@@ -317,5 +317,4 @@ public interface Block {
             NONE, SMALL, LARGE
         }
     }
-
 }

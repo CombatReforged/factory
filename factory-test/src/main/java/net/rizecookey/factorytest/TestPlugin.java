@@ -5,10 +5,7 @@ import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.combatreforged.factory.api.event.entity.LivingEntityDamageEvent;
 import com.combatreforged.factory.api.event.entity.LivingEntityDeathEvent;
-import com.combatreforged.factory.api.event.player.PlayerBreakBlockEvent;
-import com.combatreforged.factory.api.event.player.PlayerDeathEvent;
-import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
-import com.combatreforged.factory.api.event.player.PlayerRespawnEvent;
+import com.combatreforged.factory.api.event.player.*;
 import com.combatreforged.factory.api.event.server.ServerTickEvent;
 import com.combatreforged.factory.api.scheduler.ScheduledRepeatingTask;
 import com.combatreforged.factory.api.scheduler.TaskPointer;
@@ -18,6 +15,7 @@ import com.combatreforged.factory.api.world.Weather;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.block.Block;
 import com.combatreforged.factory.api.world.block.BlockEntity;
+import com.combatreforged.factory.api.world.block.BlockState;
 import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
 import com.combatreforged.factory.api.world.entity.Entity;
@@ -194,7 +192,16 @@ public class TestPlugin implements FactoryPlugin {
             if (event.getBlock().getType() == Minecraft.Block.GRASS || event.getBlock().getType() == Minecraft.Block.GRASS_BLOCK) {
                 event.setCancelled(true);
             } else {
-                event.setDrop(false);
+                event.setDropBlock(false);
+            }
+        });
+
+        PlayerChangeBlockStateEvent.BACKEND.register(event -> {
+            if (Math.random() <= 0.1) {
+                Location loc = event.getLocation();
+                event.runAfterwards(() -> loc.getWorld().setBlockAt(loc, BlockState.create(Minecraft.Block.CHEST, loc)));
+            } else {
+                event.setCancelled(true);
             }
         });
     }
