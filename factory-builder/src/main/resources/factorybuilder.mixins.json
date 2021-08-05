@@ -4,6 +4,7 @@
   "package": "com.combatreforged.factory.builder.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "commands.CommandsMixin",
     "nbt.CollectionTagMixin",
     "nbt.CompoundTagMixin",
     "nbt.ListTagMixin",

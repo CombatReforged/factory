@@ -4,9 +4,6 @@ import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.event.server.ServerTickEvent;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
@@ -20,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 @Mixin(MinecraftServer.class)
@@ -35,16 +31,7 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
 
     @Inject(method = "getServerModName", at = @At("RETURN"), cancellable = true)
     public void changeBrandName(CallbackInfoReturnable<String> cir) {
-        String string = cir.getReturnValue();
-        string += "+factory@factory-builder-";
-        Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("factory-builder");
-        if (modContainer.isPresent()) {
-            ModMetadata meta = modContainer.get().getMetadata();
-            string += meta.getVersion();
-        } else {
-            string += "unknown";
-        }
-        cir.setReturnValue(string);
+        cir.setReturnValue(cir.getReturnValue() + "+factory@factory-builder");
     }
 
     @Unique private ServerTickEvent tickEvent;

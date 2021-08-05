@@ -66,4 +66,8 @@ public class FactoryAPI {
     public TaskScheduler getScheduler() {
         return scheduler;
     }
+
+    public String getVersion() {
+        return "0.1.0";
+    }
 }
