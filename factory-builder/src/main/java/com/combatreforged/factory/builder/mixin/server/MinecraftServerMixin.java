@@ -31,7 +31,7 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
 
     @Inject(method = "getServerModName", at = @At("RETURN"), cancellable = true)
     public void changeBrandName(CallbackInfoReturnable<String> cir) {
-        cir.setReturnValue(cir.getReturnValue() + "+factory@factory-builder");
+        cir.setReturnValue(cir.getReturnValue() + "+factory-builder");
     }
 
     @Unique private ServerTickEvent tickEvent;

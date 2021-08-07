@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "factory",
+  "id": "factory-api",
   "name": "Factory API",
   "authors": ["rizecookey"],
   "version": "${version}"

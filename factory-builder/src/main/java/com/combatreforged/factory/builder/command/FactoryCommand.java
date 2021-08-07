@@ -15,10 +15,10 @@ public final class FactoryCommand {
                 .requires(commandSourceStack -> commandSourceStack.hasPermission(4))
                 .executes(context -> {
                     FabricLoader loader = FabricLoader.getInstance();
-                    assert loader.getModContainer("factory").isPresent() && loader.getModContainer("factory-builder").isPresent();
-                    String apiVersion = loader.getModContainer("factory").get().getMetadata().getVersion().toString();
+                    assert loader.getModContainer("factory-api").isPresent() && loader.getModContainer("factory-builder").isPresent();
+                    String apiVersion = loader.getModContainer("factory-api").get().getMetadata().getVersion().toString();
                     String builderVersion = loader.getModContainer("factory-builder").get().getMetadata().getVersion().toString();
-                    Component component = new TextComponent("This server is running factory-builder@" + builderVersion + " implementing factory@" + apiVersion + ".");
+                    Component component = new TextComponent("This server is running factory-builder@" + builderVersion + " implementing factory-api@" + apiVersion + ".");
                     context.getSource().sendSuccess(component, false);
                     return 0;
                 })

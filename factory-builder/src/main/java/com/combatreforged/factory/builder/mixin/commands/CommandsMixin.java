@@ -19,7 +19,7 @@ public abstract class CommandsMixin {
     @Inject(method = "<init>", at = @At("TAIL"))
     public void registerFactoryCommands(Commands.CommandSelection commandSelection, CallbackInfo ci) {
         FabricLoader loader = FabricLoader.getInstance();
-        if (commandSelection == Commands.CommandSelection.DEDICATED && loader.getModContainer("factory").isPresent() && loader.getModContainer("factory-builder").isPresent()) {
+        if (commandSelection == Commands.CommandSelection.DEDICATED && loader.getModContainer("factory-api").isPresent() && loader.getModContainer("factory-builder").isPresent()) {
             FactoryCommand.register(this.dispatcher);
         }
     }
