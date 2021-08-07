@@ -1,9 +1,9 @@
 package com.combatreforged.factory.api.world.entity;
 
 import com.combatreforged.factory.api.builder.Builder;
+import com.combatreforged.factory.api.command.CommandSender;
 import com.combatreforged.factory.api.exception.UnassignableTypeException;
 import com.combatreforged.factory.api.world.World;
-import com.combatreforged.factory.api.world.command.CommandSource;
 import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.api.world.util.Vector3D;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Set;
 
-public interface Entity extends CommandSource {
+public interface Entity extends CommandSender {
     int getEntityId();
 
     EntityType getEntityType();

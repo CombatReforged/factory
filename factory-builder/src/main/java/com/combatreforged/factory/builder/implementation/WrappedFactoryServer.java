@@ -5,10 +5,13 @@ import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import com.combatreforged.factory.builder.implementation.world.scoreboard.WrappedScoreboard;
 import com.google.common.collect.ImmutableList;
+import net.kyori.adventure.text.Component;
+import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -73,7 +76,17 @@ public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements Fa
     }
 
     @Override
+    public void sendMessage(Component message) {
+        wrapped.sendMessage(ObjectMappings.convertComponent(message), Util.NIL_UUID);
+    }
+
+    @Override
     public int getPermissionLevel() {
         return 4;
+    }
+
+    @Override
+    public FactoryServer getServer() {
+        return this;
     }
 }

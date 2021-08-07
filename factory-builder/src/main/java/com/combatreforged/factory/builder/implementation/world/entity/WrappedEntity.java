@@ -1,5 +1,6 @@
 package com.combatreforged.factory.builder.implementation.world.entity;
 
+import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.EntityType;
@@ -231,8 +232,17 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
     }
 
     @Override
+    public void sendMessage(Component message) {
+    }
+
+    @Override
     public int getPermissionLevel() {
         return ((EntityExtension) wrapped).invokeGetPermissionLevel();
+    }
+
+    @Override
+    public FactoryServer getServer() {
+        return this.getWorld().getServer();
     }
 
     @Override
