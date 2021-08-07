@@ -1,6 +1,6 @@
 package com.combatreforged.factory.builder.mixin.commands;
 
-import com.combatreforged.factory.builder.command.VersionCommand;
+import com.combatreforged.factory.builder.command.FactoryCommand;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
@@ -19,8 +19,8 @@ public abstract class CommandsMixin {
     @Inject(method = "<init>", at = @At("TAIL"))
     public void registerFactoryCommands(Commands.CommandSelection commandSelection, CallbackInfo ci) {
         FabricLoader loader = FabricLoader.getInstance();
-        if (commandSelection == Commands.CommandSelection.DEDICATED && loader.getModContainer("factory-builder").isPresent()) {
-            VersionCommand.register(this.dispatcher);
+        if (commandSelection == Commands.CommandSelection.DEDICATED && loader.getModContainer("factory").isPresent() && loader.getModContainer("factory-builder").isPresent()) {
+            FactoryCommand.register(this.dispatcher);
         }
     }
 }
