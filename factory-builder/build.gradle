@@ -21,6 +21,10 @@ dependencies {
 
 	implementation include(project(":factory-api"))
 	implementation(project(":factory-test"))
+
+	/*implementation "net.minecrell:terminalconsoleappender:1.2.0"
+	implementation 'org.jline:jline-terminal-jna:3.20.0'
+	implementation 'net.java.dev.jna:jna:5.8.0'*/ //TODO
 }
 
 minecraft {

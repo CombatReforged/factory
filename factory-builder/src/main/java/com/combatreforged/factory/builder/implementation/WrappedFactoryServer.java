@@ -1,10 +1,12 @@
 package com.combatreforged.factory.builder.implementation;
 
+import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
+import com.combatreforged.factory.builder.command.FactoryCommand;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
@@ -23,6 +25,8 @@ import java.util.*;
 public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements FactoryServer {
     public WrappedFactoryServer(DedicatedServer wrapped) {
         super(wrapped);
+
+        FactoryCommand.register(FactoryAPI.getInstance().getCommandDispatcher());
     }
 
     @Override

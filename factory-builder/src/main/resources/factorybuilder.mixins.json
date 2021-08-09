@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "commands.CommandsMixin",
+    "commands.CommandSourceStackAccessor",
     "nbt.CollectionTagMixin",
     "nbt.CompoundTagMixin",
     "nbt.ListTagMixin",
