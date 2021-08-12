@@ -2,31 +2,40 @@ package com.combatreforged.factory.api.event.player;
 
 import com.combatreforged.factory.api.event.Cancellable;
 import com.combatreforged.factory.api.event.EventBackend;
+import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.block.Block;
 import com.combatreforged.factory.api.world.block.BlockState;
+import com.combatreforged.factory.api.world.entity.equipment.HandSlot;
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.util.Location;
 
-public class PlayerChangeBlockStateEvent extends PlayerEvent implements Cancellable {
-    public static final EventBackend<PlayerChangeBlockStateEvent> BACKEND = EventBackend.create(PlayerChangeBlockStateEvent.class);
+public class PlayerPlaceBlockEvent extends PlayerEvent implements Cancellable {
+    public static final EventBackend<PlayerPlaceBlockEvent> BACKEND = EventBackend.create(PlayerPlaceBlockEvent.class);
 
     private boolean cancelled;
 
     private final Location location;
     private final Block currentBlockState;
     private BlockState newBlockState;
-    private final Action action;
+    private final ItemStack blockStack;
+    private final HandSlot placingHand;
 
-    public PlayerChangeBlockStateEvent(Player player, Location location, Block currentBlockState, BlockState newBlockState, Action action) {
+    public PlayerPlaceBlockEvent(Player player, Location location, Block currentBlockState, BlockState newBlockState, ItemStack blockStack, HandSlot placingHand) {
         super(player);
         this.location = location;
         this.currentBlockState = currentBlockState;
         this.newBlockState = newBlockState;
-        this.action = action;
+        this.blockStack = blockStack;
+        this.placingHand = placingHand;
     }
 
     public Location getLocation() {
         return location;
+    }
+
+    public World getWorld() {
+        return location.getWorld();
     }
 
     public Block getCurrentBlockState() {
@@ -41,8 +50,12 @@ public class PlayerChangeBlockStateEvent extends PlayerEvent implements Cancella
         this.newBlockState = newBlockState;
     }
 
-    public Action getAction() {
-        return action;
+    public ItemStack getBlockStack() {
+        return blockStack;
+    }
+
+    public HandSlot getPlacingHand() {
+        return placingHand;
     }
 
     @Override
@@ -53,9 +66,5 @@ public class PlayerChangeBlockStateEvent extends PlayerEvent implements Cancella
     @Override
     public boolean isCancelled() {
         return cancelled;
-    }
-
-    public enum Action {
-        OPEN_CLOSE, STRIP_BLOCK, PULL_LEVER, PRESS_BUTTON, TRAMPLE_ON_FARMLAND
     }
 }

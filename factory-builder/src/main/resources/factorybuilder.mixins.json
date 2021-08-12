@@ -51,6 +51,7 @@
     "world.inventory.SimpleContainerMixin",
     "world.inventory.StonecutterMenuMixin",
     "world.item.AxeItemMixin",
+    "world.item.BlockItemMixin",
     "world.item.EnchantmentsMixin",
     "world.item.ItemsMixin",
     "world.item.ItemStackAccessor",

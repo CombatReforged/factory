@@ -204,5 +204,16 @@ public class TestPlugin implements FactoryPlugin {
                 event.setCancelled(true);
             }
         });
+
+        PlayerPlaceBlockEvent.BACKEND.register(event -> {
+            if (event.getBlockStack().getItem() == Minecraft.Item.GRASS_BLOCK) {
+                event.setCancelled(true);
+            } else {
+                if (Math.random() <= 0.1) {
+                    Location loc = event.getLocation();
+                    event.setNewBlockState(BlockState.create(Minecraft.Block.CHEST, loc));
+                }
+            }
+        });
     }
 }

@@ -37,7 +37,7 @@ public abstract class ServerPlayerGameModeMixin {
         ItemStack miningStack = player.getEquipmentStack(HandSlot.MAIN_HAND);
         boolean drop = this.level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS);
 
-        this.breakBlockEvent = new PlayerBreakBlockEvent(player, block, location, location.getWorld(), miningStack, drop);
+        this.breakBlockEvent = new PlayerBreakBlockEvent(player, block, location, miningStack, drop);
         PlayerBreakBlockEvent.BACKEND.invoke(breakBlockEvent);
 
         if (breakBlockEvent.isCancelled()) {
