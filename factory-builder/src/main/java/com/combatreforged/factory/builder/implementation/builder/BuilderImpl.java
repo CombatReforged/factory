@@ -1,6 +1,9 @@
 package com.combatreforged.factory.builder.implementation.builder;
 
+import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.builder.Builder;
+import com.combatreforged.factory.api.command.CommandSender;
+import com.combatreforged.factory.api.command.CommandSourceInfo;
 import com.combatreforged.factory.api.util.ImplementationUtils;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.block.Block;
@@ -22,6 +25,7 @@ import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.builder.exception.NBTParsingException;
 import com.combatreforged.factory.builder.implementation.Wrapped;
+import com.combatreforged.factory.builder.implementation.command.CommandSourceInfoImpl;
 import com.combatreforged.factory.builder.implementation.util.ImplementationUtilsImpl;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
@@ -34,6 +38,7 @@ import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTLis
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTObject;
 import com.combatreforged.factory.builder.implementation.world.nbt.WrappedNBTValue;
 import com.combatreforged.factory.builder.implementation.world.scoreboard.WrappedScoreboard;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.minecraft.core.BlockPos;
@@ -47,8 +52,8 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -240,6 +245,16 @@ public class BuilderImpl implements Builder {
         BlockPos pos = new BlockPos(loc.getX(), loc.getY(), loc.getZ());
         Level level = ((WrappedWorld) loc.getWorld()).unwrap();
         return new WrappedBlockState(block.getLocation(), level.getBlockState(pos));
+    }
+
+    @Override
+    public CommandSourceInfo createCommandSourceInfo(CommandSender sender, @Nullable Entity executingEntity, Location location, FactoryServer server) {
+        return new CommandSourceInfoImpl(sender, executingEntity, location, server);
+    }
+
+    @Override
+    public CommandDispatcher<CommandSourceInfo> getCommandDispatcher() {
+        return new CommandDispatcher<>();
     }
 
     private NBTValue fromTag(Tag tag) {

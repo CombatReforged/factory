@@ -1,7 +1,7 @@
 package com.combatreforged.factory.builder.implementation;
 
-import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
+import com.combatreforged.factory.api.command.CommandSourceInfo;
 import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.player.Player;
@@ -12,6 +12,7 @@ import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import com.combatreforged.factory.builder.implementation.world.scoreboard.WrappedScoreboard;
 import com.google.common.collect.ImmutableList;
+import com.mojang.brigadier.CommandDispatcher;
 import net.kyori.adventure.text.Component;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
@@ -23,10 +24,14 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import java.util.*;
 
 public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements FactoryServer {
+    CommandDispatcher<CommandSourceInfo> commandDispatcher;
+
     public WrappedFactoryServer(DedicatedServer wrapped) {
         super(wrapped);
 
-        FactoryCommand.register(FactoryAPI.getInstance().getCommandDispatcher());
+        this.commandDispatcher = new CommandDispatcher<>();
+
+        FactoryCommand.register(this.getCommandDispatcher());
     }
 
     @Override
@@ -70,6 +75,11 @@ public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements Fa
     @Override
     public Scoreboard getServerScoreboard() {
         return Wrapped.wrap(wrapped.getScoreboard(), WrappedScoreboard.class);
+    }
+
+    @Override
+    public CommandDispatcher<CommandSourceInfo> getCommandDispatcher() {
+        return commandDispatcher;
     }
 
     @Override

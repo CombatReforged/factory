@@ -1,7 +1,6 @@
 package com.combatreforged.factory.api;
 
 import com.combatreforged.factory.api.builder.Builder;
-import com.combatreforged.factory.api.command.CommandSourceInfo;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.combatreforged.factory.api.event.server.ServerTickEvent;
 import com.combatreforged.factory.api.exception.FactoryPluginException;
@@ -9,7 +8,6 @@ import com.combatreforged.factory.api.scheduler.TaskScheduler;
 import com.combatreforged.factory.api.scheduler.TickFunction;
 import com.combatreforged.factory.api.util.ImplementationUtils;
 import com.combatreforged.factory.api.world.util.Pair;
-import com.mojang.brigadier.CommandDispatcher;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -23,7 +21,6 @@ public class FactoryAPI {
     private final FactoryServer server;
     private final TaskScheduler scheduler;
     private final TickFunction tickFunction;
-    private final CommandDispatcher<CommandSourceInfo> commandDispatcher;
 
     public FactoryAPI(FactoryServer server, Builder builder) {
         this.builder = builder;
@@ -32,8 +29,6 @@ public class FactoryAPI {
         Pair<TaskScheduler, TickFunction> sched = TaskScheduler.create();
         this.scheduler = sched.a();
         this.tickFunction = sched.b();
-
-        this.commandDispatcher = new CommandDispatcher<>();
 
         ServerTickEvent.BACKEND.register(event -> event.runAfterwards(tickFunction::tick));
 
@@ -70,9 +65,5 @@ public class FactoryAPI {
 
     public TaskScheduler getScheduler() {
         return scheduler;
-    }
-
-    public CommandDispatcher<CommandSourceInfo> getCommandDispatcher() {
-        return this.commandDispatcher;
     }
 }

@@ -6,44 +6,22 @@ import com.combatreforged.factory.api.world.util.Location;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Nullable;
 
-public class CommandSourceInfo {
-    private final CommandSender sender;
-    @Nullable private final Entity executingEntity;
-    private final Location location;
-    private final FactoryServer server;
+public interface CommandSourceInfo {
+    CommandSender getSender();
 
-    private CommandSourceInfo(CommandSender sender, @Nullable Entity executingEntity, Location location, FactoryServer server) {
-        this.sender = sender;
-        this.executingEntity = executingEntity;
-        this.location = location;
-        this.server = server;
-    }
+    @Nullable Entity getExecutingEntity();
 
-    public CommandSender getSender() {
-        return sender;
-    }
+    Location getLocation();
 
-    @Nullable public Entity getExecutingEntity() {
-        return executingEntity;
-    }
+    FactoryServer getServer();
 
-    public Location getLocation() {
-        return location;
-    }
+    void sendMessage(Component message);
 
-    public FactoryServer getServer() {
-        return server;
-    }
-
-    public void sendMessage(Component message) {
-        this.getSender().sendMessage(message);
-    }
-
-    public static Builder builder() {
+    static Builder builder() {
         return new Builder();
     }
 
-    public static class Builder {
+    class Builder {
         private CommandSender source;
         @Nullable private Entity executingEntity;
         private Location location;
@@ -72,7 +50,7 @@ public class CommandSourceInfo {
         }
 
         public CommandSourceInfo build() {
-            return new CommandSourceInfo(this.source, this.executingEntity, this.location, this.server);
+            return com.combatreforged.factory.api.builder.Builder.getInstance().createCommandSourceInfo(source, executingEntity, location, server);
         }
     }
 }

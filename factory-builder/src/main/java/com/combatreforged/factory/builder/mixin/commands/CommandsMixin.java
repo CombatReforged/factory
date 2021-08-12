@@ -30,10 +30,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class CommandsMixin {
     @Shadow @Final private CommandDispatcher<CommandSourceStack> dispatcher;
 
-    @Redirect(method = "performCommand", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/CommandDispatcher;execute(Lcom/mojang/brigadier/StringReader;Ljava/lang/Object;)I"))
+    @Redirect(method = "performCommand", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/CommandDispatcher;execute(Lcom/mojang/brigadier/StringReader;Ljava/lang/Object;)I", remap = false))
     public int enableAPICommands(CommandDispatcher<?> commandDispatcher, StringReader input, Object source, CommandSourceStack commandSourceStack, String string) throws CommandSyntaxException {
         if (commandDispatcher == this.dispatcher) {
-            CommandDispatcher<CommandSourceInfo> apiDispatcher = FactoryAPI.getInstance().getCommandDispatcher();
+            CommandDispatcher<CommandSourceInfo> apiDispatcher = FactoryAPI.getInstance().getServer().getCommandDispatcher();
             CommandSource source1 = ((CommandSourceStackAccessor) commandSourceStack).getSource();
             CommandSender sender = source1 instanceof MinecraftServer ?
                     Wrapped.wrap(source1, WrappedFactoryServer.class)
@@ -59,4 +59,6 @@ public abstract class CommandsMixin {
             return dispatcher.execute(input, (CommandSourceStack) source);
         }
     }
+
+    //TODO suggest commands on the client
 }
