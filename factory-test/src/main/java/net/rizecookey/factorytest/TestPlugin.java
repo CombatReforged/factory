@@ -2,6 +2,7 @@ package net.rizecookey.factorytest;
 
 import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
+import com.combatreforged.factory.api.command.CommandUtils;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.combatreforged.factory.api.event.entity.LivingEntityDamageEvent;
 import com.combatreforged.factory.api.event.entity.LivingEntityDeathEvent;
@@ -215,5 +216,10 @@ public class TestPlugin implements FactoryPlugin {
                 }
             }
         });
+
+        server.getCommandDispatcher().register(CommandUtils.literal("test").executes(c -> {
+            c.getSource().sendMessage(Component.text("Working!"));
+            return 0;
+        }));
     }
 }
