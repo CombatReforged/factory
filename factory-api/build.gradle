@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'java-library'
 }
 
 group 'com.combatreforged.factory'
@@ -13,6 +13,15 @@ repositories {
 }
 
 dependencies {
+    api 'org.apache.logging.log4j:log4j-api:2.14.1'
+    api 'org.apache.logging.log4j:log4j-core:2.14.1'
+
+    api 'net.kyori:adventure-api:4.8.1'
+    api 'net.kyori:adventure-text-serializer-gson:4.8.1'
+
+    api 'com.mojang:brigadier:1.0.18'
+
+    api 'org.jetbrains:annotations:21.0.1'
 }
 
 processResources {
