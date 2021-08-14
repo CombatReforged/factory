@@ -2,11 +2,14 @@ package com.combatreforged.factory.builder.mixin.world.entity;
 
 import com.combatreforged.factory.api.event.entity.LivingEntityDamageEvent;
 import com.combatreforged.factory.api.event.entity.LivingEntityDeathEvent;
+import com.combatreforged.factory.api.event.player.PlayerChangeMovementStateEvent;
 import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.builder.extension.world.entity.LivingEntityExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.world.damage.WrappedDamageData;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedLivingEntity;
+import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -144,6 +147,43 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityEx
     public void setDeathEvent(LivingEntityDeathEvent deathEvent) {
         this.deathEvent = deathEvent;
     }
-
     //END: LivingEntityDeathEvent
+
+    @Unique private PlayerChangeMovementStateEvent changeMovementStateEvent;
+    @SuppressWarnings("ConstantConditions")
+    @Inject(method = "setSprinting", at = @At("HEAD"), cancellable = true)
+    public void injectChangeMovementStateEvent(boolean bl, CallbackInfo ci) {
+        if ((Entity) this instanceof ServerPlayer) {
+            ServerPlayer player = (ServerPlayer) (Object) this;
+            this.changeMovementStateEvent = new PlayerChangeMovementStateEvent(Wrapped.wrap(player, WrappedPlayer.class), PlayerChangeMovementStateEvent.ChangedState.SPRINTING, bl, player.isShiftKeyDown(), player.isFallFlying(), player.abilities.flying);
+            PlayerChangeMovementStateEvent.BACKEND.invoke(changeMovementStateEvent);
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @ModifyVariable(method = "setSprinting", at = @At("HEAD"))
+    public boolean modifyIsSprinting(boolean prev) {
+        if (changeMovementStateEvent != null && (Entity) this instanceof ServerPlayer) {
+            ServerPlayer player = (ServerPlayer) (Object) this;
+            player.setShiftKeyDown(changeMovementStateEvent.isSneaking());
+            if (changeMovementStateEvent.isFallFlying()) {
+                player.startFallFlying();
+            } else {
+                player.stopFallFlying();
+            }
+            player.abilities.flying = true;
+            return changeMovementStateEvent.isSprinting();
+
+        } else {
+            return prev;
+        }
+    }
+
+    @Inject(method = "setSprinting", at = @At("RETURN"))
+    public void nullifyMovementStateEvent(boolean bl, CallbackInfo ci) {
+        if (changeMovementStateEvent != null) {
+            PlayerChangeMovementStateEvent.BACKEND.invokeEndFunctions(changeMovementStateEvent);
+            changeMovementStateEvent = null;
+        }
+    }
 }
