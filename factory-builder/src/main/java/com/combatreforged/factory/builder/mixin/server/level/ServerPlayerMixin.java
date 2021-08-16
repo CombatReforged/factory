@@ -7,7 +7,6 @@ import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.builder.extension.server.level.ServerPlayerExtension;
-import com.combatreforged.factory.builder.extension.world.entity.EntityExtension;
 import com.combatreforged.factory.builder.extension.world.entity.LivingEntityExtension;
 import com.combatreforged.factory.builder.extension.wrap.ChangeableWrap;
 import com.combatreforged.factory.builder.implementation.Wrapped;
@@ -207,10 +206,7 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
         if (this.lastFlyingState != this.abilities.flying) {
             PlayerChangeMovementStateEvent changeMovementStateEvent = new PlayerChangeMovementStateEvent(Wrapped.wrap(this, WrappedPlayer.class), PlayerChangeMovementStateEvent.ChangedState.FLYING, this.abilities.flying);
             PlayerChangeMovementStateEvent.BACKEND.invoke(changeMovementStateEvent);
-            ((EntityExtension) this).setInjectMovementStateEvent(false);
-            changeMovementStateEvent.applyExceptChanged();
-            ((EntityExtension) this).setInjectMovementStateEvent(true);
-            this.abilities.flying = changeMovementStateEvent.isFlying();
+            this.abilities.flying = changeMovementStateEvent.getChangedValue();
             PlayerChangeMovementStateEvent.BACKEND.invokeEndFunctions(changeMovementStateEvent);
         }
     }

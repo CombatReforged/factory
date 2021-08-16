@@ -9,108 +9,47 @@ import java.util.function.Function;
 public class PlayerChangeMovementStateEvent extends PlayerEvent {
     public static final EventBackend<PlayerChangeMovementStateEvent> BACKEND = EventBackend.create(PlayerChangeMovementStateEvent.class);
 
-    private final ChangedState state;
-    private boolean sprinting;
-    private boolean swimming;
-    private boolean sneaking;
-    private boolean fallFlying;
-    private boolean flying;
+    private final ChangedState changedState;
+    private boolean changedValue;
+    private final boolean previousValue;
 
-    public PlayerChangeMovementStateEvent(Player player, ChangedState state, boolean changedValue) {
+    public PlayerChangeMovementStateEvent(Player player, ChangedState changedState, boolean changedValue) {
         super(player);
-        this.state = state;
-        for (ChangedState changedState : ChangedState.values()) {
-            if (changedState == this.state) {
-                changedState.eventSetter.accept(this, changedValue);
-            } else {
-                changedState.eventSetter.accept(this, changedState.playerGetter.apply(this.getPlayer()));
-            }
-        }
+        this.changedState = changedState;
+        this.changedValue = changedValue;
+        this.previousValue = changedState.playerGetter.apply(player);
     }
 
-    public PlayerChangeMovementStateEvent(Player player, ChangedState state, boolean sprinting, boolean sneaking, boolean fallFlying, boolean flying) {
-        super(player);
-        this.state = state;
-        this.sprinting = sprinting;
-        this.sneaking = sneaking;
-        this.fallFlying = fallFlying;
-        this.flying = flying;
+    public ChangedState getChangedState() {
+        return changedState;
     }
 
-    public ChangedState getState() {
-        return state;
+    public boolean getChangedValue() {
+        return changedValue;
     }
 
-    public boolean isSprinting() {
-        return sprinting;
+    public void setChangedValue(boolean changedValue) {
+        this.changedValue = changedValue;
     }
 
-    public void setSprinting(boolean sprinting) {
-        this.sprinting = sprinting;
-    }
-
-    public boolean isSwimming() {
-        return swimming;
-    }
-
-    public void setSwimming(boolean swimming) {
-        this.swimming = swimming;
-    }
-
-    public boolean isSneaking() {
-        return sneaking;
-    }
-
-    public void setSneaking(boolean sneaking) {
-        this.sneaking = sneaking;
-    }
-
-    public boolean isFallFlying() {
-        return fallFlying;
-    }
-
-    public void setFallFlying(boolean fallFlying) {
-        this.fallFlying = fallFlying;
-    }
-
-    public boolean isFlying() {
-        return flying;
-    }
-
-    public void setFlying(boolean flying) {
-        this.flying = flying;
-    }
-
-    public void applyExceptChanged() {
-        for (ChangedState changedState : ChangedState.values()) {
-            if (changedState != this.state) {
-                changedState.playerSetter.accept(this.getPlayer(), changedState.eventGetter.apply(this));
-            }
-        }
+    public boolean getPreviousValue() {
+        return previousValue;
     }
 
     @SuppressWarnings("ImmutableEnumChecker")
     public enum ChangedState {
-        SPRINTING(PlayerChangeMovementStateEvent::isSprinting, PlayerChangeMovementStateEvent::setSprinting, Player::isSprinting, Player::setSprinting),
-        SWIMMING(PlayerChangeMovementStateEvent::isSwimming, PlayerChangeMovementStateEvent::setSwimming, Player::isSwimming, Player::setSwimming),
-        SNEAKING(PlayerChangeMovementStateEvent::isSneaking, PlayerChangeMovementStateEvent::setSneaking, Player::isSneaking, Player::setSneaking),
-        FALL_FLYING(PlayerChangeMovementStateEvent::isFallFlying, PlayerChangeMovementStateEvent::setFallFlying, Player::isFallFlying, Player::setFallFlying),
-        FLYING(PlayerChangeMovementStateEvent::isFlying, PlayerChangeMovementStateEvent::setFlying, Player::isFlying, Player::setFlying);
+        SPRINTING(Player::isSprinting, Player::setSprinting),
+        SWIMMING(Player::isSwimming, Player::setSwimming),
+        SNEAKING(Player::isSneaking, Player::setSneaking),
+        FALL_FLYING(Player::isFallFlying, Player::setFallFlying),
+        FLYING(Player::isFlying, Player::setFlying);
 
-        private final Function<PlayerChangeMovementStateEvent, Boolean> eventGetter;
-        private final BiConsumer<PlayerChangeMovementStateEvent, Boolean> eventSetter;
-        private final Function<Player, Boolean> playerGetter;
-        private final BiConsumer<Player, Boolean> playerSetter;
+        public final Function<Player, Boolean> playerGetter;
+        public final BiConsumer<Player, Boolean> playerSetter;
 
-        ChangedState(Function<PlayerChangeMovementStateEvent, Boolean> eventGetter, BiConsumer<PlayerChangeMovementStateEvent, Boolean> eventSetter, Function<Player, Boolean> playerGetter, BiConsumer<Player, Boolean> playerSetter) {
-            this.eventGetter = eventGetter;
-            this.eventSetter = eventSetter;
+        ChangedState(Function<Player, Boolean> playerGetter, BiConsumer<Player, Boolean> playerSetter) {
             this.playerGetter = playerGetter;
             this.playerSetter = playerSetter;
-        }
-
-        public Function<PlayerChangeMovementStateEvent, Boolean> getEventGetter() {
-            return eventGetter;
         }
     }
 }

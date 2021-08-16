@@ -19,6 +19,7 @@ import com.combatreforged.factory.builder.implementation.world.scoreboard.Wrappe
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesPacket;
 import net.minecraft.network.protocol.game.ServerboundClientCommandPacket;
@@ -92,7 +93,7 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
     @Override
     public void setFlying(boolean flying) {
         wrappedPlayer.abilities.flying = flying;
-        wrappedPlayer.onUpdateAbilities();
+        wrappedPlayer.connection.send(new ClientboundPlayerAbilitiesPacket(wrappedPlayer.abilities));
     }
 
     @Override
@@ -105,7 +106,7 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
         wrappedPlayer.abilities.mayfly = ableToFly;
         if (!ableToFly && this.isFlying()) {
             wrappedPlayer.abilities.flying = false;
-            wrappedPlayer.onUpdateAbilities();
+            wrappedPlayer.connection.send(new ClientboundPlayerAbilitiesPacket(wrappedPlayer.abilities));
         }
     }
 

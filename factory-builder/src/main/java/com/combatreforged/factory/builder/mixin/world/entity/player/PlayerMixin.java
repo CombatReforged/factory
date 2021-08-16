@@ -54,16 +54,15 @@ public abstract class PlayerMixin extends LivingEntity implements LivingEntityEx
         if (((EntityExtension) this).injectChangeMovementStateEvent() && (Object) this instanceof ServerPlayer && !this.isFallFlying()) {
             this.changeMovementStateEvent = new PlayerChangeMovementStateEvent(Wrapped.wrap(this, WrappedPlayer.class), PlayerChangeMovementStateEvent.ChangedState.FALL_FLYING, true);
             PlayerChangeMovementStateEvent.BACKEND.invoke(changeMovementStateEvent);
-            changeMovementStateEvent.applyExceptChanged();
             ((EntityExtension) this).setInjectMovementStateEvent(false);
-            if (changeMovementStateEvent.isFallFlying()) {
+            if (changeMovementStateEvent.getChangedValue()) {
                 this.startFallFlying();
             } else {
                 this.stopFallFlying();
             }
             ((EntityExtension) this).setInjectMovementStateEvent(true);
             PlayerChangeMovementStateEvent.BACKEND.invokeEndFunctions(changeMovementStateEvent);
-            changeMovementStateEvent = null; //TODO not working for stop
+            changeMovementStateEvent = null;
         }
     }
 
@@ -73,9 +72,8 @@ public abstract class PlayerMixin extends LivingEntity implements LivingEntityEx
         if (((EntityExtension) this).injectChangeMovementStateEvent() && (Object) this instanceof ServerPlayer && this.isFallFlying()) {
             this.changeMovementStateEvent = new PlayerChangeMovementStateEvent(Wrapped.wrap(this, WrappedPlayer.class), PlayerChangeMovementStateEvent.ChangedState.FALL_FLYING, false);
             PlayerChangeMovementStateEvent.BACKEND.invoke(changeMovementStateEvent);
-            changeMovementStateEvent.applyExceptChanged();
             ((EntityExtension) this).setInjectMovementStateEvent(false);
-            if (changeMovementStateEvent.isFallFlying()) {
+            if (changeMovementStateEvent.getChangedValue()) {
                 this.startFallFlying();
             } else {
                 this.stopFallFlying();

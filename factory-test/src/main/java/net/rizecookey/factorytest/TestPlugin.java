@@ -57,6 +57,8 @@ public class TestPlugin implements FactoryPlugin {
         ServerTickEvent.BACKEND.register(event -> {
             this.tickStartTime = System.currentTimeMillis();
 
+            server.getPlayers().forEach(player -> player.setAbleToFly(true));
+
             event.runAfterwards(() -> event.getServer().getPlayers()
                     .forEach(player -> player.sendActionBarMessage(Component.text("Tick time: " + (System.currentTimeMillis() - tickStartTime) + "ms").color(NamedTextColor.GRAY))));
         });
@@ -222,6 +224,6 @@ public class TestPlugin implements FactoryPlugin {
             return 0;
         }));
 
-        PlayerChangeMovementStateEvent.BACKEND.register(event -> System.out.println("Changed state" + event.getState().toString()));
+        PlayerChangeMovementStateEvent.BACKEND.register(event -> System.out.println("Changed state: " + event.getChangedState().toString()));
     }
 }

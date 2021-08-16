@@ -17,13 +17,12 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.gen.Invoker;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -42,6 +41,8 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityEx
     @Shadow protected abstract void dropEquipment();
 
     @Shadow protected abstract void dropExperience();
+
+    @Shadow public abstract boolean isFallFlying();
 
     public LivingEntityMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -165,10 +166,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityEx
     @ModifyVariable(method = "setSprinting", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setSprinting(Z)V", shift = At.Shift.BEFORE), argsOnly = true)
     public boolean modifyIsSprinting(boolean prev) {
         if (changeMovementStateEvent != null && (Entity) this instanceof ServerPlayer && ((EntityExtension) this).injectChangeMovementStateEvent()) {
-            ((EntityExtension) this).setInjectMovementStateEvent(false);
-            changeMovementStateEvent.applyExceptChanged();
-            ((EntityExtension) this).setInjectMovementStateEvent(true);
-            return changeMovementStateEvent.isSprinting();
+            return changeMovementStateEvent.getChangedValue();
 
         } else {
             return prev;
@@ -180,6 +178,22 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityEx
         if (changeMovementStateEvent != null && ((EntityExtension) this).injectChangeMovementStateEvent()) {
             PlayerChangeMovementStateEvent.BACKEND.invokeEndFunctions(changeMovementStateEvent);
             changeMovementStateEvent = null;
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Redirect(method = {"travel", "updateFallFlying"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;setSharedFlag(IZ)V"))
+    public void injectChangeMovementStateEvent(LivingEntity livingEntity, int i, boolean bl) {
+        if (i == 7 && (Entity) this instanceof ServerPlayer && ((EntityExtension) this).injectChangeMovementStateEvent() && this.isFallFlying() != bl) {
+            this.changeMovementStateEvent = new PlayerChangeMovementStateEvent(Wrapped.wrap(this, WrappedPlayer.class), PlayerChangeMovementStateEvent.ChangedState.FALL_FLYING, bl);
+            PlayerChangeMovementStateEvent.BACKEND.invoke(this.changeMovementStateEvent);
+
+            this.setSharedFlag(i, changeMovementStateEvent.getChangedValue());
+
+            PlayerChangeMovementStateEvent.BACKEND.invokeEndFunctions(changeMovementStateEvent);
+            changeMovementStateEvent = null;
+        } else {
+            this.setSharedFlag(i, bl);
         }
     }
 }
