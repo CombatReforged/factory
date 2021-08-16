@@ -221,5 +221,7 @@ public class TestPlugin implements FactoryPlugin {
             c.getSource().sendMessage(Component.text("Working!"));
             return 0;
         }));
+
+        PlayerChangeMovementStateEvent.BACKEND.register(event -> System.out.println("Changed state" + event.getState().toString()));
     }
 }

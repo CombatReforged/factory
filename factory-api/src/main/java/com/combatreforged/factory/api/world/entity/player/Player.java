@@ -22,6 +22,13 @@ public interface Player extends LivingEntity, MessageReceiver {
     PlayerInventory getInventory();
     int getSelectedSlot();
 
+    boolean isFlying();
+    void setFlying(boolean flying);
+    boolean isAbleToFly();
+    void setAbleToFly(boolean ableToFly);
+    boolean isFallFlying();
+    void setFallFlying(boolean fallFlying);
+
     void setExperienceLevel(int level);
     void setExperiencePoints(int points);
     int getExperienceLevel();

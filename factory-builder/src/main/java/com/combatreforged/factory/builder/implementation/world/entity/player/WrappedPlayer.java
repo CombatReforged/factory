@@ -85,6 +85,45 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
     }
 
     @Override
+    public boolean isFlying() {
+        return wrappedPlayer.abilities.flying;
+    }
+
+    @Override
+    public void setFlying(boolean flying) {
+        wrappedPlayer.abilities.flying = flying;
+        wrappedPlayer.onUpdateAbilities();
+    }
+
+    @Override
+    public boolean isAbleToFly() {
+        return wrappedPlayer.abilities.mayfly;
+    }
+
+    @Override
+    public void setAbleToFly(boolean ableToFly) {
+        wrappedPlayer.abilities.mayfly = ableToFly;
+        if (!ableToFly && this.isFlying()) {
+            wrappedPlayer.abilities.flying = false;
+            wrappedPlayer.onUpdateAbilities();
+        }
+    }
+
+    @Override
+    public boolean isFallFlying() {
+        return wrappedPlayer.isFallFlying();
+    }
+
+    @Override
+    public void setFallFlying(boolean fallFlying) {
+        if (fallFlying && !this.isFallFlying()) {
+            wrappedPlayer.startFallFlying();
+        } else if (!fallFlying && this.isFallFlying()) {
+            wrappedPlayer.stopFallFlying();
+        }
+    }
+
+    @Override
     public void setExperienceLevel(int level) {
         wrappedPlayer.setExperienceLevels(level);
     }
