@@ -34,6 +34,7 @@
     "world.entity.vehicle.AbstractMinecartContainerMixin",
     "world.food.FoodDataMixin",
     "world.inventory.AbstractContainerMenuAccessor",
+    "world.inventory.AbstractContainerMenuMixin",
     "world.inventory.AbstractFurnaceMenuAccessor",
     "world.inventory.CartographyMenuMixin",
     "world.inventory.CompoundContainerMixin",

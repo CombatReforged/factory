@@ -26,6 +26,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -2255,6 +2257,14 @@ public abstract class ObjectMappings {
         MENU_TYPES.put(Minecraft.MenuType.SMOKER, MenuType.SMOKER);
         MENU_TYPES.put(Minecraft.MenuType.CARTOGROPHY, MenuType.CARTOGRAPHY_TABLE);
         MENU_TYPES.put(Minecraft.MenuType.STONECUTTER, MenuType.STONECUTTER);
+    }
+
+    public static ContainerMenuType getType(AbstractContainerMenu menu) {
+        if (menu instanceof InventoryMenu) {
+            return Minecraft.MenuType.INVENTORY;
+        } else {
+            return MENU_TYPES.inverse().get(menu.getType());
+        }
     }
 
     public static net.kyori.adventure.text.Component convertComponent(Component mcComponent) {

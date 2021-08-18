@@ -2011,7 +2011,8 @@ public abstract class Minecraft {
         SMITHING,
         SMOKER,
         CARTOGROPHY,
-        STONECUTTER;
+        STONECUTTER,
+        INVENTORY;
 
         @Override
         public MenuHolder createMenu(Component title) {
