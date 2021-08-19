@@ -25,6 +25,7 @@ import com.combatreforged.factory.api.world.entity.equipment.HandSlot;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
+import com.combatreforged.factory.api.world.item.container.menu.SlotClickType;
 import com.combatreforged.factory.api.world.nbt.NBTList;
 import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
@@ -227,7 +228,15 @@ public class TestPlugin implements FactoryPlugin {
         PlayerChangeMovementStateEvent.BACKEND.register(event -> System.out.println("Changed state: " + event.getChangedState().toString()));
 
         PlayerContainerClickEvent.BACKEND.register(event -> {
-            event.setCursorStack(ItemStack.create(Minecraft.Item.CHEST));
+            if (event.getMenu().getType() == Minecraft.MenuType.INVENTORY && event.getTargetSlot() >= 0 && event.getTargetSlot() < 5) {
+                event.setCancelled(true);
+            } else if (event.getTargetSlot() == -999 && event.getClickType() == SlotClickType.CLICK) {
+                event.setCancelled(true);
+            }
+        });
+
+        PlayerHotbarDropItemEvent.BACKEND.register(event -> {
+            event.setCancelled(true);
         });
     }
 }

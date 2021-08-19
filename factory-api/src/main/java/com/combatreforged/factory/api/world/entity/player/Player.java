@@ -4,7 +4,6 @@ import com.combatreforged.factory.api.builder.Builder;
 import com.combatreforged.factory.api.interfaces.MessageReceiver;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.LivingEntity;
-import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 import com.combatreforged.factory.api.world.item.container.menu.ContainerMenu;
 import com.combatreforged.factory.api.world.item.container.menu.MenuHolder;

@@ -2,7 +2,6 @@ package com.combatreforged.factory.builder.implementation.world.entity.player;
 
 import com.combatreforged.factory.api.world.entity.player.GameModeType;
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 import com.combatreforged.factory.api.world.item.container.menu.ContainerMenu;
 import com.combatreforged.factory.api.world.item.container.menu.MenuHolder;
