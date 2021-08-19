@@ -8,6 +8,7 @@ import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.Nullable;
@@ -89,6 +90,21 @@ public class WrappedPlayerInventory extends Wrapped<Inventory> implements Player
     @Override
     public ItemStack getOffhand() {
         return Wrapped.wrap(wrapped.offhand.get(0), WrappedItemStack.class);
+    }
+
+    @Override
+    public @Nullable ItemStack getCursorStack() {
+        if (wrapped.getCarried().isEmpty()) return null;
+        return Wrapped.wrap(wrapped.getCarried(), WrappedItemStack.class);
+    }
+
+    @Override
+    public void setCursorStack(@Nullable ItemStack stack) {
+        net.minecraft.world.item.ItemStack mcStack = stack == null ? net.minecraft.world.item.ItemStack.EMPTY : ((WrappedItemStack) stack).unwrap();
+        wrapped.setCarried(mcStack);
+        if (wrapped.player instanceof ServerPlayer) {
+            ((ServerPlayer) wrapped.player).refreshContainer(wrapped.player.inventoryMenu);
+        }
     }
 
     @Override

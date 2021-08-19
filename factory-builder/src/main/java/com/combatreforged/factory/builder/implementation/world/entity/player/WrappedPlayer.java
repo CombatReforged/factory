@@ -2,7 +2,9 @@ package com.combatreforged.factory.builder.implementation.world.entity.player;
 
 import com.combatreforged.factory.api.world.entity.player.GameModeType;
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
+import com.combatreforged.factory.api.world.item.container.menu.ContainerMenu;
 import com.combatreforged.factory.api.world.item.container.menu.MenuHolder;
 import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
@@ -14,6 +16,7 @@ import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedLivingEntity;
 import com.combatreforged.factory.builder.implementation.world.item.container.WrappedPlayerInventory;
+import com.combatreforged.factory.builder.implementation.world.item.container.menu.WrappedContainerMenu;
 import com.combatreforged.factory.builder.implementation.world.item.container.menu.WrappedMenuHolder;
 import com.combatreforged.factory.builder.implementation.world.scoreboard.WrappedScoreboard;
 import net.kyori.adventure.text.Component;
@@ -26,6 +29,7 @@ import net.minecraft.network.protocol.game.ServerboundClientCommandPacket;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -185,6 +189,11 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
     public void openMenu(MenuHolder creator) {
         SimpleMenuProvider provider = ((WrappedMenuHolder) creator).unwrap();
         wrappedPlayer.openMenu(provider);
+    }
+
+    @Override
+    @Nullable public ContainerMenu getOpenMenu() {
+        return Wrapped.wrap(wrappedPlayer.containerMenu, WrappedContainerMenu.class);
     }
 
     @Override

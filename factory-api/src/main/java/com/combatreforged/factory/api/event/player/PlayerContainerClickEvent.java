@@ -18,8 +18,8 @@ public class PlayerContainerClickEvent extends PlayerEvent implements Cancellabl
     private final int targetSlot; // -1 for Button.DROP, -999 if no slot is selected (depends on type)
     private final SlotClickType slotClickType;
     private final Button button;
-    @Nullable private ItemStack targetStack;
-    @Nullable private ItemStack cursorStack;
+    @Nullable private final ItemStack targetStack;
+    @Nullable private final ItemStack cursorStack;
 
     public PlayerContainerClickEvent(Player player, ContainerMenu menu, int targetSlot, SlotClickType slotClickType, Button button, @Nullable ItemStack targetStack, @Nullable ItemStack cursorStack) {
         super(player);
@@ -51,16 +51,8 @@ public class PlayerContainerClickEvent extends PlayerEvent implements Cancellabl
         return targetStack;
     }
 
-    public void setTargetStack(@Nullable ItemStack targetStack) {
-        this.targetStack = targetStack;
-    }
-
     @Nullable public ItemStack getCursorStack() {
         return cursorStack;
-    }
-
-    public void setCursorStack(@Nullable ItemStack cursorStack) {
-        this.cursorStack = cursorStack;
     }
 
     @Override

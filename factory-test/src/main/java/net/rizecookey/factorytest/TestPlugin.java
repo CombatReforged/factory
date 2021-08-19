@@ -227,7 +227,7 @@ public class TestPlugin implements FactoryPlugin {
         PlayerChangeMovementStateEvent.BACKEND.register(event -> System.out.println("Changed state: " + event.getChangedState().toString()));
 
         PlayerContainerClickEvent.BACKEND.register(event -> {
-            event.setCancelled(true);
+            event.setCursorStack(ItemStack.create(Minecraft.Item.CHEST));
         });
     }
 }

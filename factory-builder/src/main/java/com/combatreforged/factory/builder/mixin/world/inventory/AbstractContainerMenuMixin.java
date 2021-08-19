@@ -65,16 +65,10 @@ public abstract class AbstractContainerMenuMixin implements Wrap<ContainerMenu> 
         PlayerContainerClickEvent clickEvent = new PlayerContainerClickEvent(apiPlayer, menu, i, slotClickType, button, targetStack, cursorStack);
         PlayerContainerClickEvent.BACKEND.invoke(clickEvent);
 
+        ServerPlayer serverPlayer = (ServerPlayer) player;
         if (clickEvent.isCancelled()) {
-            ServerPlayer serverPlayer = (ServerPlayer) player;
             serverPlayer.refreshContainer((AbstractContainerMenu) (Object) this);
             cir.setReturnValue(targetStack != null ? targetStack.unwrap() : ItemStack.EMPTY);
-        }
-        else {
-            player.inventory.setCarried(clickEvent.getCursorStack() != null ? ((WrappedItemStack) clickEvent.getCursorStack()).unwrap() : ItemStack.EMPTY);
-            if (i >= 0 && i < slots.size()) {
-                this.slots.get(i).set(clickEvent.getTargetStack() != null ? ((WrappedItemStack) clickEvent.getTargetStack()).unwrap() : ItemStack.EMPTY);
-            }
         }
 
         PlayerContainerClickEvent.BACKEND.invokeEndFunctions(clickEvent);

@@ -4,11 +4,14 @@ import com.combatreforged.factory.api.builder.Builder;
 import com.combatreforged.factory.api.interfaces.MessageReceiver;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.LivingEntity;
+import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
+import com.combatreforged.factory.api.world.item.container.menu.ContainerMenu;
 import com.combatreforged.factory.api.world.item.container.menu.MenuHolder;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -40,6 +43,7 @@ public interface Player extends LivingEntity, MessageReceiver {
     void sendActionBarMessage(Component component);
 
     void openMenu(MenuHolder creator);
+    @Nullable ContainerMenu getOpenMenu();
 
     GameModeType getGameMode();
     void setGameMode(GameModeType gameMode);
