@@ -235,8 +235,8 @@ public class TestPlugin implements FactoryPlugin {
             }
         });
 
-        PlayerHotbarDropItemEvent.BACKEND.register(event -> {
-            event.setCancelled(true);
-        });
+        PlayerHotbarDropItemEvent.BACKEND.register(event -> event.setCancelled(true));
+
+        PlayerUseItemEvent.BACKEND.register(event -> event.setCancelled(true));
     }
 }
