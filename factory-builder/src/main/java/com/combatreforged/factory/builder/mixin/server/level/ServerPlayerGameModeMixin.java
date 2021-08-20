@@ -1,6 +1,7 @@
 package com.combatreforged.factory.builder.mixin.server.level;
 
 import com.combatreforged.factory.api.event.player.PlayerBreakBlockEvent;
+import com.combatreforged.factory.api.event.player.PlayerInteractBlockEvent;
 import com.combatreforged.factory.api.world.block.Block;
 import com.combatreforged.factory.api.world.entity.equipment.HandSlot;
 import com.combatreforged.factory.api.world.entity.player.Player;
@@ -11,11 +12,20 @@ import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.combatreforged.factory.builder.implementation.world.block.WrappedBlock;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
+import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.phys.BlockHitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -53,6 +63,37 @@ public abstract class ServerPlayerGameModeMixin {
             ((BlockExtension) this.level.getBlockState(blockPos).getBlock()).currentBreakEvent(breakBlockEvent);
             PlayerBreakBlockEvent.BACKEND.invokeEndFunctions(breakBlockEvent);
             breakBlockEvent = null;
+        }
+    }
+
+    @Unique private PlayerInteractBlockEvent interactBlockEvent;
+    @Inject(method = "useItemOn", at = @At("HEAD"), cancellable = true)
+    public void injectPlayerInteractBlockEvent(ServerPlayer serverPlayer, Level level, net.minecraft.world.item.ItemStack itemStack, InteractionHand interactionHand, BlockHitResult blockHitResult, CallbackInfoReturnable<InteractionResult> cir) {
+        Player player = Wrapped.wrap(serverPlayer, WrappedPlayer.class);
+        Location location = new Location(blockHitResult.getBlockPos().getX(), blockHitResult.getBlockPos().getY(), blockHitResult.getBlockPos().getZ(), Wrapped.wrap(level, WrappedWorld.class));
+        Block block = new WrappedBlock(location);
+        ItemStack stack = Wrapped.wrap(itemStack, WrappedItemStack.class);
+        HandSlot hand = interactionHand == InteractionHand.MAIN_HAND ? HandSlot.MAIN_HAND : HandSlot.OFF_HAND;
+        this.interactBlockEvent = new PlayerInteractBlockEvent(player, block, location, hand, stack);
+        PlayerInteractBlockEvent.BACKEND.invoke(interactBlockEvent);
+
+        if (interactBlockEvent.isCancelled()) {
+            cir.setReturnValue(InteractionResult.FAIL);
+            BlockState blockState = level.getBlockState(blockHitResult.getBlockPos());
+            if (blockState.getBlock() instanceof DoorBlock) {
+                BlockPos otherPos = blockState.getValue(DoorBlock.HALF) == DoubleBlockHalf.UPPER ? blockHitResult.getBlockPos().below() : blockHitResult.getBlockPos().above();
+                BlockState otherState = level.getBlockState(otherPos);
+                serverPlayer.connection.send(new ClientboundBlockUpdatePacket(otherPos, otherState));
+            }
+            serverPlayer.refreshContainer(serverPlayer.inventoryMenu);
+        }
+    }
+
+    @Inject(method = "useItemOn", at = @At("RETURN"))
+    public void nullifyInteractBlockEvent(ServerPlayer serverPlayer, Level level, net.minecraft.world.item.ItemStack itemStack, InteractionHand interactionHand, BlockHitResult blockHitResult, CallbackInfoReturnable<InteractionResult> cir) {
+        if (interactBlockEvent != null) {
+            PlayerInteractBlockEvent.BACKEND.invoke(interactBlockEvent);
+            interactBlockEvent = null;
         }
     }
 }

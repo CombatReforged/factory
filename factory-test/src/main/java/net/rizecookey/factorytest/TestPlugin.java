@@ -243,5 +243,7 @@ public class TestPlugin implements FactoryPlugin {
             event.setCancelled(true);
             event.getPlayer().sendTitle(Title.title(Component.text("nope"), Component.text("")));
         });
+
+        PlayerInteractBlockEvent.BACKEND.register(event -> event.setCancelled(true));
     }
 }
