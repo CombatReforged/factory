@@ -238,5 +238,10 @@ public class TestPlugin implements FactoryPlugin {
         PlayerHotbarDropItemEvent.BACKEND.register(event -> event.setCancelled(true));
 
         PlayerUseItemEvent.BACKEND.register(event -> event.setCancelled(true));
+
+        PlayerInteractEntityEvent.BACKEND.register(event -> {
+            event.setCancelled(true);
+            event.getPlayer().sendTitle(Title.title(Component.text("nope"), Component.text("")));
+        });
     }
 }

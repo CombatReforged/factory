@@ -28,6 +28,7 @@
     "world.entity.EntityMixin",
     "world.entity.EntityTypeMixin",
     "world.entity.LivingEntityMixin",
+    "world.entity.decoration.ArmorStandMixin",
     "world.entity.player.InventoryAccessor",
     "world.entity.player.InventoryMixin",
     "world.entity.player.PlayerMixin",

@@ -2,13 +2,18 @@ package com.combatreforged.factory.builder.mixin.world.entity.player;
 
 import com.combatreforged.factory.api.event.player.PlayerChangeMovementStateEvent;
 import com.combatreforged.factory.api.event.player.PlayerHotbarDropItemEvent;
+import com.combatreforged.factory.api.event.player.PlayerInteractEntityEvent;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.builder.extension.world.entity.EntityExtension;
 import com.combatreforged.factory.builder.extension.world.entity.LivingEntityExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
+import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -107,6 +112,27 @@ public abstract class PlayerMixin extends LivingEntity implements LivingEntityEx
             cir.setReturnValue(false);
         } else {
             PlayerHotbarDropItemEvent.BACKEND.invokeEndFunctions(dropItemEvent);
+        }
+    }
+
+    @Unique private PlayerInteractEntityEvent interactEntityEvent;
+    @Inject(method = "interactOn", at = @At("HEAD"), cancellable = true)
+    public void injectInteractEntityEvent(Entity entity, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> cir) {
+        WrappedPlayer apiPlayer = Wrapped.wrap(this, WrappedPlayer.class);
+        WrappedEntity apiEntity = Wrapped.wrap(entity, WrappedEntity.class);
+        this.interactEntityEvent = new PlayerInteractEntityEvent(apiPlayer, apiEntity);
+        PlayerInteractEntityEvent.BACKEND.invoke(interactEntityEvent);
+
+        if (interactEntityEvent.isCancelled()) {
+            cir.setReturnValue(InteractionResult.FAIL);
+        }
+    }
+
+    @Inject(method = "interactOn", at = @At("RETURN"))
+    public void nullifyInteractEntityEvent(Entity entity, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> cir) {
+        if (interactEntityEvent != null) {
+            PlayerInteractEntityEvent.BACKEND.invokeEndFunctions(interactEntityEvent);
+            interactEntityEvent = null;
         }
     }
 }
