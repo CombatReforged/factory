@@ -25,7 +25,6 @@ import net.minecraft.world.level.storage.LevelStorageSource;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements FactoryServer {
