@@ -8,6 +8,7 @@ import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import com.mojang.brigadier.CommandDispatcher;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -20,4 +21,8 @@ public interface FactoryServer extends CommandSender {
     World getWorld(Identifier identifier);
     Scoreboard getServerScoreboard();
     CommandDispatcher<CommandSourceInfo> getCommandDispatcher();
+
+    boolean hasWorld(String name);
+    void loadWorld(Path path); //TODO add others
+    void unloadWorld(String name);
 }

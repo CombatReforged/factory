@@ -1,6 +1,7 @@
 package com.combatreforged.factory.api.world;
 
 import com.combatreforged.factory.api.FactoryServer;
+import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.block.Block;
 import com.combatreforged.factory.api.world.block.BlockEntity;
 import com.combatreforged.factory.api.world.block.BlockState;
@@ -15,6 +16,8 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 public interface World {
+    Identifier getIdentifier();
+
     Block getBlockAt(Location location);
     void setBlockAt(Location location, BlockState state);
     default boolean isBlockEntity(Location location) {

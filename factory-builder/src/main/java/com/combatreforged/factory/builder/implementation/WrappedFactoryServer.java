@@ -7,6 +7,7 @@ import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
 import com.combatreforged.factory.builder.command.FactoryCommand;
+import com.combatreforged.factory.builder.extension.server.MinecraftServerExtension;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
@@ -20,7 +21,11 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraft.world.level.storage.LevelStorageSource;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements FactoryServer {
@@ -80,6 +85,25 @@ public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements Fa
     @Override
     public CommandDispatcher<CommandSourceInfo> getCommandDispatcher() {
         return commandDispatcher;
+    }
+
+    @Override
+    public boolean hasWorld(String name) {
+        return ((MinecraftServerExtension) wrapped).hasLevel(name);
+    }
+
+    @Override
+    public void loadWorld(Path path) {
+        try {
+            ((MinecraftServerExtension) wrapped).addLevel(LevelStorageSource.createDefault(path).createAccess("."));
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not find level in specified Path '" + path.toAbsolutePath() + "'");
+        }
+    }
+
+    @Override
+    public void unloadWorld(String name) {
+        ((MinecraftServerExtension) wrapped).unloadLevel(name);
     }
 
     @Override

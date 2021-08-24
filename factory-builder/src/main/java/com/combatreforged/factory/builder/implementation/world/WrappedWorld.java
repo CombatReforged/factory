@@ -1,6 +1,7 @@
 package com.combatreforged.factory.builder.implementation.world;
 
 import com.combatreforged.factory.api.FactoryServer;
+import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.Weather;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.block.Block;
@@ -41,6 +42,11 @@ public class WrappedWorld extends Wrapped<ServerLevel> implements World {
     @Override
     public ServerLevel unwrap() {
         return wrapped;
+    }
+
+    @Override
+    public Identifier getIdentifier() {
+        return new Identifier(wrapped.dimension().location().getNamespace(), wrapped.dimension().location().getPath());
     }
 
     @Override

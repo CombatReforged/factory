@@ -27,17 +27,17 @@ public class WrappedPlayerInventory extends Wrapped<Inventory> implements Player
 
     @Override
     public boolean addItemStack(ItemStack itemStack) {
-        return wrapped.add(((WrappedItemStack) itemStack).unwrap());
+        return wrapped.add(itemStack != null ? ((WrappedItemStack) itemStack).unwrap() : net.minecraft.world.item.ItemStack.EMPTY);
     }
 
     @Override
     public boolean hasSpaceFor(ItemStack itemStack) {
-        return wrapped.getSlotWithRemainingSpace(((WrappedItemStack) itemStack).unwrap()) != -1;
+        return wrapped.getSlotWithRemainingSpace(itemStack != null ? ((WrappedItemStack) itemStack).unwrap() : net.minecraft.world.item.ItemStack.EMPTY) != -1;
     }
 
     @Override
     public void removeItemStack(ItemStack itemStack) {
-        wrapped.removeItem(((WrappedItemStack) itemStack).unwrap());
+        wrapped.removeItem(itemStack != null ? ((WrappedItemStack) itemStack).unwrap() : net.minecraft.world.item.ItemStack.EMPTY);
     }
 
     @Override
@@ -52,7 +52,8 @@ public class WrappedPlayerInventory extends Wrapped<Inventory> implements Player
 
     @Override
     public @Nullable ItemStack getItemStack(int slot) {
-        return Wrapped.wrap(wrapped.getItem(transformSlotId(slot)), WrappedItemStack.class);
+        net.minecraft.world.item.ItemStack itemStack = wrapped.getItem(transformSlotId(slot));
+        return Wrapped.wrap(itemStack.isEmpty() ? null : itemStack, WrappedItemStack.class);
     }
 
     @Override

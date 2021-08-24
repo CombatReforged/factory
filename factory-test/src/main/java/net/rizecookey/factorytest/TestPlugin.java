@@ -41,6 +41,8 @@ import net.kyori.adventure.title.Title;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.file.Paths;
+
 public class TestPlugin implements FactoryPlugin {
     Logger logger = LogManager.getLogger();
 
@@ -222,7 +224,12 @@ public class TestPlugin implements FactoryPlugin {
 
         server.getCommandDispatcher().register(CommandUtils.literal("test").executes(c -> {
             c.getSource().sendMessage(Component.text("Working!"));
-            return 0;
+            if (server.hasWorld("creative")) {
+                server.unloadWorld("creative");
+            } else {
+                server.loadWorld(Paths.get("test"));
+            }
+            return 0; //TODO still buggy
         }));
 
         PlayerChangeMovementStateEvent.BACKEND.register(event -> System.out.println("Changed state: " + event.getChangedState().toString()));
@@ -244,6 +251,10 @@ public class TestPlugin implements FactoryPlugin {
             event.getPlayer().sendTitle(Title.title(Component.text("nope"), Component.text("")));
         });
 
-        PlayerInteractBlockEvent.BACKEND.register(event -> event.setCancelled(true));
+        PlayerInteractBlockEvent.BACKEND.register(event -> {
+            if (event.getPlayer().isSneaking()) {
+                event.setCancelled(true);
+            }
+        });
     }
 }

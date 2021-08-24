@@ -4,6 +4,7 @@ import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.combatreforged.factory.builder.FactoryBuilder;
+import com.combatreforged.factory.builder.extension.server.MinecraftServerExtension;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
 import com.combatreforged.factory.builder.implementation.builder.BuilderImpl;
@@ -30,7 +31,7 @@ import java.net.Proxy;
 import java.util.List;
 
 @Mixin(DedicatedServer.class)
-public abstract class DedicatedServerMixin extends MinecraftServer implements Wrap<FactoryServer> {
+public abstract class DedicatedServerMixin extends MinecraftServer implements Wrap<FactoryServer>, MinecraftServerExtension {
     private WrappedFactoryServer wrapped;
     public DedicatedServerMixin(Thread thread, RegistryAccess.RegistryHolder registryHolder, LevelStorageSource.LevelStorageAccess levelStorageAccess, WorldData worldData, PackRepository packRepository, Proxy proxy, DataFixer dataFixer, ServerResources serverResources, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, GameProfileCache gameProfileCache, ChunkProgressListenerFactory chunkProgressListenerFactory) {
         super(thread, registryHolder, levelStorageAccess, worldData, packRepository, proxy, dataFixer, serverResources, minecraftSessionService, gameProfileRepository, gameProfileCache, chunkProgressListenerFactory);
