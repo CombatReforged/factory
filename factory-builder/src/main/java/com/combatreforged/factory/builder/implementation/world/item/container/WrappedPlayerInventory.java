@@ -7,7 +7,6 @@ import com.combatreforged.factory.api.world.entity.equipment.HandSlot;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.item.container.PlayerInventory;
 import com.combatreforged.factory.builder.implementation.Wrapped;
-import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -19,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.combatreforged.factory.api.world.entity.equipment.ArmorSlot.*;
+import static com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack.conv;
 
 public class WrappedPlayerInventory extends Wrapped<Inventory> implements PlayerInventory, WrappedContainer {
     public WrappedPlayerInventory(Inventory wrapped) {
@@ -27,17 +27,17 @@ public class WrappedPlayerInventory extends Wrapped<Inventory> implements Player
 
     @Override
     public boolean addItemStack(ItemStack itemStack) {
-        return wrapped.add(itemStack != null ? ((WrappedItemStack) itemStack).unwrap() : net.minecraft.world.item.ItemStack.EMPTY);
+        return wrapped.add(conv(itemStack));
     }
 
     @Override
     public boolean hasSpaceFor(ItemStack itemStack) {
-        return wrapped.getSlotWithRemainingSpace(itemStack != null ? ((WrappedItemStack) itemStack).unwrap() : net.minecraft.world.item.ItemStack.EMPTY) != -1;
+        return wrapped.getSlotWithRemainingSpace(conv(itemStack)) != -1;
     }
 
     @Override
     public void removeItemStack(ItemStack itemStack) {
-        wrapped.removeItem(itemStack != null ? ((WrappedItemStack) itemStack).unwrap() : net.minecraft.world.item.ItemStack.EMPTY);
+        wrapped.removeItem(conv(itemStack));
     }
 
     @Override
@@ -53,15 +53,12 @@ public class WrappedPlayerInventory extends Wrapped<Inventory> implements Player
     @Override
     public @Nullable ItemStack getItemStack(int slot) {
         net.minecraft.world.item.ItemStack itemStack = wrapped.getItem(transformSlotId(slot));
-        return Wrapped.wrap(itemStack.isEmpty() ? null : itemStack, WrappedItemStack.class);
+        return conv(itemStack);
     }
 
     @Override
     public void setItemStack(int slot, @Nullable ItemStack itemStack) {
-        net.minecraft.world.item.ItemStack stack = itemStack != null
-                ? ((WrappedItemStack) itemStack).unwrap()
-                : net.minecraft.world.item.ItemStack.EMPTY;
-        wrapped.setItem(transformSlotId(slot), stack);
+        wrapped.setItem(transformSlotId(slot), conv(itemStack));
     }
 
     @Override
@@ -69,7 +66,7 @@ public class WrappedPlayerInventory extends Wrapped<Inventory> implements Player
         Map<Integer, ItemStack> map = new HashMap<>();
         for (int i = 0; i < wrapped.items.size(); i++) {
             map.put(i, !wrapped.items.get(i).isEmpty()
-                    ? Wrapped.wrap(wrapped.items.get(i), WrappedItemStack.class)
+                    ? conv(wrapped.getItem(i))
                     : null);
         }
 
@@ -80,9 +77,7 @@ public class WrappedPlayerInventory extends Wrapped<Inventory> implements Player
     public Map<ArmorSlot, ItemStack> getArmorContents() {
         Map<ArmorSlot, ItemStack> map = new HashMap<>();
         for (int i = 0; i < wrapped.armor.size(); i++) {
-            map.put(transformToArmorSlot(i + 100), !wrapped.armor.get(i).isEmpty()
-                    ? Wrapped.wrap(wrapped.armor.get(i), WrappedItemStack.class)
-                    : null);
+            map.put(transformToArmorSlot(i + 100), conv(wrapped.armor.get(i)));
         }
 
         return map;
@@ -90,18 +85,18 @@ public class WrappedPlayerInventory extends Wrapped<Inventory> implements Player
 
     @Override
     public ItemStack getOffhand() {
-        return Wrapped.wrap(wrapped.offhand.get(0), WrappedItemStack.class);
+        return conv(wrapped.offhand.get(0));
     }
 
     @Override
     public @Nullable ItemStack getCursorStack() {
         if (wrapped.getCarried().isEmpty()) return null;
-        return Wrapped.wrap(wrapped.getCarried(), WrappedItemStack.class);
+        return conv(wrapped.getCarried());
     }
 
     @Override
     public void setCursorStack(@Nullable ItemStack stack) {
-        net.minecraft.world.item.ItemStack mcStack = stack == null ? net.minecraft.world.item.ItemStack.EMPTY : ((WrappedItemStack) stack).unwrap();
+        net.minecraft.world.item.ItemStack mcStack = conv(stack);
         wrapped.setCarried(mcStack);
         if (wrapped.player instanceof ServerPlayer) {
             ((ServerPlayer) wrapped.player).refreshContainer(wrapped.player.inventoryMenu);

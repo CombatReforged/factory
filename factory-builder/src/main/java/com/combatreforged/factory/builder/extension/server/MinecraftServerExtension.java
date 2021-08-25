@@ -5,6 +5,8 @@ import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.WorldData;
 
+import java.io.IOException;
+
 public interface MinecraftServerExtension {
     boolean hasLevel(String name);
 
@@ -12,5 +14,5 @@ public interface MinecraftServerExtension {
     void addLevel(WorldData worldData, LevelStorageSource.LevelStorageAccess access);
     void addLevel(LevelSettings settings, WorldGenSettings genSettings, LevelStorageSource.LevelStorageAccess access);
 
-    void unloadLevel(String name);
+    void unloadLevel(String name, boolean save) throws IOException;
 }

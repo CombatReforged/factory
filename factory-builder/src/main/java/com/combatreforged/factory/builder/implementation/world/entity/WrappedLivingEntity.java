@@ -7,7 +7,6 @@ import com.combatreforged.factory.api.world.entity.equipment.EquipmentSlot;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
-import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.effect.WrappedStatusEffectInstance;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
@@ -16,6 +15,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack.conv;
 
 public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
     private final net.minecraft.world.entity.LivingEntity wrappedLiving;
@@ -32,12 +33,12 @@ public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
 
     @Override
     public ItemStack getEquipmentStack(EquipmentSlot slot) {
-        return Wrapped.wrap(wrappedLiving.getItemBySlot(ObjectMappings.EQUIPMENT_SLOTS.get(slot)), WrappedItemStack.class);
+        return conv(wrappedLiving.getItemBySlot(ObjectMappings.EQUIPMENT_SLOTS.get(slot)));
     }
 
     @Override
     public void setEquipmentStack(EquipmentSlot slot, ItemStack itemStack) {
-        wrappedLiving.setItemSlot(ObjectMappings.EQUIPMENT_SLOTS.get(slot), ((WrappedItemStack) itemStack).unwrap());
+        wrappedLiving.setItemSlot(ObjectMappings.EQUIPMENT_SLOTS.get(slot), WrappedItemStack.conv(itemStack));
     }
 
     @Override

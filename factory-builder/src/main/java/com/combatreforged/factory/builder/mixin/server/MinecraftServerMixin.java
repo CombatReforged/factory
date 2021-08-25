@@ -5,10 +5,9 @@ import com.combatreforged.factory.api.event.server.ServerTickEvent;
 import com.combatreforged.factory.builder.extension.server.MinecraftServerExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
+import com.combatreforged.factory.builder.implementation.dynamicworld.DynamicWorld;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Lifecycle;
-import net.minecraft.CrashReport;
-import net.minecraft.ReportedException;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.MappedRegistry;
@@ -27,6 +26,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.progress.ChunkProgressListener;
 import net.minecraft.server.level.progress.ChunkProgressListenerFactory;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 import net.minecraft.world.SnooperPopulator;
 import net.minecraft.world.entity.ai.village.VillageSiege;
@@ -55,6 +55,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
@@ -91,6 +92,8 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
 
     @Shadow private ServerResources resources;
 
+    @Shadow public abstract PlayerList getPlayerList();
+
     public MinecraftServerMixin(String string) {
         super(string);
     }
@@ -126,7 +129,12 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
         }
     }
 
-    @Unique private final Map<String, List<ServerLevel>> customWorlds = new HashMap<>();
+    @Inject(method = "saveAllChunks", at = @At("RETURN"))
+    public void saveCustomWorlds(boolean bl, boolean bl2, boolean bl3, CallbackInfoReturnable<Boolean> cir) {
+        dynamicWorlds.forEach((key, value) -> this.saveOverworldData(key));
+    }
+
+    @Unique private final Map<String, DynamicWorld> dynamicWorlds = new HashMap<>();
 
     @Override
     @ApiStatus.Experimental
@@ -161,7 +169,7 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
 
         levelName = newName.toString();
 
-        if (customWorlds.containsKey(levelName)) {
+        if (dynamicWorlds.containsKey(levelName)) {
             throw new IllegalArgumentException("Custom world '" + levelName + "' is already registered on this server");
         }
 
@@ -198,14 +206,8 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
         WorldBorder worldBorder = overworld.getWorldBorder();
         worldBorder.applySettings(serverLevelData.getWorldBorder());
         if (!serverLevelData.isInitialized()) {
-            try {
-                setInitialSpawn(overworld, serverLevelData, worldGenSettings.generateBonusChest(), false, true);
-                serverLevelData.setInitialized(true);
-            } catch (Throwable var26) {
-                CrashReport crashReport = CrashReport.forThrowable(var26, "Exception initializing level");
-                overworld.fillReportDetails(crashReport);
-                throw new ReportedException(crashReport);
-            }
+            setInitialSpawn(overworld, serverLevelData, worldGenSettings.generateBonusChest(), false, true);
+            serverLevelData.setInitialized(true);
 
             serverLevelData.setInitialized(true);
         }
@@ -228,35 +230,62 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
                 worldDimensions.add(dimension);
             }
         }
-        this.customWorlds.put(levelName, worldDimensions);
+
+        DynamicWorld dynamicWorld = new DynamicWorld(levelName, overworld, worldDimensions, access, worldData);
+        this.dynamicWorlds.put(levelName, dynamicWorld);
     }
 
     @Override
     @ApiStatus.Experimental
-    public void unloadLevel(String name) {
-        if (customWorlds.containsKey(name)) {
-            for (ServerLevel level : customWorlds.get(name)) {
-                for (ServerPlayer player : level.getPlayers(player -> true)) {
-                    ServerLevel defaultOverworld = this.overworld();
-                    BlockPos spawnPos = defaultOverworld.getSharedSpawnPos();
-                    player.teleportTo(this.overworld(), spawnPos.getX() + 0.5, spawnPos.getY() + 0.5, spawnPos.getZ() + 0.5, defaultOverworld.getSharedSpawnAngle(), 0.0F);
+    public void unloadLevel(String name, boolean save) throws IOException {
+        if (dynamicWorlds.containsKey(name)) {
+            List<ResourceKey<Level>> toBeRemoved = new ArrayList<>();
+
+            DynamicWorld dynamicWorld = dynamicWorlds.get(name);
+            if (dynamicWorld.isLoaded()) {
+                for (ServerLevel level : dynamicWorld.getDimensions()) {
+                    for (ServerPlayer player : level.getPlayers(player -> true)) {
+                        ServerLevel defaultOverworld = this.overworld();
+                        BlockPos spawnPos = defaultOverworld.getSharedSpawnPos();
+                        player.teleportTo(this.overworld(), spawnPos.getX() + 0.5, spawnPos.getY() + 0.5, spawnPos.getZ() + 0.5, defaultOverworld.getSharedSpawnAngle(), 0.0F);
+                    }
+
+                    if (save) {
+                        level.save(null, true, false);
+                    }
+
+                    toBeRemoved.add(level.dimension());
+                    level.close();
                 }
 
-               List<ResourceKey<Level>> toBeRemoved = new ArrayList<>();
-               this.levels.forEach((key, value) -> {
-                   if (customWorlds.get(name).contains(value)) {
-                       toBeRemoved.add(key);
-                   }
-               });
-               toBeRemoved.forEach(this.levels::remove);
-            }
+                if (save) {
+                    this.saveOverworldData(name);
+                }
 
-            this.customWorlds.remove(name);
+                toBeRemoved.forEach(this.levels::remove);
+
+                dynamicWorld.getSource().close();
+                dynamicWorld.unloaded();
+
+                this.dynamicWorlds.remove(name);
+            }
+        }
+    }
+
+    @ApiStatus.Experimental
+    public void saveOverworldData(String name) {
+        if (dynamicWorlds.containsKey(name)) {
+            DynamicWorld dynamicWorld = dynamicWorlds.get(name);
+            ServerLevel overworld = dynamicWorld.getOverworld();
+            WorldData worldData = dynamicWorld.getWorldData();
+            worldData.overworldData().setWorldBorder(overworld.getWorldBorder().createSettings());
+            worldData.setCustomBossEvents(this.getCustomBossEvents().save());
+            dynamicWorld.getSource().saveDataTag(this.registryHolder, worldData, this.getPlayerList().getSingleplayerData());
         }
     }
 
     @Override
     public boolean hasLevel(String name) {
-        return customWorlds.containsKey(name);
+        return dynamicWorlds.containsKey(name);
     }
 }

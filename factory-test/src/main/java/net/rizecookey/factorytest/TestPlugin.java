@@ -223,11 +223,15 @@ public class TestPlugin implements FactoryPlugin {
         });
 
         server.getCommandDispatcher().register(CommandUtils.literal("test").executes(c -> {
-            c.getSource().sendMessage(Component.text("Working!"));
-            if (server.hasWorld("creative")) {
-                server.unloadWorld("creative");
-            } else {
-                server.loadWorld(Paths.get("test"));
+            try {
+                c.getSource().sendMessage(Component.text("Working!"));
+                if (server.hasWorld("creative")) {
+                    server.unloadWorld("creative");
+                } else {
+                    server.loadWorld(Paths.get("test"));
+                }
+            } catch (Exception e) {
+                logger.error("An error occured while executing test command", e);
             }
             return 0; //TODO still buggy
         }));
