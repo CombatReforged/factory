@@ -141,6 +141,8 @@ public abstract class ServerGamePacketListenerImplMixin {
             if (update) {
                 this.player.connection.send(new ClientboundPlayerAbilitiesPacket(this.player.abilities));
             }
+
+            PlayerChangeMovementStateEvent.BACKEND.invokeEndFunctions(event);
         }
     }
 }
