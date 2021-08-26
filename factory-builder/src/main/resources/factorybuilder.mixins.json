@@ -69,6 +69,7 @@
     "world.level.block.entity.BlockEntityMixin",
     "world.level.block.state.properties.BlockStatePropertiesMixin",
     "world.level.border.WorldBorderMixin",
+    "world.level.storage.PrimaryLevelDataMixin",
     "world.scores.ObjectiveMixin",
     "world.scores.PlayerTeamMixin",
     "world.scores.ScoreboardMixin",

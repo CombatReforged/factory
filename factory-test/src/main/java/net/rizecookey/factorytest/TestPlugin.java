@@ -231,10 +231,10 @@ public class TestPlugin implements FactoryPlugin {
         server.getCommandDispatcher().register(CommandUtils.literal("test").executes(c -> {
             try {
                 c.getSource().sendMessage(Component.text("Working!"));
-                if (server.hasWorld("creative")) {
-                    server.unloadWorld("creative");
+                if (server.hasWorld("test")) {
+                    server.unloadWorld("test");
                 } else {
-                    server.loadWorld(Paths.get("test"));
+                    server.loadWorld(Paths.get("test"), "test");
                 }
             } catch (Exception e) {
                 logger.error("An error occured while executing test command", e);
@@ -263,6 +263,13 @@ public class TestPlugin implements FactoryPlugin {
 
         PlayerInteractBlockEvent.BACKEND.register(event -> {
             if (event.getPlayer().isSneaking()) {
+                event.setCancelled(true);
+            }
+        });
+
+        PlayerFoodLevelsChangeEvent.BACKEND.register(event -> {
+            Player player = event.getPlayer();
+            if (event.getSaturation() < player.getSaturation() || event.getFoodLevel() < player.getFoodLevel()) {
                 event.setCancelled(true);
             }
         });

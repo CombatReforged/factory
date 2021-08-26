@@ -93,11 +93,21 @@ public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements Fa
 
     @Override
     public void loadWorld(Path path) {
+        this.loadWorld(path, null);
+    }
+
+    @Override
+    public void loadWorld(Path path, String name) {
         try {
-            ((MinecraftServerExtension) wrapped).addLevel(LevelStorageSource.createDefault(path).createAccess("."));
+            ((MinecraftServerExtension) wrapped).addLevel(LevelStorageSource.createDefault(path).createAccess("."), name);
         } catch (IOException e) {
             throw new IllegalArgumentException("Could not find level in specified Path '" + path.toAbsolutePath() + "'", e);
         }
+    }
+
+    @Override
+    public void saveWorld(String name) {
+        ((MinecraftServerExtension) wrapped).saveLevel(name);
     }
 
     @Override

@@ -25,6 +25,8 @@ public interface FactoryServer extends CommandSender {
 
     boolean hasWorld(String name);
     void loadWorld(Path path); //TODO add others
+    void loadWorld(Path path, String name);
+    void saveWorld(String name);
     void unloadWorld(String name) throws IOException;
     void unloadWorld(String name, boolean save) throws IOException;
 }

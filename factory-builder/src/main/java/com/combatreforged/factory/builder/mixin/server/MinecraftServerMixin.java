@@ -3,6 +3,7 @@ package com.combatreforged.factory.builder.mixin.server;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.event.server.ServerTickEvent;
 import com.combatreforged.factory.builder.extension.server.MinecraftServerExtension;
+import com.combatreforged.factory.builder.extension.world.level.storage.PrimaryLevelDataExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
 import com.combatreforged.factory.builder.implementation.dynamicworld.DynamicWorld;
@@ -47,6 +48,7 @@ import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.storage.*;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -142,12 +144,26 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
     @Override
     @ApiStatus.Experimental
     public void addLevel(LevelStorageSource.LevelStorageAccess access) {
+        this.addLevel(access, null);
+    }
+
+    @Override
+    @ApiStatus.Experimental
+    public void addLevel(LevelStorageSource.LevelStorageAccess access, @Nullable String name) {
         RegistryReadOps<Tag> registryReadOps = RegistryReadOps.create(NbtOps.INSTANCE, this.resources.getResourceManager(), registryHolder);
         WorldData worldData = access.getDataTag(registryReadOps, access.getDataPacks());
         if (worldData == null) {
             throw new IllegalStateException("Can't read world data options from directory");
         }
-        this.addLevel(worldData, access);
+        if (worldData instanceof PrimaryLevelData && name != null) {
+            PrimaryLevelData primLevelData = ((PrimaryLevelData) worldData);
+            LevelSettings settings = ((PrimaryLevelDataExtension) primLevelData).getSettings();
+            LevelSettings newSettings = new LevelSettings(name, settings.gameType(), settings.hardcore(), settings.difficulty(), settings.allowCommands(), settings.gameRules(), settings.getDataPackConfig());
+            ((PrimaryLevelDataExtension) primLevelData).setSettings(newSettings);
+            this.addLevel(worldData, access);
+        } else {
+            throw new IllegalStateException("Invalid world data");
+        }
     }
 
     @Override
@@ -283,6 +299,21 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
             }
         }
         LOGGER.warn("Tried unloading non-loaded world '" + name + "'!");
+    }
+
+    @Override
+    @ApiStatus.Experimental
+    public void saveLevel(String name) {
+        if (dynamicWorlds.containsKey(name)) {
+            DynamicWorld dynamicWorld = dynamicWorlds.get(name);
+            if (dynamicWorld.isLoaded()) {
+                for (ServerLevel level : dynamicWorld.getDimensions()) {
+                    level.save(null, true, false);
+                }
+
+                this.saveOverworldData(name);
+            }
+        }
     }
 
     @ApiStatus.Experimental

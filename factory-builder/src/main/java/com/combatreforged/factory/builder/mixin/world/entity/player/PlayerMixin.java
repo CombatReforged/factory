@@ -6,9 +6,12 @@ import com.combatreforged.factory.api.event.player.PlayerInteractEntityEvent;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.builder.extension.world.entity.EntityExtension;
 import com.combatreforged.factory.builder.extension.world.entity.LivingEntityExtension;
+import com.combatreforged.factory.builder.extension.world.food.FoodDataExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedEntity;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -17,6 +20,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodData;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,6 +41,13 @@ public abstract class PlayerMixin extends LivingEntity implements LivingEntityEx
     @Shadow public abstract void startFallFlying();
 
     @Shadow public abstract void stopFallFlying();
+
+    @Shadow protected FoodData foodData;
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    public void onInit(Level level, BlockPos blockPos, float f, GameProfile gameProfile, CallbackInfo ci) {
+        ((FoodDataExtension) this.foodData).setPlayer((Player) (Object) this);
+    }
 
     @Redirect(method = "dropEquipment", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/GameRules;getBoolean(Lnet/minecraft/world/level/GameRules$Key;)Z"))
     public boolean changeShouldDropEquipment(GameRules gameRules, GameRules.Key<GameRules.BooleanValue> key) {
