@@ -3,6 +3,7 @@ package com.combatreforged.factory.builder.mixin.server;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.event.server.ServerTickEvent;
 import com.combatreforged.factory.builder.extension.server.MinecraftServerExtension;
+import com.combatreforged.factory.builder.extension.world.level.storage.LevelStorageAccessExtension;
 import com.combatreforged.factory.builder.extension.world.level.storage.PrimaryLevelDataExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
@@ -196,6 +197,8 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
 
         ChunkProgressListener chunkProgressListener = this.progressListenerFactory.create(11);
         worldData.setModdedInfo(this.getServerModName(), this.getModdedStatus().isPresent());
+
+        ((LevelStorageAccessExtension) access).setCustom(levelName);
 
         // INFO copy from MinecraftServer.createLevels with custom world data
         ServerLevelData serverLevelData = worldData.overworldData();

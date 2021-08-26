@@ -89,8 +89,7 @@ public class WrappedLivingEntity extends WrappedEntity implements LivingEntity {
 
     @Override
     public void addEffectInstance(StatusEffectInstance effectInstance) {
-        wrappedLiving.addEffect(new MobEffectInstance(WrappedStatusEffectInstance.convert(effectInstance.getStatusEffect()),
-                effectInstance.getTicksLeft(), effectInstance.getAmplifier(), effectInstance.isAmbient(), effectInstance.isAmbient()));
+        wrappedLiving.addEffect(((WrappedStatusEffectInstance) effectInstance).unwrap());
     }
 
     @Override

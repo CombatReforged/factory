@@ -21,6 +21,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.world.level.storage.LevelStorageSource;
 
 import java.io.IOException;
@@ -93,13 +94,13 @@ public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements Fa
 
     @Override
     public void loadWorld(Path path) {
-        this.loadWorld(path, null);
+        this.loadWorld(path, "null");
     }
 
     @Override
     public void loadWorld(Path path, String name) {
         try {
-            ((MinecraftServerExtension) wrapped).addLevel(LevelStorageSource.createDefault(path).createAccess("."), name);
+            ((MinecraftServerExtension) wrapped).addLevel(new LevelStorageSource(path.resolve("../"), path.resolve("../backups/" + path.getFileName().toString() + "/"), DataFixers.getDataFixer()).createAccess(path.getFileName().toString()), name);
         } catch (IOException e) {
             throw new IllegalArgumentException("Could not find level in specified Path '" + path.toAbsolutePath() + "'", e);
         }
