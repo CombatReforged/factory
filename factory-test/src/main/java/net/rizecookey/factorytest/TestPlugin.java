@@ -49,6 +49,8 @@ public class TestPlugin implements FactoryPlugin {
     TaskPointer<ScheduledRepeatingTask> villagerSoundTask;
     long tickStartTime;
 
+    long averageTickTime = -1;
+
     @Override
     public void onFactoryLoad(FactoryAPI api, FactoryServer server) {
         logger.info("Hello! I was loaded within Factory!");
@@ -63,7 +65,11 @@ public class TestPlugin implements FactoryPlugin {
             server.getPlayers().forEach(player -> player.setAbleToFly(true));
 
             event.runAfterwards(() -> event.getServer().getPlayers()
-                    .forEach(player -> player.sendActionBarMessage(Component.text("Tick time: " + (System.currentTimeMillis() - tickStartTime) + "ms").color(NamedTextColor.GRAY))));
+                    .forEach(player -> {
+                        long currentTickTime = System.currentTimeMillis() - tickStartTime;
+                        this.averageTickTime = this.averageTickTime == -1 ? currentTickTime : (this.averageTickTime + currentTickTime) / 2;
+                        player.sendActionBarMessage(Component.text("Average tick time: " + this.averageTickTime + "ms").color(NamedTextColor.GRAY));
+                    }));
         });
 
         LivingEntityDamageEvent.BACKEND.register(event -> {
@@ -233,7 +239,7 @@ public class TestPlugin implements FactoryPlugin {
             } catch (Exception e) {
                 logger.error("An error occured while executing test command", e);
             }
-            return 0; //TODO still buggy
+            return 0;
         }));
 
         PlayerChangeMovementStateEvent.BACKEND.register(event -> System.out.println("Changed state: " + event.getChangedState().toString()));

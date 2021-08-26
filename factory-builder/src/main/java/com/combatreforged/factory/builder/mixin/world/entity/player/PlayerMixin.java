@@ -38,8 +38,6 @@ public abstract class PlayerMixin extends LivingEntity implements LivingEntityEx
 
     @Shadow public abstract void stopFallFlying();
 
-    @Shadow public abstract boolean drop(boolean bl);
-
     @Redirect(method = "dropEquipment", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/GameRules;getBoolean(Lnet/minecraft/world/level/GameRules$Key;)Z"))
     public boolean changeShouldDropEquipment(GameRules gameRules, GameRules.Key<GameRules.BooleanValue> key) {
         if (key.equals(GameRules.RULE_KEEPINVENTORY) && this.getDeathEvent() != null) {

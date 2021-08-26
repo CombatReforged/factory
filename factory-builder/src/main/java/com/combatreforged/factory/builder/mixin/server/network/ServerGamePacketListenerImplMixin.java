@@ -1,5 +1,6 @@
 package com.combatreforged.factory.builder.mixin.server.network;
 
+import com.combatreforged.factory.api.event.player.PlayerChangeMovementStateEvent;
 import com.combatreforged.factory.api.event.player.PlayerDisconnectEvent;
 import com.combatreforged.factory.api.event.player.PlayerMoveEvent;
 import com.combatreforged.factory.api.world.entity.player.Player;
@@ -10,10 +11,13 @@ import com.combatreforged.factory.builder.implementation.world.entity.player.Wra
 import net.minecraft.Util;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.entity.player.Abilities;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -123,4 +127,20 @@ public abstract class ServerGamePacketListenerImplMixin {
     }
 
     // END: MOVE EVENT
+
+    @Redirect(method = "*", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/world/entity/player/Abilities;flying:Z"))
+    public void injectChangeMovementStateEvent(Abilities abilities, boolean value) {
+        if (abilities == this.player.abilities && value != abilities.flying) {
+            Player player = Wrapped.wrap(this.player, WrappedPlayer.class);
+            PlayerChangeMovementStateEvent event = new PlayerChangeMovementStateEvent(player, PlayerChangeMovementStateEvent.ChangedState.FLYING, value);
+            PlayerChangeMovementStateEvent.BACKEND.invoke(event);
+
+            boolean update = event.getChangedValue() == value;
+            this.player.abilities.flying = event.getChangedValue();
+
+            if (update) {
+                this.player.connection.send(new ClientboundPlayerAbilitiesPacket(this.player.abilities));
+            }
+        }
+    }
 }

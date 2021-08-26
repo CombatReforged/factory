@@ -45,6 +45,7 @@ import net.minecraft.world.level.levelgen.PatrolSpawner;
 import net.minecraft.world.level.levelgen.PhantomSpawner;
 import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.storage.*;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -93,6 +94,8 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
     @Shadow private ServerResources resources;
 
     @Shadow public abstract PlayerList getPlayerList();
+
+    @Shadow @Final private static Logger LOGGER;
 
     public MinecraftServerMixin(String string) {
         super(string);
@@ -173,6 +176,8 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
             throw new IllegalArgumentException("Custom world '" + levelName + "' is already registered on this server");
         }
 
+        LOGGER.info("Loading custom world '" + levelName + "' dynamically...");
+
         ChunkProgressListener chunkProgressListener = this.progressListenerFactory.create(11);
         worldData.setModdedInfo(this.getServerModName(), this.getModdedStatus().isPresent());
 
@@ -233,6 +238,8 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
 
         DynamicWorld dynamicWorld = new DynamicWorld(levelName, overworld, worldDimensions, access, worldData);
         this.dynamicWorlds.put(levelName, dynamicWorld);
+
+        LOGGER.info("Done loading.");
     }
 
     @Override
@@ -243,6 +250,7 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
 
             DynamicWorld dynamicWorld = dynamicWorlds.get(name);
             if (dynamicWorld.isLoaded()) {
+                LOGGER.info("Unloading dynamically loaded custom world '" + name + "'...");
                 for (ServerLevel level : dynamicWorld.getDimensions()) {
                     for (ServerPlayer player : level.getPlayers(player -> true)) {
                         ServerLevel defaultOverworld = this.overworld();
@@ -268,8 +276,13 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
                 dynamicWorld.unloaded();
 
                 this.dynamicWorlds.remove(name);
+
+                LOGGER.info("Done unloading.");
+
+                return;
             }
         }
+        LOGGER.warn("Tried unloading non-loaded world '" + name + "'!");
     }
 
     @ApiStatus.Experimental
