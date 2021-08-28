@@ -2,6 +2,7 @@ plugins {
 	id 'fabric-loom' version '0.8-SNAPSHOT'
 	id 'maven-publish'
 	id 'java'
+	id 'java-library'
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -14,17 +15,30 @@ group = parent.group
 repositories {
 }
 
+configurations {
+	factory {
+		canBeConsumed = false
+		canBeResolved = true
+	}
+	api.extendsFrom factory
+	include.extendsFrom factory
+
+	includeClasspath
+	implementation.extendsFrom includeClasspath
+}
+
 dependencies {
 	minecraft "com.mojang:minecraft:1.16_combat-6"
 	mappings minecraft.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:0.11.6"
 
-	implementation include(project(":factory-api"))
-	implementation(project(":factory-test"))
+	factory project(path: ":factory-api", configuration: "full")
 
-	/*implementation "net.minecrell:terminalconsoleappender:1.2.0"
-	implementation 'org.jline:jline-terminal-jna:3.20.0'
-	implementation 'net.java.dev.jna:jna:5.8.0'*/ //TODO
+	implementation project(":factory-test")
+
+	includeClasspath "net.minecrell:terminalconsoleappender:1.2.0"
+	includeClasspath "org.jline:jline-terminal-jna:3.20.0"
+	includeClasspath "net.java.dev.jna:jna:5.9.0" //TODO
 }
 
 minecraft {
@@ -52,5 +66,8 @@ java {
 jar {
 	from("LICENSE") {
 		rename { "${it}_${project.archivesBaseName}"}
+	}
+	from(configurations.includeClasspath.filter { it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }) {
+		exclude "META-INF/**"
 	}
 }

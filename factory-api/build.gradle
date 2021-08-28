@@ -12,6 +12,17 @@ repositories {
     }
 }
 
+configurations {
+    include {
+        extendsFrom api
+    }
+    full {
+        canBeConsumed = true
+        canBeResolved = false
+        extendsFrom api
+    }
+}
+
 dependencies {
     api 'org.apache.logging.log4j:log4j-api:2.14.1'
     api 'org.apache.logging.log4j:log4j-core:2.14.1'
@@ -21,7 +32,7 @@ dependencies {
 
     api 'com.mojang:brigadier:1.0.18'
 
-    api 'org.jetbrains:annotations:21.0.1'
+    api 'org.jetbrains:annotations:22.0.0'
 }
 
 processResources {
@@ -30,6 +41,21 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version
     }
+}
+
+task fullJar(type: Jar) {
+    group = "build"
+    archiveClassifier = "full"
+
+    from (configurations.include.filter { it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }) {
+        exclude "META-INF/**"
+    }
+
+    with jar
+}
+
+artifacts {
+    full fullJar
 }
 
 test {
