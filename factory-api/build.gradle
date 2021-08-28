@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 group 'com.combatreforged.factory'
@@ -79,4 +80,17 @@ artifacts {
 
 test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = this.group
+            artifactId = this.archivesBaseName
+            version = this.version
+
+            artifact jar
+            artifact fullJar
+        }
+    }
 }

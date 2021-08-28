@@ -9,7 +9,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 archivesBaseName = "factory-builder"
-version = "0.1.0"
+version = "0.1.0-1.16_combat-6"
 group = parent.group
 
 repositories {
@@ -69,5 +69,19 @@ jar {
 	}
 	from(configurations.includeClasspath.filter { it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }) {
 		exclude "META-INF/**"
+	}
+}
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+			groupId = this.group
+			artifactId = this.archivesBaseName
+			version = this.version
+
+			artifact(remapJar) {
+				builtBy remapJar
+			}
+		}
 	}
 }

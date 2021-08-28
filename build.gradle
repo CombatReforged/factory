@@ -1,14 +1,23 @@
 plugins {
     id 'java'
     id 'net.ltgt.errorprone' version "2.0.1"
+    id 'maven-publish'
 }
 
 group 'com.combatreforged.factory'
 version '0.1.0'
 
+def props = new Properties()
+def file = file("maven.properties")
+if (file.exists()) {
+    System.out.println("Publishing enabled")
+    file.withInputStream { props.load(it) }
+}
+
 allprojects {
     apply plugin: 'java'
     apply plugin: 'net.ltgt.errorprone'
+    apply plugin: 'maven-publish'
 
     repositories {
         mavenCentral()
@@ -36,5 +45,19 @@ allprojects {
     compileJava {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    publishing {
+        repositories {
+            if (props.containsKey("maven.url")) {
+                maven {
+                    url props.get("maven.url")
+                    credentials {
+                        username props.get("maven.username")
+                        password props.get("maven.password")
+                    }
+                }
+            }
+        }
     }
 }
