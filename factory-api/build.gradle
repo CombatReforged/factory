@@ -13,26 +13,33 @@ repositories {
 }
 
 configurations {
-    include {
-        extendsFrom api
-    }
+    apiParts
+    mcProvided
+    api.extendsFrom apiParts, mcProvided
+    include.extendsFrom api
+
     full {
         canBeConsumed = true
         canBeResolved = false
         extendsFrom api
     }
+    fullNoDuplicates {
+        canBeConsumed = true
+        canBeResolved = false
+        extendsFrom apiParts
+    }
 }
 
 dependencies {
-    api 'org.apache.logging.log4j:log4j-api:2.14.1'
-    api 'org.apache.logging.log4j:log4j-core:2.14.1'
+    mcProvided 'org.apache.logging.log4j:log4j-api:2.14.1'
+    mcProvided 'org.apache.logging.log4j:log4j-core:2.14.1'
 
-    api 'net.kyori:adventure-api:4.8.1'
-    api 'net.kyori:adventure-text-serializer-gson:4.8.1'
+    apiParts 'net.kyori:adventure-api:4.8.1'
+    apiParts 'net.kyori:adventure-text-serializer-gson:4.8.1'
 
-    api 'com.mojang:brigadier:1.0.18'
+    mcProvided 'com.mojang:brigadier:1.0.18'
 
-    api 'org.jetbrains:annotations:22.0.0'
+    apiParts 'org.jetbrains:annotations:22.0.0'
 }
 
 processResources {
@@ -54,8 +61,20 @@ task fullJar(type: Jar) {
     with jar
 }
 
+task fullNoDuplicatesJar(type: Jar) {
+    archiveClassifier = "full-no-duplicates"
+
+    from (configurations.apiParts.filter { it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }) {
+        exclude "META-INF/**"
+    }
+
+    with jar
+}
+
 artifacts {
+    archives fullJar
     full fullJar
+    fullNoDuplicates fullNoDuplicatesJar
 }
 
 test {

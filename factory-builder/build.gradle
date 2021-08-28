@@ -32,13 +32,13 @@ dependencies {
 	mappings minecraft.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:0.11.6"
 
-	factory project(path: ":factory-api", configuration: "full")
+	factory(project(path: ":factory-api", configuration: "fullNoDuplicates"))
 
 	implementation project(":factory-test")
 
-	includeClasspath "net.minecrell:terminalconsoleappender:1.2.0"
+	/*includeClasspath "net.minecrell:terminalconsoleappender:1.2.0"
 	includeClasspath "org.jline:jline-terminal-jna:3.20.0"
-	includeClasspath "net.java.dev.jna:jna:5.9.0" //TODO
+	includeClasspath "net.java.dev.jna:jna:5.9.0"*/ //TODO
 }
 
 minecraft {
