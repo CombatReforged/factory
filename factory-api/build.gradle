@@ -72,6 +72,17 @@ task fullNoDuplicatesJar(type: Jar) {
     with jar
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
 artifacts {
     archives fullJar
     full fullJar
@@ -84,12 +95,31 @@ test {
 
 publishing {
     publications {
-        maven(MavenPublication) {
-            groupId = this.group
+        mavenJava(MavenPublication) {
             artifactId = this.archivesBaseName
-            version = this.version
 
-            artifact jar
+            from components.java
+
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+
+            pom {
+                name = 'Factory API'
+                description = 'Factory API, a Minecraft-abstracted API for Fabric.'
+                url = 'https://github.com/CombatReforged/factory'
+                developers {
+                    developer {
+                        id = 'rizecookey'
+                    }
+                }
+            }
+
             artifact fullJar
         }
     }
