@@ -18,6 +18,7 @@ import com.combatreforged.factory.builder.implementation.world.item.container.Wr
 import com.combatreforged.factory.builder.implementation.world.item.container.menu.WrappedContainerMenu;
 import com.combatreforged.factory.builder.implementation.world.item.container.menu.WrappedMenuHolder;
 import com.combatreforged.factory.builder.implementation.world.scoreboard.WrappedScoreboard;
+import com.google.common.collect.ImmutableList;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.network.chat.ChatType;
@@ -29,6 +30,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -248,6 +250,18 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
         if (this.wrappedPlayer.isDeadOrDying()) {
             wrappedPlayer.connection.handleClientCommand(new ServerboundClientCommandPacket(ServerboundClientCommandPacket.Action.PERFORM_RESPAWN));
         }
+    }
+
+    @Override
+    public void showPlayerInTabList(Player player, boolean show) {
+        ((ServerPlayerExtension) wrappedPlayer).showInTabList(((WrappedPlayer) player).unwrap(), show, true);
+    }
+
+    @Override
+    public List<Player> getShownInTabList() {
+        return this.getServer().getPlayers().stream()
+                .filter(player -> !((ServerPlayerExtension) wrappedPlayer).getHiddenInTabList().contains(((WrappedPlayer) player).unwrap()))
+                .collect(ImmutableList.toImmutableList());
     }
 
     @Override

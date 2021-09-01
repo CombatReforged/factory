@@ -5,6 +5,7 @@ import com.combatreforged.factory.api.event.player.PlayerDisconnectEvent;
 import com.combatreforged.factory.api.event.player.PlayerMoveEvent;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.util.Location;
+import com.combatreforged.factory.builder.extension.server.level.ServerPlayerExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
@@ -13,11 +14,13 @@ import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.player.Abilities;
 import org.objectweb.asm.Opcodes;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -39,6 +42,7 @@ public abstract class ServerGamePacketListenerImplMixin {
 
     @Shadow public abstract void teleport(double d, double e, double f, float g, float h);
 
+    @Shadow @Final private MinecraftServer server;
     // BEGIN: DISCONNECT EVENT
     @Unique private PlayerDisconnectEvent disconnectEvent;
     @Redirect(method = "onDisconnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
@@ -56,6 +60,7 @@ public abstract class ServerGamePacketListenerImplMixin {
     @Inject(method = "onDisconnect", at = @At("TAIL"))
     public void nullifyDisconnectEvent(Component component, CallbackInfo ci) {
         PlayerDisconnectEvent.BACKEND.invokeEndFunctions(this.disconnectEvent);
+        this.server.getPlayerList().getPlayers().forEach(players -> ((ServerPlayerExtension) players).showInTabList(this.player, true, false));
         this.disconnectEvent = null;
     }
     // END: DISCONNECT EVENT

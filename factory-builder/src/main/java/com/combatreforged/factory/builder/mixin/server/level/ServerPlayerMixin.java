@@ -15,9 +15,11 @@ import com.combatreforged.factory.builder.implementation.world.damage.WrappedDam
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import com.combatreforged.factory.builder.implementation.world.scoreboard.WrappedScoreboardTeam;
 import com.combatreforged.factory.builder.mixin.server.players.PlayerListAccessor;
+import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import net.minecraft.server.MinecraftServer;
@@ -45,6 +47,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin extends net.minecraft.world.entity.player.Player implements ServerPlayerExtension, LivingEntityExtension {
     @Shadow public ServerGamePacketListenerImpl connection;
@@ -62,6 +68,8 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
     @Unique private boolean keepInv;
 
     @Unique private boolean lastFlyingState;
+
+    @Unique private List<UUID> hiddenInTabList = new ArrayList<>();
 
     public ServerPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
         super(level, blockPos, f, gameProfile);
@@ -143,6 +151,24 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
     @Override
     public boolean hasDeathEventHappened() {
         return deathEventHappened;
+    }
+
+    @Override
+    public List<ServerPlayer> getHiddenInTabList() {
+        return this.hiddenInTabList.stream()
+                .map(uuid -> this.server.getPlayerList().getPlayer(uuid))
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    @Override
+    public void showInTabList(ServerPlayer player, boolean show, boolean update) {
+        if (show && hiddenInTabList.contains(player.getUUID())) {
+            if (update) this.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, player));
+            this.hiddenInTabList.remove(player.getUUID());
+        } else if (!show && !hiddenInTabList.contains(player.getUUID())) {
+            if (update) this.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, player));
+            this.hiddenInTabList.add(player.getUUID());
+        }
     }
 
     //BEGIN: LivingEntityDeathEvent

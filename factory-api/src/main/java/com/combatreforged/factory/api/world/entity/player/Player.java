@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface Player extends LivingEntity, MessageReceiver {
@@ -55,6 +56,9 @@ public interface Player extends LivingEntity, MessageReceiver {
     void setServerScoreboard();
 
     void respawn();
+
+    void showPlayerInTabList(Player player, boolean show);
+    List<Player> getShownInTabList();
 
     static Player createNPCPlayer(World world, UUID uuid, String name) {
         return Builder.getInstance().createNPCPlayer(world, uuid, name);
