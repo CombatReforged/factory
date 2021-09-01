@@ -25,6 +25,8 @@ public interface ImplementationUtils {
 
     Identifier getIdentifier(Namespaced namespaced);
 
+    <T extends Namespaced> Namespaced getByIdentifier(Identifier identifier, Class<T> type);
+
     MenuHolder createMenu(ContainerMenuType type, Component title);
 
     static ImplementationUtils getInstance() {

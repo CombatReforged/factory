@@ -16,4 +16,13 @@ public class Identifier {
     public String getId() {
         return id;
     }
+
+    public String pure() {
+        return namespace + ":" + id;
+    }
+
+    @Override
+    public String toString() {
+        return "Identifier[" + namespace + ":" + id + "]";
+    }
 }

@@ -20,33 +20,34 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 
-import static com.combatreforged.factory.builder.implementation.util.ObjectMappings.MENU_TYPES;
-import static com.combatreforged.factory.builder.implementation.util.ObjectMappings.convertComponent;
+import static com.combatreforged.factory.builder.implementation.util.ObjectMappings.*;
 
 public class ImplementationUtilsImpl implements ImplementationUtils {
     @Override
     public int getMaxLevel(Enchantment enchantment) {
-        return ObjectMappings.ENCHANTMENTS.get(enchantment).getMaxLevel();
+        return ENCHANTMENTS.get(enchantment).getMaxLevel();
     }
 
     @Override
     public boolean isCurse(Enchantment enchantment) {
-        return ObjectMappings.ENCHANTMENTS.get(enchantment).isCurse();
+        return ENCHANTMENTS.get(enchantment).isCurse();
     }
 
     @Override
     public boolean canApply(Enchantment enchantment, ItemStack itemStack) {
         net.minecraft.world.item.ItemStack mcStack = ((WrappedItemStack) itemStack).unwrap();
-        net.minecraft.world.item.enchantment.Enchantment mcEnchant = ObjectMappings.ENCHANTMENTS.get(enchantment);
+        net.minecraft.world.item.enchantment.Enchantment mcEnchant = ENCHANTMENTS.get(enchantment);
         return mcEnchant.canEnchant(mcStack, true);
     }
 
     @Override
     public StatusEffect.Type getType(StatusEffect effect) {
-        switch(((MobEffectExtension) ObjectMappings.EFFECTS.get(effect)).getCategory()) {
+        switch(((MobEffectExtension) EFFECTS.get(effect)).getCategory()) {
             case HARMFUL:
                 return StatusEffect.Type.HARMFUL;
             case BENEFICIAL:
@@ -58,49 +59,189 @@ public class ImplementationUtilsImpl implements ImplementationUtils {
 
     @Override
     public boolean isBlockItem(ItemType item) {
-        return ObjectMappings.ITEMS.get(item) instanceof BlockItem;
+        return ITEMS.get(item) instanceof BlockItem;
     }
 
     @Override
     public BlockType getBlock(ItemType item) {
-        Item mcItem = ObjectMappings.ITEMS.get(item);
-        return mcItem instanceof BlockItem ? ObjectMappings.BLOCKS.inverse().get(((BlockItem) mcItem).getBlock()) : null;
+        Item mcItem = ITEMS.get(item);
+        return mcItem instanceof BlockItem ? BLOCKS.inverse().get(((BlockItem) mcItem).getBlock()) : null;
     }
 
     @Override
     public int getMaxStackSize(ItemType item) {
-        return ObjectMappings.ITEMS.get(item).getMaxStackSize();
+        return ITEMS.get(item).getMaxStackSize();
     }
 
     @Override
     public int getMaxDamage(ItemType item) {
-        return ObjectMappings.ITEMS.get(item).getMaxDamage();
+        return ITEMS.get(item).getMaxDamage();
     }
 
     @Override
     public Identifier getIdentifier(Namespaced namespaced) {
         ResourceLocation loc = null;
         if (namespaced instanceof EntityType) {
-            loc = Registry.ENTITY_TYPE.getKey(ObjectMappings.ENTITIES.get((EntityType) namespaced));
+            loc = Registry.ENTITY_TYPE.getKey(ENTITIES.get((EntityType) namespaced));
         }
         else if (namespaced instanceof StatusEffect) {
-            loc = Registry.MOB_EFFECT.getKey(ObjectMappings.EFFECTS.get((StatusEffect) namespaced));
+            loc = Registry.MOB_EFFECT.getKey(EFFECTS.get((StatusEffect) namespaced));
         }
         else if (namespaced instanceof Enchantment) {
-            loc = Registry.ENCHANTMENT.getKey(ObjectMappings.ENCHANTMENTS.get((Enchantment) namespaced));
+            loc = Registry.ENCHANTMENT.getKey(ENCHANTMENTS.get((Enchantment) namespaced));
         }
         else if (namespaced instanceof ItemType) {
-            loc = Registry.ITEM.getKey(ObjectMappings.ITEMS.get((ItemType) namespaced));
+            loc = Registry.ITEM.getKey(ITEMS.get((ItemType) namespaced));
         }
         else if (namespaced instanceof BlockType) {
-            loc = Registry.BLOCK.getKey(ObjectMappings.BLOCKS.get((BlockType) namespaced));
+            loc = Registry.BLOCK.getKey(BLOCKS.get((BlockType) namespaced));
         }
         
         if (loc != null) {
             return new Identifier(loc.getNamespace(), loc.getPath());
         }
         
-        return null;
+        throw new IllegalArgumentException("Cannot find identifier for " + namespaced);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Namespaced> T getByIdentifier(final Identifier identifier, Class<T> type) {
+        ResourceLocation loc = new ResourceLocation(identifier.getNamespace(), identifier.getId());
+        try {
+            if (EntityType.class.isAssignableFrom(type) && Registry.ENTITY_TYPE.containsKey(loc)) {
+                net.minecraft.world.entity.EntityType<?> mcType = Registry.ENTITY_TYPE.get(loc);
+                return ENTITIES.inverse().containsKey(mcType)
+                        ? (T) ENTITIES.inverse().get(mcType)
+                        : (T) new EntityType.Other() {
+                    @Override
+                    public String getId() {
+                        return identifier.pure();
+                    }
+
+                    @Override
+                    public Identifier getNamespaceId() {
+                        return identifier;
+                    }
+                };
+            } else if (StatusEffect.class.isAssignableFrom(type) && Registry.MOB_EFFECT.containsKey(loc)) {
+                final MobEffect mcType = Registry.MOB_EFFECT.get(loc);
+                assert mcType != null;
+                return EFFECTS.inverse().containsKey(mcType)
+                        ? (T) EFFECTS.inverse().get(mcType)
+                        : (T) new StatusEffect.Other() {
+                    @Override
+                    public Type getType() {
+                        switch (((MobEffectExtension) mcType).getCategory()) {
+                            case HARMFUL:
+                                return Type.HARMFUL;
+                            case BENEFICIAL:
+                                return Type.BENEFICIAL;
+                            case NEUTRAL:
+                            default:
+                                return Type.NEUTRAL;
+                        }
+                    }
+
+                    @Override
+                    public Identifier getNamespaceId() {
+                        return identifier;
+                    }
+
+                    @Override
+                    public String getId() {
+                        return identifier.pure();
+                    }
+                };
+            } else if (Enchantment.class.isAssignableFrom(type) && Registry.ENCHANTMENT.containsKey(loc)) {
+                final net.minecraft.world.item.enchantment.Enchantment mcType = Registry.ENCHANTMENT.get(loc);
+                assert mcType != null;
+                return ENCHANTMENTS.inverse().containsKey(mcType)
+                        ? (T) ENCHANTMENTS.inverse().get(Registry.ENCHANTMENT.get(loc))
+                        : (T) new Enchantment.Other() {
+                    @Override
+                    public Identifier getNamespaceId() {
+                        return identifier;
+                    }
+
+                    @Override
+                    public String getId() {
+                        return identifier.pure();
+                    }
+
+                    @Override
+                    public boolean isCurse() {
+                        return mcType.isCurse();
+                    }
+
+                    @Override
+                    public int getMaxLevel() {
+                        return mcType.getMaxLevel();
+                    }
+
+                    @Override
+                    public boolean canBeAppliedTo(ItemStack itemStack) {
+                        return mcType.canEnchant(((WrappedItemStack) itemStack).unwrap(), true);
+                    }
+                };
+            } else if (ItemType.class.isAssignableFrom(type) && Registry.ITEM.containsKey(loc)) {
+                final Item mcType = Registry.ITEM.get(loc);
+                return ITEMS.inverse().containsKey(mcType)
+                        ? (T) ITEMS.inverse().get(Registry.ITEM.get(loc))
+                        : (T) new ItemType.Other() {
+                    @Override
+                    public Identifier getNamespaceId() {
+                        return identifier;
+                    }
+
+                    @Override
+                    public String getId() {
+                        return identifier.pure();
+                    }
+
+                    @Override
+                    public boolean isBlockItem() {
+                        return mcType instanceof BlockItem;
+                    }
+
+                    @Override
+                    public BlockType getBlock() {
+                        return isBlockItem() ? BLOCKS.inverse().get(((BlockItem) mcType).getBlock()) : null;
+                    }
+
+                    @Override
+                    public int getMaxStackSize() {
+                        return mcType.getMaxStackSize();
+                    }
+
+                    @Override
+                    public int getMaxDamage() {
+                        return mcType.getMaxDamage();
+                    }
+                };
+            } else if (BlockType.class.isAssignableFrom(type) && Registry.BLOCK.containsKey(loc)) {
+                final Block mcType = Registry.BLOCK.get(loc);
+                return BLOCKS.inverse().containsKey(mcType)
+                        ? (T) BLOCKS.inverse().get(Registry.BLOCK.get(loc))
+                        : (T) new BlockType.Other() {
+                    @Override
+                    public Identifier getNamespaceId() {
+                        return identifier;
+                    }
+
+                    @Override
+                    public String getId() {
+                        return identifier.pure();
+                    }
+                };
+            } else {
+                throw new IllegalStateException("No " + type.getSimpleName() + " registered with " + identifier);
+            }
+        } catch (ClassCastException e) {
+            throw new IllegalStateException("Incompatible type", e);
+        } catch (NullPointerException e) {
+            throw new IllegalArgumentException("Could not find " + identifier + " with type " + type.getSimpleName(), e);
+        }
     }
 
     @Override
