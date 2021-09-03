@@ -1,11 +1,13 @@
 package com.combatreforged.factory.api.world.types;
 
+import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.util.ImplementationUtils;
 import com.combatreforged.factory.api.world.block.BlockType;
 import com.combatreforged.factory.api.world.effect.StatusEffect;
 import com.combatreforged.factory.api.world.entity.EntityType;
 import com.combatreforged.factory.api.world.entity.player.GameModeType;
 import com.combatreforged.factory.api.world.item.ItemStack;
+import com.combatreforged.factory.api.world.item.ItemType;
 import com.combatreforged.factory.api.world.item.container.menu.ContainerMenuType;
 import com.combatreforged.factory.api.world.item.container.menu.MenuHolder;
 import com.google.errorprone.annotations.Immutable;
@@ -778,7 +780,11 @@ public abstract class Minecraft {
         POLISHED_BLACKSTONE_WALL,
         CHISELED_NETHER_BRICKS,
         CRACKED_NETHER_BRICKS,
-        QUARTZ_BRICKS
+        QUARTZ_BRICKS;
+
+        public static BlockType byIdentifier(Identifier identifier) {
+            return utils.getByIdentifier(identifier, BlockType.class);
+        }
     }
 
     public enum Effect implements StatusEffect {
@@ -818,6 +824,10 @@ public abstract class Minecraft {
         @Override
         public Type getType() {
             return utils.getType(this);
+        }
+
+        public static StatusEffect byIdentifier(Identifier identifier) {
+            return utils.getByIdentifier(identifier, StatusEffect.class);
         }
     }
 
@@ -1818,6 +1828,10 @@ public abstract class Minecraft {
         public int getMaxDamage() {
             return utils.getMaxDamage(this);
         }
+
+        public static ItemType byIdentifier(Identifier identifier) {
+            return utils.getByIdentifier(identifier, ItemType.class);
+        }
     }
 
     public enum Entity implements EntityType {
@@ -1928,7 +1942,11 @@ public abstract class Minecraft {
         ZOMBIE_VILLAGER,
         ZOMBIFIED_PIGLIN,
         PLAYER,
-        FISHING_BOBBER
+        FISHING_BOBBER;
+
+        public static EntityType byIdentifier(Identifier identifier) {
+            return utils.getByIdentifier(identifier, EntityType.class);
+        }
     }
 
     public enum GameMode implements GameModeType {
@@ -1989,6 +2007,10 @@ public abstract class Minecraft {
         @Override
         public boolean canBeAppliedTo(ItemStack itemStack) {
             return utils.canApply(this, itemStack);
+        }
+
+        public static com.combatreforged.factory.api.world.item.Enchantment byIdentifier(Identifier identifier) {
+            return utils.getByIdentifier(identifier, com.combatreforged.factory.api.world.item.Enchantment.class);
         }
     }
 

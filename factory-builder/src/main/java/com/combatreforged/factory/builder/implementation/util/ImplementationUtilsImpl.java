@@ -109,7 +109,7 @@ public class ImplementationUtilsImpl implements ImplementationUtils {
     public <T extends Namespaced> T getByIdentifier(final Identifier identifier, Class<T> type) {
         ResourceLocation loc = new ResourceLocation(identifier.getNamespace(), identifier.getId());
         try {
-            if (EntityType.class.isAssignableFrom(type) && Registry.ENTITY_TYPE.containsKey(loc)) {
+            if (EntityType.class.isAssignableFrom(type) && Registry.ENTITY_TYPE.getOptional(loc).isPresent()) {
                 net.minecraft.world.entity.EntityType<?> mcType = Registry.ENTITY_TYPE.get(loc);
                 return ENTITIES.inverse().containsKey(mcType)
                         ? (T) ENTITIES.inverse().get(mcType)
@@ -124,7 +124,7 @@ public class ImplementationUtilsImpl implements ImplementationUtils {
                         return identifier;
                     }
                 };
-            } else if (StatusEffect.class.isAssignableFrom(type) && Registry.MOB_EFFECT.containsKey(loc)) {
+            } else if (StatusEffect.class.isAssignableFrom(type) && Registry.MOB_EFFECT.getOptional(loc).isPresent()) {
                 final MobEffect mcType = Registry.MOB_EFFECT.get(loc);
                 assert mcType != null;
                 return EFFECTS.inverse().containsKey(mcType)
@@ -153,7 +153,7 @@ public class ImplementationUtilsImpl implements ImplementationUtils {
                         return identifier.pure();
                     }
                 };
-            } else if (Enchantment.class.isAssignableFrom(type) && Registry.ENCHANTMENT.containsKey(loc)) {
+            } else if (Enchantment.class.isAssignableFrom(type) && Registry.ENCHANTMENT.getOptional(loc).isPresent()) {
                 final net.minecraft.world.item.enchantment.Enchantment mcType = Registry.ENCHANTMENT.get(loc);
                 assert mcType != null;
                 return ENCHANTMENTS.inverse().containsKey(mcType)
@@ -184,7 +184,7 @@ public class ImplementationUtilsImpl implements ImplementationUtils {
                         return mcType.canEnchant(((WrappedItemStack) itemStack).unwrap(), true);
                     }
                 };
-            } else if (ItemType.class.isAssignableFrom(type) && Registry.ITEM.containsKey(loc)) {
+            } else if (ItemType.class.isAssignableFrom(type) && Registry.ITEM.getOptional(loc).isPresent()) {
                 final Item mcType = Registry.ITEM.get(loc);
                 return ITEMS.inverse().containsKey(mcType)
                         ? (T) ITEMS.inverse().get(Registry.ITEM.get(loc))
@@ -219,7 +219,7 @@ public class ImplementationUtilsImpl implements ImplementationUtils {
                         return mcType.getMaxDamage();
                     }
                 };
-            } else if (BlockType.class.isAssignableFrom(type) && Registry.BLOCK.containsKey(loc)) {
+            } else if (BlockType.class.isAssignableFrom(type) && Registry.BLOCK.getOptional(loc).isPresent()) {
                 final Block mcType = Registry.BLOCK.get(loc);
                 return BLOCKS.inverse().containsKey(mcType)
                         ? (T) BLOCKS.inverse().get(Registry.BLOCK.get(loc))
