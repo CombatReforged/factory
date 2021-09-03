@@ -35,8 +35,6 @@ dependencies {
 	api project(":factory-api")
 	include project(path: ":factory-api", configuration: "fullNoDuplicates")
 
-	implementation project(":factory-test")
-
 	/*includeClasspath "net.minecrell:terminalconsoleappender:1.2.0"
 	includeClasspath "org.jline:jline-terminal-jna:3.20.0"
 	includeClasspath "net.java.dev.jna:jna:5.9.0"*/ //TODO
@@ -70,6 +68,16 @@ jar {
 	}
 	from(configurations.includeClasspath.filter { it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }) {
 		exclude "META-INF/**"
+	}
+}
+
+loom {
+	runs {
+		testServer {
+			server()
+			name = "Factory Test"
+			source sourceSets.test
+		}
 	}
 }
 

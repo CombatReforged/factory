@@ -11,5 +11,4 @@ pluginManagement {
 
 include ":factory-api"
 include ":factory-builder"
-include ':factory-test'
 
