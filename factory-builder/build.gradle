@@ -70,6 +70,7 @@ task fullJar(type: RemapJarTask) {
 		archiveClassifier = "dev"
 	}.archiveFile
 	addNestedDependencies = true
+	remapAccessWidener = true
 
 	from(configurations.includeClasspath.filter { it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }) {
 		exclude "META-INF/**"
