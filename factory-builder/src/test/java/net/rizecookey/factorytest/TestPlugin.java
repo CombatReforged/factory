@@ -34,6 +34,7 @@ import com.combatreforged.factory.api.world.scoreboard.ScoreboardObjective;
 import com.combatreforged.factory.api.world.scoreboard.ScoreboardTeam;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.combatreforged.factory.api.world.util.Location;
+import com.combatreforged.factory.api.world.util.Vector3D;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -264,6 +265,14 @@ public class TestPlugin implements FactoryPlugin {
         PlayerInteractBlockEvent.BACKEND.register(event -> {
             if (event.getPlayer().isSneaking()) {
                 event.setCancelled(true);
+            }
+        });
+
+        PlayerChangeMovementStateEvent.BACKEND.register(event -> {
+            Player player = event.getPlayer();
+            if (event.getChangedState() == PlayerChangeMovementStateEvent.ChangedState.FLYING && event.getChangedValue() && player.getGameMode() == Minecraft.GameMode.ADVENTURE) {
+                player.addVelocity(new Vector3D(0.0, 1.5, 0.0));
+                event.setChangedValue(false);
             }
         });
 

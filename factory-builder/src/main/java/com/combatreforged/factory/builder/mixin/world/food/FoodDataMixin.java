@@ -46,7 +46,7 @@ public abstract class FoodDataMixin implements FoodDataExtension {
         return player;
     }
 
-    @Redirect(method = "*", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/world/food/FoodData;saturationLevel:F"))
+    @Redirect(method = { "eat(IF)V", "tick", "addExhaustion", "setFoodLevel" }, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/world/food/FoodData;saturationLevel:F"))
     public void onSaturationChange(FoodData foodData, float value) {
         if (value != this.saturationLevel && this.player != null) {
             PlayerFoodLevelsChangeEvent event = new PlayerFoodLevelsChangeEvent(Wrapped.wrap(this.player, WrappedPlayer.class), value, this.foodLevel);
@@ -61,7 +61,7 @@ public abstract class FoodDataMixin implements FoodDataExtension {
         }
     }
 
-    @Redirect(method = "*", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/world/food/FoodData;foodLevel:I"))
+    @Redirect(method = { "eat(IF)V", "tick", "addExhaustion", "setFoodLevel" }, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/world/food/FoodData;foodLevel:I"))
     public void onFoodLevelChange(FoodData foodData, int value) {
         if (value != this.foodLevel && this.player != null) {
             PlayerFoodLevelsChangeEvent event = new PlayerFoodLevelsChangeEvent(Wrapped.wrap(this.player, WrappedPlayer.class), this.saturationLevel, value);

@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
@@ -233,6 +234,7 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
             PlayerChangeMovementStateEvent changeMovementStateEvent = new PlayerChangeMovementStateEvent(Wrapped.wrap(this, WrappedPlayer.class), PlayerChangeMovementStateEvent.ChangedState.FLYING, this.abilities.flying);
             PlayerChangeMovementStateEvent.BACKEND.invoke(changeMovementStateEvent);
             this.abilities.flying = changeMovementStateEvent.getChangedValue();
+            this.connection.send(new ClientboundPlayerAbilitiesPacket(this.abilities));
             PlayerChangeMovementStateEvent.BACKEND.invokeEndFunctions(changeMovementStateEvent);
         }
     }

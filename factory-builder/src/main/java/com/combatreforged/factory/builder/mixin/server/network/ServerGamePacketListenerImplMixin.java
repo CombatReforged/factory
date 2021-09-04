@@ -140,7 +140,7 @@ public abstract class ServerGamePacketListenerImplMixin {
             PlayerChangeMovementStateEvent event = new PlayerChangeMovementStateEvent(player, PlayerChangeMovementStateEvent.ChangedState.FLYING, value);
             PlayerChangeMovementStateEvent.BACKEND.invoke(event);
 
-            boolean update = event.getChangedValue() == value;
+            boolean update = event.getChangedValue() != value;
             this.player.abilities.flying = event.getChangedValue();
 
             if (update) {

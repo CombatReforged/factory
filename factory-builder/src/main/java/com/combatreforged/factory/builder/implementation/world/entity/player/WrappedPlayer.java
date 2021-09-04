@@ -108,6 +108,7 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
     @Override
     public void setAbleToFly(boolean ableToFly) {
         wrappedPlayer.abilities.mayfly = ableToFly;
+        wrappedPlayer.onUpdateAbilities();
         if (!ableToFly && this.isFlying()) {
             this.setFlying(false);
         }
