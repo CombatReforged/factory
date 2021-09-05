@@ -116,7 +116,7 @@ public abstract class EntityMixin implements Nameable, CommandSource, Changeable
     @ModifyVariable(method = {"setSwimming", "setShiftKeyDown"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setSharedFlag(IZ)V", shift = At.Shift.BEFORE), argsOnly = true)
     public boolean modifyChangedState(boolean prev) {
         if (changeMovementStateEvent != null && (Object) this instanceof ServerPlayer && this.injectChangeMovementStateEvent()) {
-            return changeMovementStateEvent.getChangedValue();
+            return changeMovementStateEvent.isCancelled() ? changeMovementStateEvent.getPreviousValue() : changeMovementStateEvent.getChangedValue();
         } else {
             return prev;
         }

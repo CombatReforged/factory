@@ -167,7 +167,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityEx
     @ModifyVariable(method = "setSprinting", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setSprinting(Z)V", shift = At.Shift.BEFORE), argsOnly = true)
     public boolean modifyIsSprinting(boolean prev) {
         if (changeMovementStateEvent != null && (Entity) this instanceof ServerPlayer && ((EntityExtension) this).injectChangeMovementStateEvent()) {
-            return changeMovementStateEvent.getChangedValue();
+            return changeMovementStateEvent.isCancelled() ? changeMovementStateEvent.getPreviousValue() : changeMovementStateEvent.getChangedValue();
 
         } else {
             return prev;
@@ -189,7 +189,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityEx
             this.changeMovementStateEvent = new PlayerChangeMovementStateEvent(Wrapped.wrap(this, WrappedPlayer.class), PlayerChangeMovementStateEvent.ChangedState.FALL_FLYING, bl);
             PlayerChangeMovementStateEvent.BACKEND.invoke(this.changeMovementStateEvent);
 
-            this.setSharedFlag(i, changeMovementStateEvent.getChangedValue());
+            this.setSharedFlag(i, changeMovementStateEvent.isCancelled() ? changeMovementStateEvent.getPreviousValue() : changeMovementStateEvent.getChangedValue());
 
             PlayerChangeMovementStateEvent.BACKEND.invokeEndFunctions(changeMovementStateEvent);
             changeMovementStateEvent = null;

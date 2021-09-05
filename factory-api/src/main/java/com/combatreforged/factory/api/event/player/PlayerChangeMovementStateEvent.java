@@ -1,14 +1,16 @@
 package com.combatreforged.factory.api.event.player;
 
+import com.combatreforged.factory.api.event.Cancellable;
 import com.combatreforged.factory.api.event.EventBackend;
 import com.combatreforged.factory.api.world.entity.player.Player;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public class PlayerChangeMovementStateEvent extends PlayerEvent {
+public class PlayerChangeMovementStateEvent extends PlayerEvent implements Cancellable {
     public static final EventBackend<PlayerChangeMovementStateEvent> BACKEND = EventBackend.create(PlayerChangeMovementStateEvent.class);
 
+    private boolean cancelled;
     private final ChangedState changedState;
     private boolean changedValue;
     private final boolean previousValue;
@@ -34,6 +36,16 @@ public class PlayerChangeMovementStateEvent extends PlayerEvent {
 
     public boolean getPreviousValue() {
         return previousValue;
+    }
+
+    @Override
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return cancelled;
     }
 
     @SuppressWarnings("ImmutableEnumChecker")

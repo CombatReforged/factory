@@ -3,6 +3,7 @@ package com.combatreforged.factory.builder.mixin.server.network;
 import com.combatreforged.factory.api.event.player.PlayerChangeMovementStateEvent;
 import com.combatreforged.factory.api.event.player.PlayerDisconnectEvent;
 import com.combatreforged.factory.api.event.player.PlayerMoveEvent;
+import com.combatreforged.factory.api.event.player.PlayerSwitchActiveSlotEvent;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.builder.extension.server.level.ServerPlayerExtension;
@@ -13,12 +14,15 @@ import net.minecraft.Util;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
+import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
+import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.player.Abilities;
+import net.minecraft.world.entity.player.Inventory;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,6 +31,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.UUID;
@@ -140,14 +145,47 @@ public abstract class ServerGamePacketListenerImplMixin {
             PlayerChangeMovementStateEvent event = new PlayerChangeMovementStateEvent(player, PlayerChangeMovementStateEvent.ChangedState.FLYING, value);
             PlayerChangeMovementStateEvent.BACKEND.invoke(event);
 
-            boolean update = event.getChangedValue() != value;
-            this.player.abilities.flying = event.getChangedValue();
+            boolean update = event.isCancelled() || event.getChangedValue() != value;
+            this.player.abilities.flying = event.isCancelled() ? this.player.abilities.flying : event.getChangedValue();
 
             if (update) {
                 this.player.connection.send(new ClientboundPlayerAbilitiesPacket(this.player.abilities));
             }
 
             PlayerChangeMovementStateEvent.BACKEND.invokeEndFunctions(event);
+        }
+    }
+
+    @Unique private PlayerSwitchActiveSlotEvent switchActiveSlotEvent;
+    @Inject(method = "handleSetCarriedItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V", shift = At.Shift.AFTER), cancellable = true)
+    public void injectSwitchActiveSlotEvent(ServerboundSetCarriedItemPacket serverboundSetCarriedItemPacket, CallbackInfo ci) {
+        if (serverboundSetCarriedItemPacket.getSlot() >= 0 && serverboundSetCarriedItemPacket.getSlot() < Inventory.getSelectionSize()) {
+            this.switchActiveSlotEvent = new PlayerSwitchActiveSlotEvent(Wrapped.wrap(player, WrappedPlayer.class), serverboundSetCarriedItemPacket.getSlot());
+            PlayerSwitchActiveSlotEvent.BACKEND.invoke(switchActiveSlotEvent);
+
+            if (switchActiveSlotEvent.isCancelled()) {
+                player.connection.send(new ClientboundSetCarriedItemPacket(this.player.inventory.selected));
+                ci.cancel();
+            }
+        }
+    }
+
+    @Redirect(method = "handleSetCarriedItem", slice = @Slice(
+            from = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V", shift = At.Shift.AFTER),
+            to = @At("TAIL")
+    ), at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ServerboundSetCarriedItemPacket;getSlot()I"))
+    public int changeCarriedItem(ServerboundSetCarriedItemPacket serverboundSetCarriedItemPacket) {
+        return switchActiveSlotEvent != null ? switchActiveSlotEvent.getNewSlot() : serverboundSetCarriedItemPacket.getSlot();
+    }
+
+    @Inject(method = "handleSetCarriedItem", at = @At("TAIL"))
+    public void nullifySwitchActiveSlotEvent(ServerboundSetCarriedItemPacket serverboundSetCarriedItemPacket, CallbackInfo ci) {
+        if (switchActiveSlotEvent != null) {
+            if (player.inventory.selected != serverboundSetCarriedItemPacket.getSlot()) {
+                player.connection.send(new ClientboundSetCarriedItemPacket(switchActiveSlotEvent.getNewSlot()));
+            }
+            PlayerSwitchActiveSlotEvent.BACKEND.invokeEndFunctions(switchActiveSlotEvent);
+            switchActiveSlotEvent = null;
         }
     }
 }

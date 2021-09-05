@@ -75,7 +75,7 @@ public abstract class PlayerMixin extends LivingEntity implements LivingEntityEx
             this.changeMovementStateEvent = new PlayerChangeMovementStateEvent(Wrapped.wrap(this, WrappedPlayer.class), PlayerChangeMovementStateEvent.ChangedState.FALL_FLYING, true);
             PlayerChangeMovementStateEvent.BACKEND.invoke(changeMovementStateEvent);
             ((EntityExtension) this).setInjectMovementStateEvent(false);
-            if (changeMovementStateEvent.getChangedValue()) {
+            if (changeMovementStateEvent.isCancelled() ? changeMovementStateEvent.getPreviousValue() : changeMovementStateEvent.getChangedValue()) {
                 this.startFallFlying();
             } else {
                 this.stopFallFlying();
@@ -93,7 +93,7 @@ public abstract class PlayerMixin extends LivingEntity implements LivingEntityEx
             this.changeMovementStateEvent = new PlayerChangeMovementStateEvent(Wrapped.wrap(this, WrappedPlayer.class), PlayerChangeMovementStateEvent.ChangedState.FALL_FLYING, false);
             PlayerChangeMovementStateEvent.BACKEND.invoke(changeMovementStateEvent);
             ((EntityExtension) this).setInjectMovementStateEvent(false);
-            if (changeMovementStateEvent.getChangedValue()) {
+            if (changeMovementStateEvent.isCancelled() ? changeMovementStateEvent.getPreviousValue() : changeMovementStateEvent.getChangedValue()) {
                 this.startFallFlying();
             } else {
                 this.stopFallFlying();

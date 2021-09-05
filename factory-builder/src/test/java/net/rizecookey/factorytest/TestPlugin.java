@@ -282,5 +282,13 @@ public class TestPlugin implements FactoryPlugin {
                 event.setCancelled(true);
             }
         });
+
+        PlayerSwitchActiveSlotEvent.BACKEND.register(event -> {
+            if (event.getPlayer().isSneaking()) {
+                event.setCancelled(true);
+            } else if (event.getPlayer().isSprinting()) {
+                event.setNewSlot(4);
+            }
+        });
     }
 }
