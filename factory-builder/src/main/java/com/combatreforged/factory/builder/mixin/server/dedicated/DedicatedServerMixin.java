@@ -8,6 +8,7 @@ import com.combatreforged.factory.builder.extension.server.MinecraftServerExtens
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
 import com.combatreforged.factory.builder.implementation.builder.BuilderImpl;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.datafixers.DataFixer;
@@ -50,6 +51,7 @@ public abstract class DedicatedServerMixin extends MinecraftServer implements Wr
 
         this.wrapped = new WrappedFactoryServer((DedicatedServer) (Object) this);
         this.api = new FactoryAPI(wrapped, new BuilderImpl((DedicatedServer) (Object) this, LogManager.getLogger("FactoryWrapBuilder")));
+        ObjectMappings.initIndependent();
 
         FactoryBuilder.LOGGER.info("Initializing plugins...");
 

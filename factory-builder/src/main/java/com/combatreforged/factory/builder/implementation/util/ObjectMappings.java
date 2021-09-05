@@ -35,6 +35,7 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.*;
+import org.apache.logging.log4j.LogManager;
 
 public abstract class ObjectMappings {
     public static final BiMap<StatusEffect, MobEffect> EFFECTS = HashBiMap.create();
@@ -51,9 +52,26 @@ public abstract class ObjectMappings {
     public static final BiMap<ContainerMenuType, MenuType<?>> MENU_TYPES = HashBiMap.create();
 
     public static void initIndependent() {
-        setupStatePropertyEnums();
-        setupGameModes();
-        setupEquipmentSlots();
+        // Cause all classes to initialize if they aren't already to prevent issues
+        try {
+            Class<?>[] classes = {
+                    MobEffects.class,
+                    Blocks.class,
+                    Items.class,
+                    DamageSource.class,
+                    net.minecraft.world.entity.EntityType.class,
+                    BlockStateProperties.class,
+                    GameType.class,
+                    net.minecraft.world.entity.EquipmentSlot.class,
+                    Enchantments.class,
+                    MenuType.class
+            };
+            for (Class<?> clazz : classes) {
+                Class.forName(clazz.getName());
+            }
+        } catch (ClassNotFoundException e) {
+            LogManager.getLogger("ObjectMappings").error(e);
+        }
     }
 
     public static void setupEffects() {
@@ -2285,9 +2303,5 @@ public abstract class ObjectMappings {
 
     public static ChatFormatting convertColor(NamedTextColor color) {
         return ChatFormatting.getByName(color.toString());
-    }
-
-    static {
-        initIndependent();
     }
 }
