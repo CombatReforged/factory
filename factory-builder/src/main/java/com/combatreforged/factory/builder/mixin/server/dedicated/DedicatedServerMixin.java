@@ -12,6 +12,9 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.datafixers.DataFixer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
+import net.fabricmc.loader.api.metadata.ModDependency;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerResources;
@@ -28,11 +31,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Mixin(DedicatedServer.class)
 public abstract class DedicatedServerMixin extends MinecraftServer implements Wrap<FactoryServer>, MinecraftServerExtension {
     private WrappedFactoryServer wrapped;
+    private FactoryAPI api;
     public DedicatedServerMixin(Thread thread, RegistryAccess.RegistryHolder registryHolder, LevelStorageSource.LevelStorageAccess levelStorageAccess, WorldData worldData, PackRepository packRepository, Proxy proxy, DataFixer dataFixer, ServerResources serverResources, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, GameProfileCache gameProfileCache, ChunkProgressListenerFactory chunkProgressListenerFactory) {
         super(thread, registryHolder, levelStorageAccess, worldData, packRepository, proxy, dataFixer, serverResources, minecraftSessionService, gameProfileRepository, gameProfileCache, chunkProgressListenerFactory);
     }
@@ -42,21 +49,58 @@ public abstract class DedicatedServerMixin extends MinecraftServer implements Wr
         FactoryBuilder.LOGGER.info("Injecting the API...");
 
         this.wrapped = new WrappedFactoryServer((DedicatedServer) (Object) this);
-        FactoryAPI api = new FactoryAPI(wrapped, new BuilderImpl((DedicatedServer) (Object) this, LogManager.getLogger("FactoryWrapBuilder")));
+        this.api = new FactoryAPI(wrapped, new BuilderImpl((DedicatedServer) (Object) this, LogManager.getLogger("FactoryWrapBuilder")));
 
         FactoryBuilder.LOGGER.info("Initializing plugins...");
 
-        List<FactoryPlugin> plugins = FabricLoader.getInstance().getEntrypoints("factory", FactoryPlugin.class);
-        StringBuilder sB = new StringBuilder().append("Found ").append(plugins.size()).append(" plugin entrypoints");
-        for (int i = 0; i < plugins.size(); i++) {
-            if (i == 0) sB.append(": ");
-            sB.append(plugins.get(i).getClass().getSimpleName());
-            if (i < (plugins.size() - 1)) sB.append(",");
-        }
-        FactoryBuilder.LOGGER.info(sB.toString());
-        api.init(plugins);
+        this.loadPlugins();
 
         FactoryBuilder.LOGGER.info("Done.");
+    }
+
+    public void loadPlugins() {
+        List<EntrypointContainer<FactoryPlugin>> entrypoints = FabricLoader.getInstance()
+                .getEntrypointContainers("factory", FactoryPlugin.class);
+        StringBuilder sB = new StringBuilder().append("Found ").append(entrypoints.size()).append(" plugin entrypoints");
+        for (int i = 0; i < entrypoints.size(); i++) {
+            if (i == 0) sB.append(": \n");
+            sB.append("    - ")
+                    .append(entrypoints.get(i).getEntrypoint().getClass().getSimpleName())
+                    .append(" [")
+                    .append(entrypoints.get(i).getProvider().getMetadata().getId())
+                    .append("@")
+                    .append(entrypoints.get(i).getProvider().getMetadata().getVersion())
+                    .append("]");
+            if (i < (entrypoints.size() - 1)) sB.append(", \n");
+        }
+        FactoryBuilder.LOGGER.info(sB.toString());
+
+        List<ModContainer> loaded = new ArrayList<>();
+        Map<ModContainer, List<FactoryPlugin>> modEntrypoints = new HashMap<>();
+        for (EntrypointContainer<FactoryPlugin> container : entrypoints) {
+            if (modEntrypoints.containsKey(container.getProvider())) {
+                modEntrypoints.get(container.getProvider()).add(container.getEntrypoint());
+            } else {
+                List<FactoryPlugin> list = new ArrayList<>();
+                list.add(container.getEntrypoint());
+                modEntrypoints.put(container.getProvider(), list);
+            }
+        }
+
+        modEntrypoints.keySet().forEach(mod -> this.loadEntrypoints(mod, modEntrypoints, loaded));
+    }
+
+    public void loadEntrypoints(ModContainer modContainer, Map<ModContainer, List<FactoryPlugin>> entrypointMap, List<ModContainer> loaded) {
+        for (ModDependency dependencyContainer : modContainer.getMetadata().getDepends()) {
+            ModContainer dependency = FabricLoader.getInstance().getModContainer(dependencyContainer.getModId()).orElseThrow(() -> new IllegalStateException("Dependency not present"));
+            if (entrypointMap.containsKey(dependency)) {
+                this.loadEntrypoints(dependency, entrypointMap, loaded);
+            }
+        }
+        if (!loaded.contains(modContainer)) {
+            entrypointMap.get(modContainer).forEach(entrypoint -> entrypoint.onFactoryLoad(this.api, this.wrapped));
+            loaded.add(modContainer);
+        }
     }
 
     @Override
