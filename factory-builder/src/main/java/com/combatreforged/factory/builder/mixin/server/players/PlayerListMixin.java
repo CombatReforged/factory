@@ -61,8 +61,7 @@ public abstract class PlayerListMixin {
         GameType gameType = serverPlayer.gameMode.getGameModeForPlayer();
         this.respawnEvent = new PlayerRespawnEvent(Wrapped.wrap(serverPlayer, WrappedPlayer.class), respawnPoint, bl2, ObjectMappings.GAME_MODES.inverse().get(gameType));
         PlayerRespawnEvent.BACKEND.invoke(respawnEvent);
-
-        serverPlayer.gameMode.setGameModeForPlayer(ObjectMappings.GAME_MODES.get(respawnEvent.getRespawnMode()));
+        Wrapped.wrap(serverPlayer, WrappedPlayer.class).setGameMode(respawnEvent.getRespawnMode());
     }
 
     @ModifyVariable(method = "respawn", at = @At(value = "JUMP", ordinal = 0, shift = At.Shift.BEFORE))
