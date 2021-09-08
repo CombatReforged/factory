@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin implements Wrap<com.combatreforged.factory.api.world.item.ItemStack> {
     private WrappedItemStack wrapped;
-    @Inject(method = "<init>*", at = @At("TAIL"))
+    @Inject(method = { "<init>(Lnet/minecraft/world/level/ItemLike;I)V", "<init>(Lnet/minecraft/nbt/CompoundTag;)V" }, at = @At("TAIL"))
     public void injectWrapped(CallbackInfo ci) {
         this.wrapped = new WrappedItemStack((ItemStack) (Object) this);
     }

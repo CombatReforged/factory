@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MobEffectInstanceMixin implements Wrap<StatusEffectInstance> {
     private StatusEffectInstance wrapped;
 
-    @Inject(method = "<init>*", at = @At("TAIL"))
+    @Inject(method = { "<init>(Lnet/minecraft/world/effect/MobEffect;IIZZZLnet/minecraft/world/effect/MobEffectInstance;)V", "<init>(Lnet/minecraft/world/effect/MobEffect;)V" }, at = @At("TAIL"))
     public void injectWrap(CallbackInfo ci) {
         this.wrapped = new WrappedStatusEffectInstance((MobEffectInstance) (Object) this);
     }
