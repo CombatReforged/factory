@@ -64,7 +64,7 @@ public abstract class PlayerListMixin {
         Wrapped.wrap(serverPlayer, WrappedPlayer.class).setGameMode(respawnEvent.getRespawnMode());
     }
 
-    @ModifyVariable(method = "respawn", at = @At(value = "JUMP", ordinal = 0, shift = At.Shift.BEFORE))
+    @ModifyVariable(method = "respawn", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;", ordinal = 0, shift = At.Shift.AFTER))
     public BlockPos modifyBlockPos(BlockPos prev) {
         if (respawnEvent != null) {
             Location respawnLoc = respawnEvent.getSpawnpoint();
@@ -74,7 +74,7 @@ public abstract class PlayerListMixin {
         }
     }
 
-    @ModifyVariable(method = "respawn", at = @At(value = "JUMP", ordinal = 0, shift = At.Shift.BEFORE))
+    @ModifyVariable(method = "respawn", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;", ordinal = 0, shift = At.Shift.AFTER))
     public float modifyRespawnAngle(float prev) {
         if (respawnEvent != null) {
             return respawnEvent.getSpawnpoint() != null ? respawnEvent.getSpawnpoint().getYaw() : 0.0f;
@@ -83,7 +83,7 @@ public abstract class PlayerListMixin {
         }
     }
 
-    @ModifyVariable(method = "respawn", at = @At(value = "JUMP", ordinal = 0, shift = At.Shift.BEFORE), ordinal = 1)
+    @ModifyVariable(method = "respawn", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;", ordinal = 0, shift = At.Shift.AFTER), ordinal = 1)
     public boolean modifyIsForced(boolean prev) {
         if (respawnEvent != null) {
             return respawnEvent.isSpawnpointForced();
@@ -92,7 +92,7 @@ public abstract class PlayerListMixin {
         }
     }
 
-    @ModifyVariable(method = "respawn", at = @At(value = "JUMP", ordinal = 0, shift = At.Shift.BEFORE))
+    @ModifyVariable(method = "respawn", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;", ordinal = 0, shift = At.Shift.AFTER))
     public ServerLevel modifyLevel(ServerLevel prev) {
         if (respawnEvent != null) {
             return respawnEvent.getSpawnpoint() != null ? ((WrappedWorld) respawnEvent.getSpawnpoint().getWorld()).unwrap() : null;
