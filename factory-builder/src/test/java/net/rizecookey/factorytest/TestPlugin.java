@@ -84,6 +84,7 @@ public class TestPlugin implements FactoryPlugin {
             }
         }, event -> event.getEntity() instanceof Player);
 
+        ItemStack netheriteSword = ItemStack.create(Minecraft.Item.byIdentifier(new Identifier("minecraft", "netherite_sword")));
         LivingEntityDeathEvent.BACKEND.register(event -> event.setDropLoot(false));
         PlayerDeathEvent.BACKEND.register(event -> {
             final Player player = event.getPlayer();
@@ -110,7 +111,7 @@ public class TestPlugin implements FactoryPlugin {
 
             PlayerInventory inventory = player.getInventory();
             inventory.clear();
-            inventory.addItemStack(ItemStack.create(Minecraft.Item.NETHERITE_SWORD));
+            inventory.addItemStack(netheriteSword);
             inventory.setItemStack(18, ItemStack.create(Minecraft.Item.LAPIS_LAZULI, 16));
             player.setEquipmentStack(ArmorSlot.HEAD, ItemStack.create(Minecraft.Item.NETHERITE_HELMET));
             player.setEquipmentStack(ArmorSlot.CHEST, ItemStack.create(Minecraft.Item.DIAMOND_CHESTPLATE));

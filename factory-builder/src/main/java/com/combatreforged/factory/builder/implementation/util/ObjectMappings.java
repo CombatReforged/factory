@@ -55,19 +55,23 @@ public abstract class ObjectMappings {
         // Cause all classes to initialize if they aren't already to prevent issues
         try {
             Class<?>[] classes = {
-                    MobEffects.class,
                     Blocks.class,
-                    Items.class,
-                    DamageSource.class,
-                    net.minecraft.world.entity.EntityType.class,
                     BlockStateProperties.class,
+                    Items.class,
+                    MobEffects.class,
+                    net.minecraft.world.entity.EntityType.class,
+                    DamageSource.class,
                     GameType.class,
                     net.minecraft.world.entity.EquipmentSlot.class,
                     Enchantments.class,
                     MenuType.class
             };
             for (Class<?> clazz : classes) {
-                Class.forName(clazz.getName());
+                try {
+                    Class.forName(clazz.getName());
+                } catch (ExceptionInInitializerError e) {
+                    LogManager.getLogger("ObjectMappings").error("Error while loading class '" + clazz.getName() + "':", e);
+                }
             }
         } catch (ClassNotFoundException e) {
             LogManager.getLogger("ObjectMappings").error(e);
