@@ -124,15 +124,14 @@ public class WrappedPlayerInventory extends Wrapped<Inventory> implements Player
             chosen = slot - 100 + wrapped.items.size();
         }
         else if (slot == -106) {
-            chosen = wrapped.items.size() + wrapped.armor.size() - 1;
+            chosen = wrapped.items.size() + wrapped.armor.size();
         }
 
         return chosen;
     }
 
     private ArmorSlot transformToArmorSlot(int id) {
-        switch (id) {
-            case 100:
+        switch (id) {            case 100:
                 return FEET;
             case 101:
                 return LEGS;
