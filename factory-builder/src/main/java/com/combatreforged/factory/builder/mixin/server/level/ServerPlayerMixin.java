@@ -178,7 +178,7 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
         DamageData data = Wrapped.wrap(damageSource, WrappedDamageData.class);
         boolean mobLoot = this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT);
         boolean keepInventory = this.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
-        LivingEntityDeathEvent deathEvent = new LivingEntityDeathEvent(player, data, mobLoot, keepInventory, keepInventory);
+        LivingEntityDeathEvent deathEvent = new LivingEntityDeathEvent(player, data, mobLoot, !keepInventory, !keepInventory);
         this.setDeathEvent(deathEvent);
         LivingEntityDeathEvent.BACKEND.invoke(this.getDeathEvent());
         this.deathEventHappened = true;
