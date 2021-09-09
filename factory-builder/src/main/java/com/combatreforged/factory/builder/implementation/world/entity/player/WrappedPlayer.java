@@ -7,12 +7,14 @@ import com.combatreforged.factory.api.world.item.container.menu.ContainerMenu;
 import com.combatreforged.factory.api.world.item.container.menu.MenuHolder;
 import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.scoreboard.Scoreboard;
+import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.api.world.util.Vector3D;
 import com.combatreforged.factory.builder.exception.WrappingException;
 import com.combatreforged.factory.builder.extension.server.level.ServerPlayerExtension;
 import com.combatreforged.factory.builder.extension.world.food.FoodDataExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
+import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
 import com.combatreforged.factory.builder.implementation.world.entity.WrappedLivingEntity;
 import com.combatreforged.factory.builder.implementation.world.item.container.WrappedPlayerInventory;
 import com.combatreforged.factory.builder.implementation.world.item.container.menu.WrappedContainerMenu;
@@ -26,7 +28,9 @@ import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesPacket;
 import net.minecraft.network.protocol.game.ServerboundClientCommandPacket;
 import net.minecraft.server.ServerScoreboard;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.SimpleMenuProvider;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,6 +42,15 @@ import static com.combatreforged.factory.builder.implementation.util.ObjectMappi
 
 public class WrappedPlayer extends WrappedLivingEntity implements Player {
     ServerPlayer wrappedPlayer;
+
+    @Override
+    public void teleport(Location location, boolean ignoreDirection) {
+        ServerLevel level = ((WrappedWorld) location.getWorld()).unwrap();
+        float yRot = !ignoreDirection ? location.getYaw() % 360 : wrappedPlayer.yRot;
+        float xRot = !ignoreDirection ? Mth.clamp(location.getPitch(), -90.0F, 90.0F) % 360.0F : wrappedPlayer.xRot;
+        wrappedPlayer.teleportTo(level, location.getX(), location.getY(), location.getZ(), yRot, xRot);
+    }
+
     public WrappedPlayer(ServerPlayer wrappedPlayer) {
         super(wrappedPlayer);
         this.wrappedPlayer = wrappedPlayer;

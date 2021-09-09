@@ -110,7 +110,7 @@ public abstract class PlayerListMixin {
     @Inject(method = "respawn", at = @At("TAIL"))
     public void nullifyRespawnEvent(ServerPlayer serverPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir) {
         if (respawnEvent != null) {
-            ((WrappedPlayer) respawnEvent.getPlayer()).unwrap().onUpdateAbilities();
+            respawnEvent.getPlayer().setGameMode(respawnEvent.getRespawnMode());
             PlayerRespawnEvent.BACKEND.invokeEndFunctions(respawnEvent);
             this.respawnEvent = null;
         }
