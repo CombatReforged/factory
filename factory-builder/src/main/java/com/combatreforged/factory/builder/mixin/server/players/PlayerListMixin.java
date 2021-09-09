@@ -61,7 +61,6 @@ public abstract class PlayerListMixin {
         GameType gameType = serverPlayer.gameMode.getGameModeForPlayer();
         this.respawnEvent = new PlayerRespawnEvent(Wrapped.wrap(serverPlayer, WrappedPlayer.class), respawnPoint, bl2, ObjectMappings.GAME_MODES.inverse().get(gameType));
         PlayerRespawnEvent.BACKEND.invoke(respawnEvent);
-        Wrapped.wrap(serverPlayer, WrappedPlayer.class).setGameMode(respawnEvent.getRespawnMode());
     }
 
     @ModifyVariable(method = "respawn", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;", ordinal = 0, shift = At.Shift.AFTER))
@@ -98,6 +97,13 @@ public abstract class PlayerListMixin {
             return respawnEvent.getSpawnpoint() != null ? ((WrappedWorld) respawnEvent.getSpawnpoint().getWorld()).unwrap() : null;
         } else {
             return prev;
+        }
+    }
+
+    @Inject(method = "respawn", at = @At(value = "NEW", target = "net/minecraft/server/level/ServerPlayer", shift = At.Shift.BEFORE))
+    public void modifyGameMode(ServerPlayer serverPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir) {
+        if (respawnEvent != null) {
+            serverPlayer.setGameMode(ObjectMappings.GAME_MODES.get(respawnEvent.getRespawnMode()));
         }
     }
 
