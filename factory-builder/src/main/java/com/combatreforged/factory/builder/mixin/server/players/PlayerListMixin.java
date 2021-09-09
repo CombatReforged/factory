@@ -109,8 +109,11 @@ public abstract class PlayerListMixin {
 
     @Inject(method = "respawn", at = @At("TAIL"))
     public void nullifyRespawnEvent(ServerPlayer serverPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir) {
-        PlayerRespawnEvent.BACKEND.invokeEndFunctions(respawnEvent);
-        this.respawnEvent = null;
+        if (respawnEvent != null) {
+            ((WrappedPlayer) respawnEvent.getPlayer()).unwrap().onUpdateAbilities();
+            PlayerRespawnEvent.BACKEND.invokeEndFunctions(respawnEvent);
+            this.respawnEvent = null;
+        }
     }
     // END: PlayerRespawnEvent
 }
