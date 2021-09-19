@@ -6,6 +6,7 @@ import com.combatreforged.factory.api.event.player.PlayerDeathEvent;
 import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.scoreboard.ScoreboardTeam;
 import com.combatreforged.factory.builder.extension.server.level.ServerPlayerExtension;
 import com.combatreforged.factory.builder.extension.world.entity.LivingEntityExtension;
 import com.combatreforged.factory.builder.extension.wrap.ChangeableWrap;
@@ -69,7 +70,7 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
 
     @Unique private boolean lastFlyingState;
 
-    @Unique private List<UUID> hiddenInTabList = new ArrayList<>();
+    @Unique private final List<UUID> hiddenInTabList = new ArrayList<>();
 
     public ServerPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
         super(level, blockPos, f, gameProfile);
@@ -178,27 +179,16 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
         DamageData data = Wrapped.wrap(damageSource, WrappedDamageData.class);
         boolean mobLoot = this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT);
         boolean keepInventory = this.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
-        LivingEntityDeathEvent deathEvent = new LivingEntityDeathEvent(player, data, mobLoot, !keepInventory, !keepInventory);
-        this.setDeathEvent(deathEvent);
-        LivingEntityDeathEvent.BACKEND.invoke(this.getDeathEvent());
-        this.deathEventHappened = true;
-        this.keepInv = !this.getDeathEvent().isDropEquipment();
-        this.keepExp = !this.getDeathEvent().isDropExperience();
+        this.playerDeathEvent = new PlayerDeathEvent(player, data, mobLoot, !keepInventory, !keepInventory, null, ScoreboardTeam.VisibleFor.NO_ONE);
     }
 
     @Unique private PlayerDeathEvent playerDeathEvent;
-    @Inject(method = "die", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;send(Lnet/minecraft/network/protocol/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
+    @Inject(method = "die", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;send(Lnet/minecraft/network/protocol/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", shift = At.Shift.BEFORE, ordinal = 0), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
     public void injectPlayerDeathEvent(DamageSource damageSource, CallbackInfo ci, boolean b, Component component) {
-        LivingEntityDeathEvent deathEvent = this.getDeathEvent();
-        net.kyori.adventure.text.Component deathMessage = ObjectMappings.convertComponent(component);
-        this.playerDeathEvent = new PlayerDeathEvent(
-                Wrapped.wrap(this, WrappedPlayer.class),
-                deathEvent.getCause(),
-                deathEvent.isDropLoot(),
-                deathEvent.isDropEquipment(),
-                deathEvent.isDropExperience(),
-                deathMessage,
-                WrappedScoreboardTeam.VISIBLE_MAP.inverse().get(this.getTeam() != null ? this.getTeam().getDeathMessageVisibility() : Team.Visibility.ALWAYS));
+        this.playerDeathEvent.setDeathMessage(ObjectMappings.convertComponent(component));
+        this.playerDeathEvent.setVisibleFor(WrappedScoreboardTeam.VISIBLE_MAP.inverse().get(this.getTeam() != null ? this.getTeam().getDeathMessageVisibility() : Team.Visibility.ALWAYS));
+        this.setDeathEvent(this.playerDeathEvent);
+        LivingEntityDeathEvent.BACKEND.invoke(this.playerDeathEvent);
         PlayerDeathEvent.BACKEND.invoke(this.playerDeathEvent);
     }
 
@@ -216,6 +206,13 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
         } else {
             return this.getTeam();
         }
+    }
+
+    @Inject(method = "die", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;removeEntitiesOnShoulder()V", shift = At.Shift.BEFORE))
+    public void loadValues(DamageSource damageSource, CallbackInfo ci) {
+        this.deathEventHappened = true;
+        this.keepInv = !this.getDeathEvent().isDropEquipment();
+        this.keepExp = !this.getDeathEvent().isDropExperience();
     }
 
     @Inject(method = "die", at = @At("TAIL"))
