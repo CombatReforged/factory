@@ -205,6 +205,11 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
     }
 
     @Override
+    public void closeMenu() {
+        this.wrappedPlayer.closeContainer();
+    }
+
+    @Override
     @Nullable public ContainerMenu getOpenMenu() {
         return Wrapped.wrap(wrappedPlayer.containerMenu, WrappedContainerMenu.class);
     }

@@ -43,6 +43,7 @@ public interface Player extends LivingEntity, MessageReceiver {
     void sendActionBarMessage(Component component);
 
     void openMenu(MenuHolder creator);
+    void closeMenu();
     @Nullable ContainerMenu getOpenMenu();
 
     GameModeType getGameMode();

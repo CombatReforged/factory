@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'com.combatreforged.factory'
-version '0.1.6'
+version '0.1.7'
 
 def props = new Properties()
 def file = file("maven.properties")
