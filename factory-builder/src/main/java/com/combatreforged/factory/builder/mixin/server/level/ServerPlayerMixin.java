@@ -180,6 +180,7 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
         boolean mobLoot = this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT);
         boolean keepInventory = this.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
         this.playerDeathEvent = new PlayerDeathEvent(player, data, mobLoot, !keepInventory, !keepInventory, null, ScoreboardTeam.VisibleFor.NO_ONE);
+        this.setDeathEvent(playerDeathEvent);
     }
 
     @Unique private PlayerDeathEvent playerDeathEvent;
@@ -187,7 +188,6 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
     public void injectPlayerDeathEvent(DamageSource damageSource, CallbackInfo ci, boolean b, Component component) {
         this.playerDeathEvent.setDeathMessage(ObjectMappings.convertComponent(component));
         this.playerDeathEvent.setVisibleFor(WrappedScoreboardTeam.VISIBLE_MAP.inverse().get(this.getTeam() != null ? this.getTeam().getDeathMessageVisibility() : Team.Visibility.ALWAYS));
-        this.setDeathEvent(this.playerDeathEvent);
         LivingEntityDeathEvent.BACKEND.invoke(this.playerDeathEvent);
         PlayerDeathEvent.BACKEND.invoke(this.playerDeathEvent);
     }

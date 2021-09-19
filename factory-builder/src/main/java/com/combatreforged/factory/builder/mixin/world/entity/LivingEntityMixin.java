@@ -29,15 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements LivingEntityExtension {
-    @Shadow protected abstract boolean shouldDropLoot();
-
-    @Shadow public int deathTime;
-
     @Shadow protected boolean dead;
-
-    @Shadow protected abstract float getDamageAfterArmorAbsorb(DamageSource damageSource, float f);
-
-    @Shadow protected abstract void dropAllDeathLoot(DamageSource damageSource);
 
     @Shadow protected abstract void dropEquipment();
 
@@ -89,7 +81,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityEx
     @Unique LivingEntityDeathEvent deathEvent;
     @Inject(method = "die", at = @At("HEAD"))
     public void injectLivingEntityDeathEvent(DamageSource damageSource, CallbackInfo ci) {
-        if (!this.removed && !this.dead) {
+        if (!this.removed && !this.dead && this.deathEvent == null) {
             com.combatreforged.factory.api.world.entity.LivingEntity entity = Wrapped.wrap(this, WrappedLivingEntity.class);
             DamageData data = Wrapped.wrap(damageSource, WrappedDamageData.class);
             boolean mobLoot = this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT);
