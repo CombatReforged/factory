@@ -219,11 +219,11 @@ public class BuilderImpl implements Builder {
     @Override
     public ItemStack createItemStack(ItemType itemType, int count, int damage, @Nullable NBTObject nbt) {
         net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(ObjectMappings.ITEMS.get(itemType), count);
-        if (damage != 0) {
-            stack.setDamageValue(damage);
-        }
         if (nbt != null) {
             stack.setTag(((WrappedNBTObject) nbt).unwrap());
+        }
+        if (damage != 0) {
+            stack.setDamageValue(damage);
         }
 
         return Wrapped.wrap(stack, WrappedItemStack.class);
