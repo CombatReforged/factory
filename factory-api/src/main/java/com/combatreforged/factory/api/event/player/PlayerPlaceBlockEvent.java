@@ -9,6 +9,7 @@ import com.combatreforged.factory.api.world.entity.equipment.HandSlot;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.combatreforged.factory.api.world.util.Location;
+import org.jetbrains.annotations.Nullable;
 
 public class PlayerPlaceBlockEvent extends PlayerEvent implements Cancellable {
     public static final EventBackend<PlayerPlaceBlockEvent> BACKEND = EventBackend.create(PlayerPlaceBlockEvent.class);
@@ -16,12 +17,12 @@ public class PlayerPlaceBlockEvent extends PlayerEvent implements Cancellable {
     private boolean cancelled;
 
     private final Location location;
-    private final Block currentBlockState;
-    private BlockState newBlockState;
+    private final @Nullable Block currentBlockState;
+    private @Nullable BlockState newBlockState;
     private final ItemStack blockStack;
     private final HandSlot placingHand;
 
-    public PlayerPlaceBlockEvent(Player player, Location location, Block currentBlockState, BlockState newBlockState, ItemStack blockStack, HandSlot placingHand) {
+    public PlayerPlaceBlockEvent(Player player, Location location, @Nullable Block currentBlockState, @Nullable BlockState newBlockState, ItemStack blockStack, HandSlot placingHand) {
         super(player);
         this.location = location;
         this.currentBlockState = currentBlockState;
@@ -38,15 +39,15 @@ public class PlayerPlaceBlockEvent extends PlayerEvent implements Cancellable {
         return location.getWorld();
     }
 
-    public Block getCurrentBlockState() {
+    public @Nullable Block getCurrentBlockState() {
         return currentBlockState;
     }
 
-    public BlockState getNewBlockState() {
+    public @Nullable BlockState getNewBlockState() {
         return newBlockState;
     }
 
-    public void setNewBlockState(BlockState newBlockState) {
+    public void setNewBlockState(@Nullable BlockState newBlockState) {
         this.newBlockState = newBlockState;
     }
 

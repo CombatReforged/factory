@@ -17,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
@@ -88,18 +89,19 @@ public abstract class ServerPlayerGameModeMixin {
         PlayerInteractBlockEvent.BACKEND.invoke(interactBlockEvent);
 
         if (interactBlockEvent.isCancelled()) {
-            cir.setReturnValue(InteractionResult.FAIL);
+            cir.setReturnValue(InteractionResult.PASS);
             BlockState blockState = level.getBlockState(blockHitResult.getBlockPos());
             if (blockState.getBlock() instanceof DoorBlock) {
                 BlockPos otherPos = blockState.getValue(DoorBlock.HALF) == DoubleBlockHalf.UPPER ? blockHitResult.getBlockPos().below() : blockHitResult.getBlockPos().above();
                 BlockState otherState = level.getBlockState(otherPos);
                 serverPlayer.connection.send(new ClientboundBlockUpdatePacket(otherPos, otherState));
             }
+            BlockPos placePos = blockHitResult.getBlockPos();
             if (itemStack.getItem() instanceof DoubleHighBlockItem) {
-                BlockPos above = blockHitResult.getBlockPos().above();
-                serverPlayer.connection.send(new ClientboundBlockUpdatePacket(above, level.getBlockState(above)));
+                serverPlayer.connection.send(new ClientboundBlockUpdatePacket(placePos.above(), level.getBlockState(placePos.above())));
+                serverPlayer.connection.send(new ClientboundBlockUpdatePacket(placePos.relative(blockHitResult.getDirection()).above(), level.getBlockState(placePos.relative(blockHitResult.getDirection()).above())));
             }
-            serverPlayer.refreshContainer(serverPlayer.inventoryMenu);
+            serverPlayer.connection.send(new ClientboundContainerSetSlotPacket(0, hand == HandSlot.MAIN_HAND ? serverPlayer.inventory.selected + 36 : 45, itemStack));
         }
     }
 

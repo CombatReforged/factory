@@ -220,7 +220,7 @@ public class TestPlugin implements FactoryPlugin {
         });
 
         PlayerPlaceBlockEvent.BACKEND.register(event -> {
-            if (event.getBlockStack().getItem() == Minecraft.Item.GRASS_BLOCK) {
+            if (event.getPlayer().isSneaking()) {
                 event.setCancelled(true);
             } else {
                 if (Math.random() <= 0.1) {
@@ -228,7 +228,7 @@ public class TestPlugin implements FactoryPlugin {
                     event.setNewBlockState(BlockState.create(Minecraft.Block.CHEST, loc));
                 }
             }
-        });
+        }, event -> false);
 
         server.getCommandDispatcher().register(CommandUtils.literal("test").executes(c -> {
             try {
@@ -264,7 +264,7 @@ public class TestPlugin implements FactoryPlugin {
         });
 
         PlayerInteractBlockEvent.BACKEND.register(event -> {
-            if (event.getPlayer().isSneaking()) {
+            if (event.getPlayer().isSprinting()) {
                 event.setCancelled(true);
             }
         });

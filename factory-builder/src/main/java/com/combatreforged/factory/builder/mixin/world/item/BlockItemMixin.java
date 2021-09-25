@@ -39,8 +39,8 @@ public abstract class BlockItemMixin {
             Player player = Wrapped.wrap(blockPlaceContext2.getPlayer(), WrappedPlayer.class);
             BlockPos clickedPos = blockPlaceContext2.getClickedPos();
             Location location = new Location(clickedPos.getX(), clickedPos.getY(), clickedPos.getZ(), Wrapped.wrap(blockPlaceContext2.getLevel(), WrappedWorld.class));
-            Block currentBlockState = new WrappedBlock(location);
-            com.combatreforged.factory.api.world.block.BlockState newBlockState = new WrappedBlockState(location, blockState);
+            Block currentBlockState = blockPlaceContext2.getLevel().getBlockState(clickedPos) != null ? new WrappedBlock(location) : null;
+            com.combatreforged.factory.api.world.block.BlockState newBlockState = blockState != null ? new WrappedBlockState(location, blockState) : null;
             ItemStack blockStack = Wrapped.wrap(blockPlaceContext2.getItemInHand(), WrappedItemStack.class);
             HandSlot handSlot = blockPlaceContext2.getHand() == InteractionHand.MAIN_HAND ? HandSlot.MAIN_HAND : HandSlot.OFF_HAND;
 
@@ -50,9 +50,9 @@ public abstract class BlockItemMixin {
             if (this.placeBlockEvent.isCancelled()) {
                 assert blockPlaceContext2.getPlayer() instanceof ServerPlayer;
                 ServerPlayer sPlayer = ((ServerPlayer) blockPlaceContext2.getPlayer());
-                sPlayer.connection.send(new ClientboundContainerSetSlotPacket(0, handSlot == HandSlot.MAIN_HAND ? sPlayer.inventory.selected + 36 : 45, blockPlaceContext2.getItemInHand()));
                 BlockPos above = blockPlaceContext2.getClickedPos().above();
-                sPlayer.connection.send(new ClientboundBlockUpdatePacket(above, blockPlaceContext2.getLevel().getBlockState(above)));
+                sPlayer.connection.send(new ClientboundBlockUpdatePacket(above, sPlayer.level.getBlockState(above)));
+                sPlayer.connection.send(new ClientboundContainerSetSlotPacket(0, handSlot == HandSlot.MAIN_HAND ? sPlayer.inventory.selected + 36 : 45, blockPlaceContext2.getItemInHand()));
                 cir.setReturnValue(InteractionResult.FAIL);
             }
         }
@@ -61,7 +61,12 @@ public abstract class BlockItemMixin {
     @ModifyVariable(method = "place", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/item/BlockItem;getPlacementState(Lnet/minecraft/world/item/context/BlockPlaceContext;)Lnet/minecraft/world/level/block/state/BlockState;", shift = At.Shift.AFTER))
     public BlockState modifyBlockState(BlockState prev) {
         if (this.placeBlockEvent != null && !this.placeBlockEvent.isCancelled()) {
-            return ((WrappedBlockState) placeBlockEvent.getNewBlockState()).state();
+            if ((placeBlockEvent.getNewBlockState() != null ? placeBlockEvent.getNewBlockState().getType() : null) != (placeBlockEvent.getCurrentBlockState() != null ? placeBlockEvent.getCurrentBlockState().getType() : null)) {
+                ServerPlayer mcPlayer = ((WrappedPlayer) placeBlockEvent.getPlayer()).unwrap();
+                BlockPos blockPos = new BlockPos(placeBlockEvent.getLocation().getX(), placeBlockEvent.getLocation().getY() + 1, placeBlockEvent.getLocation().getZ());
+                mcPlayer.connection.send(new ClientboundBlockUpdatePacket(blockPos, ((WrappedWorld) placeBlockEvent.getWorld()).unwrap().getBlockState(blockPos)));
+            }
+            return placeBlockEvent.getNewBlockState() != null ? ((WrappedBlockState) placeBlockEvent.getNewBlockState()).state() : null;
         } else {
             return prev;
         }
