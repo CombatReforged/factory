@@ -22,6 +22,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.DoubleHighBlockItem;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DoorBlock;
@@ -93,6 +94,10 @@ public abstract class ServerPlayerGameModeMixin {
                 BlockPos otherPos = blockState.getValue(DoorBlock.HALF) == DoubleBlockHalf.UPPER ? blockHitResult.getBlockPos().below() : blockHitResult.getBlockPos().above();
                 BlockState otherState = level.getBlockState(otherPos);
                 serverPlayer.connection.send(new ClientboundBlockUpdatePacket(otherPos, otherState));
+            }
+            if (itemStack.getItem() instanceof DoubleHighBlockItem) {
+                BlockPos above = blockHitResult.getBlockPos().above();
+                serverPlayer.connection.send(new ClientboundBlockUpdatePacket(above, level.getBlockState(above)));
             }
             serverPlayer.refreshContainer(serverPlayer.inventoryMenu);
         }

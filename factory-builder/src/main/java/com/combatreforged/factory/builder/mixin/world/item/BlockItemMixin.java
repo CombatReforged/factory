@@ -13,6 +13,7 @@ import com.combatreforged.factory.builder.implementation.world.block.WrappedBloc
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -21,7 +22,6 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -31,8 +31,6 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(BlockItem.class)
 public abstract class BlockItemMixin {
-    @Shadow protected abstract boolean placeBlock(BlockPlaceContext blockPlaceContext, BlockState blockState);
-
     @Unique private PlayerPlaceBlockEvent placeBlockEvent;
 
     @Inject(method = "place", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/item/BlockItem;getPlacementState(Lnet/minecraft/world/item/context/BlockPlaceContext;)Lnet/minecraft/world/level/block/state/BlockState;", shift = At.Shift.AFTER), cancellable = true, locals = LocalCapture.CAPTURE_FAILEXCEPTION)
@@ -53,6 +51,8 @@ public abstract class BlockItemMixin {
                 assert blockPlaceContext2.getPlayer() instanceof ServerPlayer;
                 ServerPlayer sPlayer = ((ServerPlayer) blockPlaceContext2.getPlayer());
                 sPlayer.connection.send(new ClientboundContainerSetSlotPacket(0, handSlot == HandSlot.MAIN_HAND ? sPlayer.inventory.selected + 36 : 45, blockPlaceContext2.getItemInHand()));
+                BlockPos above = blockPlaceContext2.getClickedPos().above();
+                sPlayer.connection.send(new ClientboundBlockUpdatePacket(above, blockPlaceContext2.getLevel().getBlockState(above)));
                 cir.setReturnValue(InteractionResult.FAIL);
             }
         }
