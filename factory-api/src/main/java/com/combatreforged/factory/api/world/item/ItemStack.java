@@ -56,4 +56,6 @@ public interface ItemStack {
     static ItemStack create(ItemType itemType, int count, int damage, @Nullable NBTObject nbt) {
         return Builder.getInstance().createItemStack(itemType, count, damage, nbt);
     }
+
+    ItemStack copy();
 }

@@ -267,6 +267,11 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
         wrapped.setTag(((WrappedNBTObject) nbt).unwrap());
     }
 
+    @Override
+    public ItemStack copy() {
+        return Wrapped.wrap(wrapped.copy(), WrappedItemStack.class);
+    }
+
     public static ItemStack conv(net.minecraft.world.item.ItemStack itemStack) {
         return itemStack.isEmpty() ? null : Wrapped.wrap(itemStack, WrappedItemStack.class);
     }

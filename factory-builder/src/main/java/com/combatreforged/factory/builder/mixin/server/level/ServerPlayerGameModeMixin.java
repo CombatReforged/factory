@@ -14,6 +14,8 @@ import com.combatreforged.factory.builder.implementation.world.block.WrappedBloc
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,6 +25,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.phys.BlockHitResult;
@@ -52,6 +55,12 @@ public abstract class ServerPlayerGameModeMixin {
 
         if (breakBlockEvent.isCancelled()) {
             cir.setReturnValue(false);
+            this.player.connection.send(new ClientboundBlockUpdatePacket(blockPos, level.getBlockState(blockPos)));
+            if (level.getBlockEntity(blockPos) != null) {
+                BlockEntity blockEntity = level.getBlockEntity(blockPos);
+                assert blockEntity != null;
+                this.player.connection.send(new ClientboundBlockEntityDataPacket(blockPos, 0, blockEntity.save(new CompoundTag())));
+            }
         } else {
             ((BlockExtension) this.level.getBlockState(blockPos).getBlock()).currentBreakEvent(breakBlockEvent);
         }

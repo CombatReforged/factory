@@ -39,6 +39,11 @@ public class WrappedStatusEffectInstance extends Wrapped<MobEffectInstance> impl
         return wrapped.isAmbient();
     }
 
+    @Override
+    public StatusEffectInstance copy() {
+        return StatusEffectInstance.create(this.getStatusEffect(), this.getTicksLeft(), this.getAmplifier(), this.isAmbient());
+    }
+
     private static StatusEffect convert(MobEffect effect) {
         StatusEffect statusEffect;
         if (ObjectMappings.EFFECTS.inverse().containsKey(effect))

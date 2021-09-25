@@ -203,7 +203,7 @@ public class TestPlugin implements FactoryPlugin {
         });
 
         PlayerBreakBlockEvent.BACKEND.register(event -> {
-            if (event.getBlock().getType() == Minecraft.Block.GRASS || event.getBlock().getType() == Minecraft.Block.GRASS_BLOCK) {
+            if (event.getBlock().getType() == Minecraft.Block.GRASS || event.getBlock().getType() == Minecraft.Block.TALL_GRASS || event.getBlock().getType() == Minecraft.Block.GRASS_BLOCK || event.getBlock().getType() == Minecraft.Block.BLACK_WALL_BANNER) {
                 event.setCancelled(true);
             } else {
                 event.setDropBlock(false);

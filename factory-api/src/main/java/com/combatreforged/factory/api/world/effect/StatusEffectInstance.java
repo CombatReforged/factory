@@ -11,6 +11,8 @@ public interface StatusEffectInstance {
     int getAmplifier();
     boolean isAmbient();
 
+    StatusEffectInstance copy();
+
     static StatusEffectInstance create(StatusEffect statusEffect, int duration, int amplifier,
                                        boolean ambient) {
         return Builder.getInstance()

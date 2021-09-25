@@ -1,7 +1,6 @@
 package com.combatreforged.factory.builder.mixin.server.level;
 
 import com.combatreforged.factory.api.event.entity.LivingEntityDeathEvent;
-import com.combatreforged.factory.api.event.player.PlayerChangeMovementStateEvent;
 import com.combatreforged.factory.api.event.player.PlayerDeathEvent;
 import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.entity.Entity;
@@ -67,8 +66,6 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
     @Unique private boolean deathEventHappened;
     @Unique private boolean keepExp;
     @Unique private boolean keepInv;
-
-    @Unique private boolean lastFlyingState;
 
     @Unique private final List<UUID> hiddenInTabList = new ArrayList<>();
 
@@ -223,18 +220,4 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
         this.playerDeathEvent = null;
     }
     //END: LivingEntityDeathEvent
-
-    @Inject(method = "onUpdateAbilities", at = @At("HEAD"))
-    public void injectChangeMovementStateEvent(CallbackInfo ci) {
-        if (this.lastFlyingState != this.abilities.flying) {
-            PlayerChangeMovementStateEvent changeMovementStateEvent = new PlayerChangeMovementStateEvent(Wrapped.wrap(this, WrappedPlayer.class), PlayerChangeMovementStateEvent.ChangedState.FLYING, this.abilities.flying);
-            PlayerChangeMovementStateEvent.BACKEND.invoke(changeMovementStateEvent);
-            if (changeMovementStateEvent.isCancelled()) {
-                this.abilities.flying = this.lastFlyingState;
-            } else {
-                this.abilities.flying = changeMovementStateEvent.getChangedValue();
-            }
-            PlayerChangeMovementStateEvent.BACKEND.invokeEndFunctions(changeMovementStateEvent);
-        }
-    }
 }
