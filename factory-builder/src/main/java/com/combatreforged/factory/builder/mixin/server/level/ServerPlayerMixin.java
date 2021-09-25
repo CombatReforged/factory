@@ -73,11 +73,6 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
         super(level, blockPos, f, gameProfile);
     }
 
-    @Inject(method = "<init>", at = @At("TAIL"))
-    public void initialize(MinecraftServer minecraftServer, ServerLevel serverLevel, GameProfile gameProfile, ServerPlayerGameMode serverPlayerGameMode, CallbackInfo ci) {
-        this.lastFlyingState = this.abilities.flying;
-    }
-
     @Inject(method = "restoreFrom", at = @At("HEAD"))
     public void storeDefaultValues(ServerPlayer serverPlayer, boolean bl, CallbackInfo ci) {
         ServerPlayerExtension ext = (ServerPlayerExtension) serverPlayer;
