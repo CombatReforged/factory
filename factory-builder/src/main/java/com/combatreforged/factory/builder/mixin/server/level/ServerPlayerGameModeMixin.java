@@ -61,7 +61,7 @@ public abstract class ServerPlayerGameModeMixin {
             if (level.getBlockEntity(blockPos) != null) {
                 BlockEntity blockEntity = level.getBlockEntity(blockPos);
                 assert blockEntity != null;
-                this.player.connection.send(new ClientboundBlockEntityDataPacket(blockPos, 0, blockEntity.save(new CompoundTag())));
+                this.player.connection.send(blockEntity.getUpdatePacket());
             }
         } else {
             ((BlockExtension) this.level.getBlockState(blockPos).getBlock()).currentBreakEvent(breakBlockEvent);
