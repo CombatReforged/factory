@@ -259,6 +259,11 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
                 .setScoreboard(Objects.requireNonNull(wrappedPlayer.getServer()).getScoreboard());
     }
 
+    @Override
+    public Component getDisplayName() {
+        return convertComponent(wrappedPlayer.getDisplayName());
+    }
+
     public void updatePlayer(ServerPlayer player) {
         this.wrapped = player;
         this.wrappedPlayer = player;

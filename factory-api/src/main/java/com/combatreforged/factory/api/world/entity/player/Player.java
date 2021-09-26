@@ -56,6 +56,8 @@ public interface Player extends LivingEntity, MessageReceiver {
     void setScoreboard(Scoreboard scoreboard);
     void setServerScoreboard();
 
+    Component getDisplayName();
+
     void respawn();
 
     void showPlayerInTabList(Player player, boolean show);
