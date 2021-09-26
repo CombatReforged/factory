@@ -279,10 +279,10 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
 
                     if (save) {
                         level.save(null, true, false);
+                        level.close();
                     }
 
                     toBeRemoved.add(level.dimension());
-                    level.close();
                 }
 
                 if (save) {
