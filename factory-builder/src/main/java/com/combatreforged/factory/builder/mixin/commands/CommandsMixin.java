@@ -81,20 +81,9 @@ public abstract class CommandsMixin {
 
         Map<CommandNode<CommandSourceInfo>, CommandNode<SharedSuggestionProvider>> apiMap = new HashMap<>();
         apiMap.put(apiDispatcher.getRoot(), rootCommandNode);
-        CommandSourceStack stack = serverPlayer.createCommandSourceStack();
 
         Player player = Wrapped.wrap(serverPlayer, WrappedPlayer.class);
-        this.fillAPICommands(apiDispatcher.getRoot(), rootCommandNode, CommandSourceInfo.builder()
-                .source(player)
-                .executingEntity(Wrapped.wrap(stack.getEntity(), WrappedEntity.class))
-                .location(new Location(
-                        stack.getPosition().x,
-                        stack.getPosition().y,
-                        stack.getPosition().z,
-                        stack.getRotation().y,
-                        stack.getRotation().x,
-                        Wrapped.wrap(stack.getLevel(), WrappedWorld.class)))
-                .server(FactoryAPI.getInstance().getServer()).build(), apiMap);
+        this.fillAPICommands(apiDispatcher.getRoot(), rootCommandNode, player.createCommandInfo(), apiMap);
     }
 
     // Copy of Commands.fillUsableCommands(...) for our dispatcher

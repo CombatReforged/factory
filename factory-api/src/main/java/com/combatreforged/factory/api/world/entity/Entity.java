@@ -2,6 +2,7 @@ package com.combatreforged.factory.api.world.entity;
 
 import com.combatreforged.factory.api.builder.Builder;
 import com.combatreforged.factory.api.command.CommandSender;
+import com.combatreforged.factory.api.command.CommandSourceInfo;
 import com.combatreforged.factory.api.exception.UnassignableTypeException;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.nbt.NBTObject;
@@ -77,6 +78,8 @@ public interface Entity extends CommandSender {
     void setEntityNBT(NBTObject nbt);
 
     boolean isOnGround();
+
+    CommandSourceInfo createCommandInfo();
 
     static Entity create(EntityType type, World world) {
         return Builder.getInstance().createEntity(type, world);

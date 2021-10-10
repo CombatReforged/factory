@@ -2,6 +2,7 @@ package net.rizecookey.factorytest;
 
 import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
+import com.combatreforged.factory.api.command.CommandSourceInfo;
 import com.combatreforged.factory.api.command.CommandUtils;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.combatreforged.factory.api.event.entity.LivingEntityDamageEvent;
@@ -35,14 +36,14 @@ import com.combatreforged.factory.api.world.scoreboard.ScoreboardTeam;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.api.world.util.Vector3D;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.nio.file.Paths;
 
 public class TestPlugin implements FactoryPlugin {
     Logger logger = LogManager.getLogger();
@@ -230,19 +231,13 @@ public class TestPlugin implements FactoryPlugin {
             }
         }, event -> false);
 
-        server.getCommandDispatcher().register(CommandUtils.literal("test").executes(c -> {
-            try {
-                c.getSource().sendMessage(Component.text("Working!"));
-                if (server.hasWorld("test")) {
-                    server.unloadWorld("test");
-                } else {
-                    server.loadWorld(Paths.get("test"), "test");
-                }
-            } catch (Exception e) {
-                logger.error("An error occured while executing test command", e);
-            }
-            return 0;
-        }));
+        server.getCommandDispatcher().register(CommandUtils.literal("test")
+                .then(RequiredArgumentBuilder.<CommandSourceInfo, String>argument("test_suggestion", StringArgumentType.word())
+                        .suggests((ctx, builder) -> builder.suggest("foobar").buildFuture())
+                        .executes(ctx -> {
+                            ctx.getSource().sendMessage(Component.text("Success! lol"));
+                            return 0;
+                        })));
 
         PlayerChangeMovementStateEvent.BACKEND.register(event -> System.out.println("Changed state: " + event.getChangedState().toString()));
 

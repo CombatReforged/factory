@@ -1,6 +1,8 @@
 package com.combatreforged.factory.builder.implementation.world.entity;
 
+import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
+import com.combatreforged.factory.api.command.CommandSourceInfo;
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.EntityType;
@@ -205,6 +207,22 @@ public class WrappedEntity extends Wrapped<net.minecraft.world.entity.Entity> im
     @Override
     public boolean isOnGround() {
         return wrapped.isOnGround();
+    }
+
+    @Override
+    public CommandSourceInfo createCommandInfo() {
+        CommandSourceStack stack = wrapped.createCommandSourceStack();
+        return CommandSourceInfo.builder()
+                .source(this)
+                .executingEntity(Wrapped.wrap(stack.getEntity(), WrappedEntity.class))
+                .location(new Location(
+                        stack.getPosition().x,
+                        stack.getPosition().y,
+                        stack.getPosition().z,
+                        stack.getRotation().y,
+                        stack.getRotation().x,
+                        Wrapped.wrap(stack.getLevel(), WrappedWorld.class)))
+                .server(FactoryAPI.getInstance().getServer()).build();
     }
 
     @Override
