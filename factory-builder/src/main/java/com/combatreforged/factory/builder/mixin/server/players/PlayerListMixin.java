@@ -3,6 +3,7 @@ package com.combatreforged.factory.builder.mixin.server.players;
 import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
 import com.combatreforged.factory.api.event.player.PlayerRespawnEvent;
 import com.combatreforged.factory.api.world.util.Location;
+import com.combatreforged.factory.builder.extension.server.MinecraftServerExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;
@@ -12,10 +13,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.border.BorderChangeListener;
+import net.minecraft.world.level.border.WorldBorder;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -32,6 +37,8 @@ import java.util.UUID;
 @Mixin(PlayerList.class)
 public abstract class PlayerListMixin {
     @Shadow public abstract void broadcastMessage(Component component, ChatType chatType, UUID uUID);
+
+    @Shadow @Final private MinecraftServer server;
     // BEGIN: JOIN EVENT
     Component joinMessage;
     @Redirect(method = "placeNewPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V", ordinal = 0))
@@ -116,4 +123,14 @@ public abstract class PlayerListMixin {
         }
     }
     // END: PlayerRespawnEvent
+
+    @Redirect(method = "sendLevelInfo", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;overworld()Lnet/minecraft/server/level/ServerLevel;"))
+    public ServerLevel modifyServerLevel(MinecraftServer instance, ServerPlayer serverPlayer, ServerLevel serverLevel) {
+        return ((MinecraftServerExtension) instance).getOverworldForLevel(serverLevel);
+    }
+
+    @Redirect(method = "setLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/border/WorldBorder;addListener(Lnet/minecraft/world/level/border/BorderChangeListener;)V"))
+    public void changeBorderChangeListener(WorldBorder border, BorderChangeListener prev, ServerLevel level) {
+        border.addListener(new SelectiveBorderChangeListener(((MinecraftServerExtension) this.server).getRelatedLevels(level)));
+    }
 }

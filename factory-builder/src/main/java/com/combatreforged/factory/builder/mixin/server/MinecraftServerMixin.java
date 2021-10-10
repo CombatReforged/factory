@@ -8,6 +8,7 @@ import com.combatreforged.factory.builder.extension.world.level.storage.PrimaryL
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
 import com.combatreforged.factory.builder.implementation.dynamicworld.DynamicWorld;
+import com.combatreforged.factory.builder.mixin.server.players.SelectiveBorderChangeListener;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Lifecycle;
 import net.minecraft.commands.CommandSource;
@@ -63,6 +64,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<TickTask> implements SnooperPopulator, CommandSource, AutoCloseable, MinecraftServerExtension {
@@ -232,8 +234,6 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
         if (!serverLevelData.isInitialized()) {
             setInitialSpawn(overworld, serverLevelData, worldGenSettings.generateBonusChest(), false, true);
             serverLevelData.setInitialized(true);
-
-            serverLevelData.setInitialized(true);
         }
 
         if (worldData.getCustomBossEvents() != null) {
@@ -254,6 +254,8 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
                 worldDimensions.add(dimension);
             }
         }
+
+        worldBorder.addListener(new SelectiveBorderChangeListener(worldDimensions));
 
         DynamicWorld dynamicWorld = new DynamicWorld(levelName, overworld, worldDimensions, access, worldData);
         this.dynamicWorlds.put(levelName, dynamicWorld);
@@ -334,5 +336,31 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
     @Override
     public boolean hasLevel(String name) {
         return dynamicWorlds.containsKey(name);
+    }
+
+    @Override
+    public ServerLevel getOverworldForLevel(ServerLevel serverLevel) {
+        return this.dynamicWorlds.values().stream()
+                .filter(dynamicWorld -> dynamicWorld.getDimensions().contains(serverLevel))
+                .map(DynamicWorld::getOverworld)
+                .findFirst().orElse(serverLevel);
+    }
+
+    @Override
+    public List<ServerLevel> getRelatedLevels(ServerLevel serverLevel) {
+        List<ServerLevel> dynamicLevels = this.dynamicWorlds.values().stream()
+                .flatMap(dynWorld -> dynWorld.getDimensions().stream())
+                .collect(Collectors.toList());
+        if (!dynamicLevels.contains(serverLevel)) {
+            return this.levels.values().stream()
+                    .filter(level -> !dynamicLevels.contains(level))
+                    .collect(Collectors.toList());
+        } else {
+            return dynamicWorlds.values().stream()
+                    .map(DynamicWorld::getDimensions)
+                    .filter(dimensions -> dimensions.contains(serverLevel))
+                    .findFirst()
+                    .orElse(ImmutableList.of());
+        }
     }
 }
