@@ -8,7 +8,7 @@ import com.combatreforged.factory.builder.extension.world.level.storage.PrimaryL
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
 import com.combatreforged.factory.builder.implementation.dynamicworld.DynamicWorld;
-import com.combatreforged.factory.builder.mixin.server.players.SelectiveBorderChangeListener;
+import com.combatreforged.factory.builder.extension.server.SelectiveBorderChangeListener;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Lifecycle;
 import net.minecraft.commands.CommandSource;

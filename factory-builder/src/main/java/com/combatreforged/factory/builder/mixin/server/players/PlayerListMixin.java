@@ -4,6 +4,7 @@ import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
 import com.combatreforged.factory.api.event.player.PlayerRespawnEvent;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.builder.extension.server.MinecraftServerExtension;
+import com.combatreforged.factory.builder.extension.server.SelectiveBorderChangeListener;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.WrappedWorld;

@@ -1,4 +1,4 @@
-package com.combatreforged.factory.builder.mixin.server.players;
+package com.combatreforged.factory.builder.extension.server;
 
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundSetBorderPacket;
