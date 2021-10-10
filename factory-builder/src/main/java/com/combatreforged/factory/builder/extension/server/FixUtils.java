@@ -1,4 +1,4 @@
-package com.combatreforged.factory.builder.mixin.__bugfixes;
+package com.combatreforged.factory.builder.extension.server;
 
 import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.scheduler.TaskScheduler;

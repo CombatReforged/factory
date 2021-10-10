@@ -1,5 +1,6 @@
 package com.combatreforged.factory.builder.mixin.__bugfixes;
 
+import com.combatreforged.factory.builder.extension.server.FixUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
