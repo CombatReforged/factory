@@ -4,7 +4,9 @@
   "package": "com.combatreforged.factory.builder.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "__bugfixes.UpdateAfterChangeWorldFix",
+    "_bugfixes.ConnectionAccessor",
+    "_bugfixes.PacketUtilsMixin",
+    "_bugfixes.ServerPlayerMixin",
     "commands.CommandsMixin",
     "commands.CommandSourceStackAccessor",
     "nbt.CollectionTagMixin",
