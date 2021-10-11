@@ -3,6 +3,7 @@ package com.combatreforged.factory.builder.mixin.server.dedicated;
 import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
+import com.combatreforged.factory.api.event.server.ServerStartupFinishEvent;
 import com.combatreforged.factory.builder.FactoryBuilder;
 import com.combatreforged.factory.builder.extension.server.MinecraftServerExtension;
 import com.combatreforged.factory.builder.extension.wrap.Wrap;
@@ -58,6 +59,13 @@ public abstract class DedicatedServerMixin extends MinecraftServer implements Wr
         this.loadPlugins();
 
         FactoryBuilder.LOGGER.info("Done.");
+    }
+
+    @Inject(method = "initServer", at = @At("TAIL"))
+    public void callServerStartupFinishEvent(CallbackInfoReturnable<Boolean> cir) {
+        ServerStartupFinishEvent event = new ServerStartupFinishEvent(this.wrapped);
+        ServerStartupFinishEvent.BACKEND.invoke(event);
+        ServerStartupFinishEvent.BACKEND.invokeEndFunctions(event);
     }
 
     public void loadPlugins() {

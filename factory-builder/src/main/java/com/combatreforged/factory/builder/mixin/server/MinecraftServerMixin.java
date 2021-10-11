@@ -1,6 +1,7 @@
 package com.combatreforged.factory.builder.mixin.server;
 
 import com.combatreforged.factory.api.FactoryServer;
+import com.combatreforged.factory.api.event.server.ServerStopEvent;
 import com.combatreforged.factory.api.event.server.ServerTickEvent;
 import com.combatreforged.factory.builder.extension.server.MinecraftServerExtension;
 import com.combatreforged.factory.builder.extension.server.SelectiveBorderChangeListener;
@@ -25,6 +26,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerResources;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.bossevents.CustomBossEvents;
+import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.progress.ChunkProgressListener;
@@ -140,6 +142,16 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
     @Inject(method = "saveAllChunks", at = @At("RETURN"))
     public void saveCustomWorlds(boolean bl, boolean bl2, boolean bl3, CallbackInfoReturnable<Boolean> cir) {
         dynamicWorlds.forEach((key, value) -> this.saveOverworldData(key));
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Inject(method = "stopServer", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;info(Ljava/lang/String;)V", ordinal = 0, shift = At.Shift.AFTER, remap = false))
+    public void callServerStopEvent(CallbackInfo ci) {
+        if ((Object) this instanceof DedicatedServer) {
+            ServerStopEvent event = new ServerStopEvent(Wrapped.wrap(this, WrappedFactoryServer.class));
+            ServerStopEvent.BACKEND.invoke(event);
+            ServerStopEvent.BACKEND.invokeEndFunctions(event);
+        }
     }
 
     @Unique private final Map<String, DynamicWorld> dynamicWorlds = new HashMap<>();
