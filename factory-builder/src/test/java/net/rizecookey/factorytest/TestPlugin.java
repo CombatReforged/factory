@@ -201,7 +201,11 @@ public class TestPlugin implements FactoryPlugin {
         PlayerRespawnEvent.BACKEND.register(event -> {
             event.setSpawnpointForced(true);
             event.setSpawnpoint(new Location(-13, 76, 12, server.getWorld(new Identifier("minecraft", "the_nether"))));
+            event.runAfterwards(() -> {
+                event.getPlayer().addEffectInstance(StatusEffectInstance.create(Minecraft.Effect.BLINDNESS, 1000000 * 20));
+            });
         });
+
 
         PlayerBreakBlockEvent.BACKEND.register(event -> {
             if (event.getBlock().getType() == Minecraft.Block.GRASS || event.getBlock().getType() == Minecraft.Block.TALL_GRASS || event.getBlock().getType() == Minecraft.Block.GRASS_BLOCK || event.getBlock().getType() == Minecraft.Block.BLACK_WALL_BANNER) {

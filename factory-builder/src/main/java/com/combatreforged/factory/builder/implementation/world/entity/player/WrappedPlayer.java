@@ -41,87 +41,84 @@ import java.util.UUID;
 import static com.combatreforged.factory.builder.implementation.util.ObjectMappings.convertComponent;
 
 public class WrappedPlayer extends WrappedLivingEntity implements Player {
-    ServerPlayer wrappedPlayer;
-
     @Override
     public void teleport(Location location, boolean ignoreDirection) {
         ServerLevel level = ((WrappedWorld) location.getWorld()).unwrap();
-        float yRot = !ignoreDirection ? location.getYaw() % 360 : wrappedPlayer.yRot;
-        float xRot = !ignoreDirection ? Mth.clamp(location.getPitch(), -90.0F, 90.0F) % 360.0F : wrappedPlayer.xRot;
-        wrappedPlayer.teleportTo(level, location.getX(), location.getY(), location.getZ(), yRot, xRot);
+        float yRot = !ignoreDirection ? location.getYaw() % 360 : wrappedPlayer().yRot;
+        float xRot = !ignoreDirection ? Mth.clamp(location.getPitch(), -90.0F, 90.0F) % 360.0F : wrappedPlayer().xRot;
+        wrappedPlayer().teleportTo(level, location.getX(), location.getY(), location.getZ(), yRot, xRot);
     }
 
     public WrappedPlayer(ServerPlayer wrappedPlayer) {
         super(wrappedPlayer);
-        this.wrappedPlayer = wrappedPlayer;
     }
 
     @Override
     public void setEntityNBT(NBTObject nbt) {
         super.setEntityNBT(nbt);
-        wrappedPlayer.onUpdateAbilities();
+        wrappedPlayer().onUpdateAbilities();
     }
 
     @Override
     public int getFoodLevel() {
-        return wrappedPlayer.getFoodData().getFoodLevel();
+        return wrappedPlayer().getFoodData().getFoodLevel();
     }
 
     @Override
     public float getSaturation() {
-        return wrappedPlayer.getFoodData().getSaturationLevel();
+        return wrappedPlayer().getFoodData().getSaturationLevel();
     }
 
     @Override
     public void setFoodLevel(int level) {
-        wrappedPlayer.getFoodData().setFoodLevel(level);
+        wrappedPlayer().getFoodData().setFoodLevel(level);
     }
 
     @Override
     public void setSaturation(float saturation) {
-        ((FoodDataExtension) wrappedPlayer.getFoodData()).setSaturationServer(saturation);
+        ((FoodDataExtension) wrappedPlayer().getFoodData()).setSaturationServer(saturation);
     }
 
     @Override
     public float getExhaustion() {
-        return ((FoodDataExtension) wrappedPlayer.getFoodData()).getExhaustion();
+        return ((FoodDataExtension) wrappedPlayer().getFoodData()).getExhaustion();
     }
 
     @Override
     public void setExhaustion(float exhaustion) {
-        ((FoodDataExtension) wrappedPlayer.getFoodData()).setExhaustion(exhaustion);
+        ((FoodDataExtension) wrappedPlayer().getFoodData()).setExhaustion(exhaustion);
     }
 
     @Override
     public PlayerInventory getInventory() {
-        return Wrapped.wrap(wrappedPlayer.inventory, WrappedPlayerInventory.class);
+        return Wrapped.wrap(wrappedPlayer().inventory, WrappedPlayerInventory.class);
     }
 
     @Override
     public int getSelectedSlot() {
-        return wrappedPlayer.inventory.selected;
+        return wrappedPlayer().inventory.selected;
     }
 
     @Override
     public boolean isFlying() {
-        return wrappedPlayer.abilities.flying;
+        return wrappedPlayer().abilities.flying;
     }
 
     @Override
     public void setFlying(boolean flying) {
-        wrappedPlayer.abilities.flying = flying;
-        wrappedPlayer.onUpdateAbilities();
+        wrappedPlayer().abilities.flying = flying;
+        wrappedPlayer().onUpdateAbilities();
     }
 
     @Override
     public boolean isAbleToFly() {
-        return wrappedPlayer.abilities.mayfly;
+        return wrappedPlayer().abilities.mayfly;
     }
 
     @Override
     public void setAbleToFly(boolean ableToFly) {
-        wrappedPlayer.abilities.mayfly = ableToFly;
-        wrappedPlayer.onUpdateAbilities();
+        wrappedPlayer().abilities.mayfly = ableToFly;
+        wrappedPlayer().onUpdateAbilities();
         if (!ableToFly && this.isFlying()) {
             this.setFlying(false);
         }
@@ -129,36 +126,36 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
 
     @Override
     public boolean isFallFlying() {
-        return wrappedPlayer.isFallFlying();
+        return wrappedPlayer().isFallFlying();
     }
 
     @Override
     public void setFallFlying(boolean fallFlying) {
         if (fallFlying && !this.isFallFlying()) {
-            wrappedPlayer.startFallFlying();
+            wrappedPlayer().startFallFlying();
         } else if (!fallFlying && this.isFallFlying()) {
-            wrappedPlayer.stopFallFlying();
+            wrappedPlayer().stopFallFlying();
         }
     }
 
     @Override
     public void setExperienceLevel(int level) {
-        wrappedPlayer.setExperienceLevels(level);
+        wrappedPlayer().setExperienceLevels(level);
     }
 
     @Override
     public void setExperiencePoints(int points) {
-        wrappedPlayer.setExperiencePoints(points);
+        wrappedPlayer().setExperiencePoints(points);
     }
 
     @Override
     public int getExperienceLevel() {
-        return wrappedPlayer.experienceLevel;
+        return wrappedPlayer().experienceLevel;
     }
 
     @Override
     public int getExperiencePoints() {
-        return (int) (wrappedPlayer.experienceProgress * wrappedPlayer.getXpNeededForNextLevel());
+        return (int) (wrappedPlayer().experienceProgress * wrappedPlayer().getXpNeededForNextLevel());
     }
 
     @Override
@@ -171,72 +168,72 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
             int in = (int) (times.fadeIn().toMillis() / 50);
             int stay = (int) (times.stay().toMillis() / 50);
             int out = (int) (times.fadeOut().toMillis() / 50);
-            wrappedPlayer.connection.send(new ClientboundSetTitlesPacket(in, stay, out));
+            wrappedPlayer().connection.send(new ClientboundSetTitlesPacket(in, stay, out));
         }
 
         if (mcTitle != null) {
-            wrappedPlayer.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.TITLE, mcTitle));
+            wrappedPlayer().connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.TITLE, mcTitle));
         }
 
         if (mcSubTitle != null) {
-            wrappedPlayer.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.SUBTITLE, mcSubTitle));
+            wrappedPlayer().connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.SUBTITLE, mcSubTitle));
         }
     }
 
     @Override
     public void clearTitle() {
-        wrappedPlayer.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.CLEAR, null));
+        wrappedPlayer().connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.CLEAR, null));
     }
 
     @Override
     public void resetTitle() {
-        wrappedPlayer.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.RESET, null));
+        wrappedPlayer().connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.RESET, null));
     }
 
     @Override
     public void sendActionBarMessage(Component component) {
-        wrappedPlayer.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.ACTIONBAR, convertComponent(component)));
+        wrappedPlayer().connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.ACTIONBAR, convertComponent(component)));
     }
 
     @Override
     public void openMenu(MenuHolder creator) {
         SimpleMenuProvider provider = ((WrappedMenuHolder) creator).unwrap();
-        wrappedPlayer.openMenu(provider);
+        wrappedPlayer().openMenu(provider);
     }
 
     @Override
     public void closeMenu() {
-        this.wrappedPlayer.closeContainer();
+        this.wrappedPlayer().closeContainer();
     }
 
     @Override
     @Nullable public ContainerMenu getOpenMenu() {
-        return Wrapped.wrap(wrappedPlayer.containerMenu, WrappedContainerMenu.class);
+        return Wrapped.wrap(wrappedPlayer().containerMenu, WrappedContainerMenu.class);
     }
 
     @Override
     public GameModeType getGameMode() {
-        return ObjectMappings.GAME_MODES.inverse().get(wrappedPlayer.gameMode.getGameModeForPlayer());
+        return ObjectMappings.GAME_MODES.inverse().get(wrappedPlayer().gameMode.getGameModeForPlayer());
     }
 
     @Override
     public void setGameMode(GameModeType gameMode) {
-        wrappedPlayer.setGameMode(ObjectMappings.GAME_MODES.get(gameMode));
+        wrappedPlayer().setGameMode(ObjectMappings.GAME_MODES.get(gameMode));
     }
 
     @Override
     public String getRawName() {
-        return wrappedPlayer.getGameProfile().getName();
+        return wrappedPlayer().getGameProfile().getName();
     }
 
     @Override
     public UUID getUUID() {
-        return wrappedPlayer.getUUID();
+        return wrappedPlayer().getUUID();
     }
 
     @Override
     public Scoreboard getScoreboard() {
-        return Wrapped.wrap(((ServerPlayerExtension) wrappedPlayer).getScoreboard(), WrappedScoreboard.class);
+        return Wrapped.wrap(((ServerPlayerExtension) wrappedPlayer()).getScoreboard(), WrappedScoreboard.class);
     }
 
     @Override
@@ -250,48 +247,47 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
         if (!(wrappedScoreboard.unwrap() instanceof ServerScoreboard)) {
             throw new IllegalStateException("Scoreboard is not a ServerScoreboard");
         }
-        ((ServerPlayerExtension) wrappedPlayer).setScoreboard(((ServerScoreboard) wrappedScoreboard.unwrap()));
+        ((ServerPlayerExtension) wrappedPlayer()).setScoreboard(((ServerScoreboard) wrappedScoreboard.unwrap()));
     }
 
     @Override
     public void setServerScoreboard() {
-        ((ServerPlayerExtension) wrappedPlayer)
-                .setScoreboard(Objects.requireNonNull(wrappedPlayer.getServer()).getScoreboard());
+        ((ServerPlayerExtension) wrappedPlayer())
+                .setScoreboard(Objects.requireNonNull(wrappedPlayer().getServer()).getScoreboard());
     }
 
     @Override
     public Component getDisplayName() {
-        return convertComponent(wrappedPlayer.getDisplayName());
+        return convertComponent(wrappedPlayer().getDisplayName());
     }
 
     public void updatePlayer(ServerPlayer player) {
         this.wrapped = player;
-        this.wrappedPlayer = player;
     }
 
     @Override
     public void respawn() {
-        if (this.wrappedPlayer.isDeadOrDying()) {
-            wrappedPlayer.connection.handleClientCommand(new ServerboundClientCommandPacket(ServerboundClientCommandPacket.Action.PERFORM_RESPAWN));
+        if (this.wrappedPlayer().isDeadOrDying()) {
+            wrappedPlayer().connection.handleClientCommand(new ServerboundClientCommandPacket(ServerboundClientCommandPacket.Action.PERFORM_RESPAWN));
         }
     }
 
     @Override
     public void showPlayerInTabList(Player player, boolean show) {
-        ((ServerPlayerExtension) wrappedPlayer).showInTabList(((WrappedPlayer) player).unwrap(), show, true);
+        ((ServerPlayerExtension) wrappedPlayer()).showInTabList(((WrappedPlayer) player).unwrap(), show, true);
     }
 
     @Override
     public List<Player> getShownInTabList() {
         return this.getServer().getPlayers().stream()
-                .filter(player -> !((ServerPlayerExtension) wrappedPlayer).getHiddenInTabList().contains(((WrappedPlayer) player).unwrap()))
+                .filter(player -> !((ServerPlayerExtension) wrappedPlayer()).getHiddenInTabList().contains(((WrappedPlayer) player).unwrap()))
                 .collect(ImmutableList.toImmutableList());
     }
 
     @Override
     public void setVelocity(Vector3D velocity) {
         super.setVelocity(velocity);
-        wrappedPlayer.connection.send(new ClientboundSetEntityMotionPacket(wrappedPlayer));
+        wrappedPlayer().connection.send(new ClientboundSetEntityMotionPacket(wrappedPlayer()));
     }
 
     @Override
@@ -314,11 +310,15 @@ public class WrappedPlayer extends WrappedLivingEntity implements Player {
                 chatType = ChatType.GAME_INFO;
                 break;
         }
-        wrappedPlayer.sendMessage(ObjectMappings.convertComponent(component), chatType, UUID.randomUUID());
+        wrappedPlayer().sendMessage(ObjectMappings.convertComponent(component), chatType, UUID.randomUUID());
     }
 
     @Override
     public ServerPlayer unwrap() {
-        return wrappedPlayer;
+        return wrappedPlayer();
+    }
+
+    private ServerPlayer wrappedPlayer() {
+        return (ServerPlayer) this.wrapped;
     }
 }

@@ -3,7 +3,6 @@ package com.combatreforged.factory.builder.mixin.server.level;
 import com.combatreforged.factory.api.event.entity.LivingEntityDeathEvent;
 import com.combatreforged.factory.api.event.player.PlayerDeathEvent;
 import com.combatreforged.factory.api.world.damage.DamageData;
-import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.scoreboard.ScoreboardTeam;
 import com.combatreforged.factory.builder.extension.server.level.ServerPlayerExtension;
@@ -99,13 +98,12 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
         this.setScore(this.keepExp ? serverPlayer.getScore() : this.prevScore);
     }
 
+    @SuppressWarnings("unchecked")
     @Inject(method = "restoreFrom", at = @At("TAIL"))
     public void copyWrappedOver(ServerPlayer serverPlayer, boolean bl, CallbackInfo ci) {
-        @SuppressWarnings("unchecked") ChangeableWrap<Entity> wrap = (ChangeableWrap<Entity>) this;
-        wrap.setWrap(Wrapped.wrap(serverPlayer, WrappedPlayer.class));
-        if (wrap.wrap() instanceof WrappedPlayer) {
-            ((WrappedPlayer) wrap.wrap()).updatePlayer((ServerPlayer) (Object) this);
-        }
+        WrappedPlayer oldWrap = Wrapped.wrap(serverPlayer, WrappedPlayer.class);
+        oldWrap.updatePlayer((ServerPlayer) (Object) this);
+        ((ChangeableWrap<Player>) this).setWrap(oldWrap);
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
