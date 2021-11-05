@@ -243,7 +243,7 @@ public class TestPlugin implements FactoryPlugin {
                         .suggests((ctx, builder) -> builder.suggest("foobar").buildFuture())
                         .executes(ctx -> {
                             ctx.getSource().sendMessage(Component.text("Success! lol"));
-                            FactoryAPI.getInstance().getServer().loadWorld(Paths.get("test"), "test");
+                            FactoryAPI.getInstance().getServer().loadWorldAsync(Paths.get("test"), "test");
                             return 0;
                         })));
 

@@ -6,6 +6,7 @@ import com.combatreforged.factory.api.event.server.ServerStopEvent;
 import com.combatreforged.factory.api.event.server.ServerTickEvent;
 import com.combatreforged.factory.builder.extension.server.MinecraftServerExtension;
 import com.combatreforged.factory.builder.extension.server.SelectiveBorderChangeListener;
+import com.combatreforged.factory.builder.extension.server.level.ServerChunkCacheExtension;
 import com.combatreforged.factory.builder.extension.world.level.LevelExtension;
 import com.combatreforged.factory.builder.extension.world.level.storage.LevelStorageAccessExtension;
 import com.combatreforged.factory.builder.extension.world.level.storage.PrimaryLevelDataExtension;
@@ -224,19 +225,20 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
     private int worldExecCount = 0;
     private final ExecutorService worldExec = Executors.newFixedThreadPool(5, runnable -> new Thread(runnable, "DynamicWorldLoader-" + (worldExecCount += 1)));
 
+    @SuppressWarnings("FutureReturnValueIgnored")
     private CompletableFuture<Void> loadDynamicWorldAsync0(WorldData worldData, LevelStorageSource.LevelStorageAccess access) {
         DimensionType overworldType = this.registryHolder.dimensionTypes().get(DimensionType.OVERWORLD_LOCATION);
         NoiseBasedChunkGenerator defaultGenerator = WorldGenSettings.makeDefaultOverworld(this.registryHolder.registryOrThrow(Registry.BIOME_REGISTRY), this.registryHolder.registryOrThrow(Registry.NOISE_GENERATOR_SETTINGS_REGISTRY), new Random().nextLong());
 
         CompletableFuture<Void> future = new CompletableFuture<>();
 
-        this.worldExec.submit(() -> {
+        CompletableFuture.runAsync(() -> {
             DynamicWorld world = this.loadDynamicWorldFromFile(worldData, access, overworldType, defaultGenerator);
             FactoryAPI.getInstance().getScheduler().schedule(() -> {
                 this.registerDynamicWorld(world);
                 future.complete(null);
             }, 0);
-        });
+        }, this.worldExec).whenComplete((void_, t) -> future.completeExceptionally(t));
 
         return future;
     }
@@ -261,6 +263,7 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
         worldData.setModdedInfo(this.getServerModName(), this.getModdedStatus().isPresent());
 
         ((LevelStorageAccessExtension) access).setCustom(levelName);
+        //TODO fix deadlock when tping to world
 
         // INFO copy from MinecraftServer.createLevels with custom world data
         ServerLevelData serverLevelData = worldData.overworldData();
@@ -285,6 +288,7 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
         ResourceKey<Level> adaptedOverworldKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(levelName + "." + Level.OVERWORLD.location().getNamespace(), Level.OVERWORLD.location().getPath()));
         ServerLevel overworld = new ServerLevel((MinecraftServer) (Object) this, this.executor, access, serverLevelData, adaptedOverworldKey, dimensionType, chunkProgressListener, generator, false, biomeSeed, customSpawners, true);
         ((LevelExtension) overworld).setThread(this.serverThread);
+        ((ServerChunkCacheExtension) overworld.getChunkSource()).setThread(this.serverThread);
         worldDimensions.add(overworld);
 
         WorldBorder worldBorder = overworld.getWorldBorder();
@@ -308,6 +312,7 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
                 DerivedLevelData derivedLevelData = new DerivedLevelData(worldData, serverLevelData);
                 ServerLevel dimension = new ServerLevel((MinecraftServer) (Object) this, this.executor, access, derivedLevelData, adaptedKey, dimType, chunkProgressListener, dimGenerator, false, biomeSeed, ImmutableList.of(), false);
                 ((LevelExtension) dimension).setThread(this.serverThread);
+                ((ServerChunkCacheExtension) dimension.getChunkSource()).setThread(this.serverThread);
                 worldBorder.addListener(new BorderChangeListener.DelegateBorderChangeListener(dimension.getWorldBorder()));
                 worldDimensions.add(dimension);
             }

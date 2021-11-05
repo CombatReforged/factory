@@ -17,6 +17,7 @@
     "server.MinecraftServerMixin",
     "server.ServerScoreboardMixin",
     "server.dedicated.DedicatedServerMixin",
+    "server.level.ServerChunkCacheMixin",
     "server.level.ServerLevelMixin",
     "server.level.ServerPlayerGameModeMixin",
     "server.level.ServerPlayerMixin",
