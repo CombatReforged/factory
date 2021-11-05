@@ -27,6 +27,7 @@ import net.minecraft.world.level.storage.LevelStorageSource;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements FactoryServer {
     CommandDispatcher<CommandSourceInfo> commandDispatcher;
@@ -89,18 +90,32 @@ public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements Fa
 
     @Override
     public boolean hasWorld(String name) {
-        return ((MinecraftServerExtension) wrapped).hasLevel(name);
+        return ((MinecraftServerExtension) wrapped).hasDynamicWorld(name);
     }
 
     @Override
     public void loadWorld(Path path) {
-        this.loadWorld(path, "null");
+        this.loadWorld(path, path.getFileName().toString());
     }
 
     @Override
     public void loadWorld(Path path, String name) {
         try {
-            ((MinecraftServerExtension) wrapped).addLevel(new LevelStorageSource(path.resolve("../"), path.resolve("../backups/" + path.getFileName().toString() + "/"), DataFixers.getDataFixer()).createAccess(path.getFileName().toString()), name);
+            ((MinecraftServerExtension) wrapped).loadDynamicWorldSync(name, new LevelStorageSource(path.resolve("../"), path.resolve("../backups/" + path.getFileName().toString() + "/"), DataFixers.getDataFixer()).createAccess(path.getFileName().toString()));
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not find level in specified Path '" + path.toAbsolutePath() + "'", e);
+        }
+    }
+
+    @Override
+    public CompletableFuture<Void> loadWorldAsync(Path path) {
+        return this.loadWorldAsync(path, path.getFileName().toString());
+    }
+
+    @Override
+    public CompletableFuture<Void> loadWorldAsync(Path path, String name) {
+        try {
+            return ((MinecraftServerExtension) wrapped).loadDynamicWorldAsync(name, new LevelStorageSource(path.resolve("../"), path.resolve("../backups/" + path.getFileName().toString() + "/"), DataFixers.getDataFixer()).createAccess(path.getFileName().toString()));
         } catch (IOException e) {
             throw new IllegalArgumentException("Could not find level in specified Path '" + path.toAbsolutePath() + "'", e);
         }
@@ -108,7 +123,7 @@ public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements Fa
 
     @Override
     public void saveWorld(String name) {
-        ((MinecraftServerExtension) wrapped).saveLevel(name);
+        ((MinecraftServerExtension) wrapped).saveDynamicWorld(name);
     }
 
     @Override
@@ -118,7 +133,7 @@ public class WrappedFactoryServer extends Wrapped<DedicatedServer> implements Fa
 
     @Override
     public void unloadWorld(String name, boolean save) throws IOException {
-        ((MinecraftServerExtension) wrapped).unloadLevel(name, save);
+        ((MinecraftServerExtension) wrapped).unloadDynamicWorld(name, save);
     }
 
     @Override

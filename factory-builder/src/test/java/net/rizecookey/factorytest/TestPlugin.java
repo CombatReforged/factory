@@ -45,6 +45,9 @@ import net.kyori.adventure.title.Title;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.file.Paths;
+import java.util.function.Supplier;
+
 public class TestPlugin implements FactoryPlugin {
     Logger logger = LogManager.getLogger();
 
@@ -85,7 +88,7 @@ public class TestPlugin implements FactoryPlugin {
             }
         }, event -> event.getEntity() instanceof Player);
 
-        ItemStack netheriteSword = ItemStack.create(Minecraft.Item.byIdentifier(new Identifier("minecraft", "netherite_sword")));
+        Supplier<ItemStack> netheriteSword = () -> ItemStack.create(Minecraft.Item.byIdentifier(new Identifier("minecraft", "netherite_sword")));
         LivingEntityDeathEvent.BACKEND.register(event -> event.setDropLoot(false));
         PlayerDeathEvent.BACKEND.register(event -> {
             final Player player = event.getPlayer();
@@ -112,7 +115,7 @@ public class TestPlugin implements FactoryPlugin {
 
             PlayerInventory inventory = player.getInventory();
             inventory.clear();
-            inventory.addItemStack(netheriteSword);
+            inventory.addItemStack(netheriteSword.get());
             inventory.setItemStack(18, ItemStack.create(Minecraft.Item.LAPIS_LAZULI, 16));
             player.setEquipmentStack(ArmorSlot.HEAD, ItemStack.create(Minecraft.Item.NETHERITE_HELMET));
             player.setEquipmentStack(ArmorSlot.CHEST, ItemStack.create(Minecraft.Item.DIAMOND_CHESTPLATE));
@@ -240,6 +243,7 @@ public class TestPlugin implements FactoryPlugin {
                         .suggests((ctx, builder) -> builder.suggest("foobar").buildFuture())
                         .executes(ctx -> {
                             ctx.getSource().sendMessage(Component.text("Success! lol"));
+                            FactoryAPI.getInstance().getServer().loadWorld(Paths.get("test"), "test");
                             return 0;
                         })));
 

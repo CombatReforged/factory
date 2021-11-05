@@ -8,4 +8,7 @@ public interface LevelExtension {
     void addIndependentContainer(TickableBlockEntity blockEntity);
     void removeIndependentContainer(TickableBlockEntity blockEntity);
     List<TickableBlockEntity> getIndependentContainers();
+
+    Thread getThread();
+    void setThread(Thread thread);
 }

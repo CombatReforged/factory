@@ -1,17 +1,18 @@
 package com.combatreforged.factory.builder.mixin.server;
 
+import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.event.server.ServerStopEvent;
 import com.combatreforged.factory.api.event.server.ServerTickEvent;
 import com.combatreforged.factory.builder.extension.server.MinecraftServerExtension;
 import com.combatreforged.factory.builder.extension.server.SelectiveBorderChangeListener;
+import com.combatreforged.factory.builder.extension.world.level.LevelExtension;
 import com.combatreforged.factory.builder.extension.world.level.storage.LevelStorageAccessExtension;
 import com.combatreforged.factory.builder.extension.world.level.storage.PrimaryLevelDataExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.WrappedFactoryServer;
 import com.combatreforged.factory.builder.implementation.dynamicworld.DynamicWorld;
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Lifecycle;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.MappedRegistry;
@@ -46,6 +47,7 @@ import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
+import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import net.minecraft.world.level.levelgen.PatrolSpawner;
 import net.minecraft.world.level.levelgen.PhantomSpawner;
 import net.minecraft.world.level.levelgen.WorldGenSettings;
@@ -64,45 +66,67 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<TickTask> implements SnooperPopulator, CommandSource, AutoCloseable, MinecraftServerExtension {
-    @Shadow public abstract boolean isDedicatedServer();
+    @Shadow
+    public abstract boolean isDedicatedServer();
 
-    @Shadow private int tickCount;
+    @Shadow
+    private int tickCount;
 
-    @Shadow public abstract String getServerModName();
+    @Shadow
+    public abstract String getServerModName();
 
-    @Shadow public abstract Optional<String> getModdedStatus();
+    @Shadow
+    public abstract Optional<String> getModdedStatus();
 
-    @Shadow @Final private ChunkProgressListenerFactory progressListenerFactory;
+    @Shadow
+    @Final
+    private ChunkProgressListenerFactory progressListenerFactory;
 
-    @Shadow public abstract RegistryAccess registryAccess();
+    @Shadow
+    @Final
+    protected RegistryAccess.RegistryHolder registryHolder;
 
-    @Shadow @Final protected RegistryAccess.RegistryHolder registryHolder;
+    @Shadow
+    @Final
+    private Map<ResourceKey<Level>, ServerLevel> levels;
 
-    @Shadow @Final private Map<ResourceKey<Level>, ServerLevel> levels;
-
-    @Shadow protected abstract void readScoreboard(DimensionDataStorage dimensionDataStorage);
-
-    @Shadow @SuppressWarnings("unused")
+    @Shadow
+    @SuppressWarnings("unused")
     private static void setInitialSpawn(ServerLevel serverLevel, ServerLevelData serverLevelData, boolean bl, boolean bl2, boolean bl3) {
     }
 
-    @Shadow public abstract CustomBossEvents getCustomBossEvents();
+    @Shadow
+    public abstract CustomBossEvents getCustomBossEvents();
 
-    @Shadow @Final private Executor executor;
+    @Shadow
+    @Final
+    private Executor executor;
 
-    @Shadow public abstract ServerLevel overworld();
+    @Shadow
+    public abstract ServerLevel overworld();
 
-    @Shadow private ServerResources resources;
+    @Shadow
+    private ServerResources resources;
 
-    @Shadow public abstract PlayerList getPlayerList();
+    @Shadow
+    public abstract PlayerList getPlayerList();
 
-    @Shadow @Final private static Logger LOGGER;
+    @Shadow
+    @Final
+    private static Logger LOGGER;
+
+    @Shadow
+    @Final
+    private Thread serverThread;
 
     public MinecraftServerMixin(String string) {
         super(string);
@@ -113,7 +137,9 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
         cir.setReturnValue(cir.getReturnValue() + "+factory-builder");
     }
 
-    @Unique private ServerTickEvent tickEvent;
+    @Unique
+    private ServerTickEvent tickEvent;
+
     @Inject(method = "tickServer",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/server/MinecraftServer;tickChildren(Ljava/util/function/BooleanSupplier;)V",
@@ -140,7 +166,7 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
     }
 
     @Inject(method = "saveAllChunks", at = @At("RETURN"))
-    public void saveCustomWorlds(boolean bl, boolean bl2, boolean bl3, CallbackInfoReturnable<Boolean> cir) {
+    public void saveDynamicWorlds(boolean bl, boolean bl2, boolean bl3, CallbackInfoReturnable<Boolean> cir) {
         dynamicWorlds.forEach((key, value) -> this.saveOverworldData(key));
     }
 
@@ -152,19 +178,15 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
             ServerStopEvent.BACKEND.invoke(event);
             ServerStopEvent.BACKEND.invokeEndFunctions(event);
         }
+
+        this.worldExec.shutdown();
     }
 
-    @Unique private final Map<String, DynamicWorld> dynamicWorlds = new HashMap<>();
+    @Unique
+    private final Map<String, DynamicWorld> dynamicWorlds = new HashMap<>();
 
-    @Override
-    @ApiStatus.Experimental
-    public void addLevel(LevelStorageSource.LevelStorageAccess access) {
-        this.addLevel(access, null);
-    }
-
-    @Override
-    @ApiStatus.Experimental
-    public void addLevel(LevelStorageSource.LevelStorageAccess access, @Nullable String name) {
+    @Override @ApiStatus.Experimental
+    public void loadDynamicWorldSync(@Nullable String name, LevelStorageSource.LevelStorageAccess access) {
         RegistryReadOps<Tag> registryReadOps = RegistryReadOps.create(NbtOps.INSTANCE, this.resources.getResourceManager(), registryHolder);
         WorldData worldData = access.getDataTag(registryReadOps, access.getDataPacks());
         if (worldData == null) {
@@ -175,38 +197,64 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
             LevelSettings settings = ((PrimaryLevelDataExtension) primLevelData).getSettings();
             LevelSettings newSettings = new LevelSettings(name, settings.gameType(), settings.hardcore(), settings.difficulty(), settings.allowCommands(), settings.gameRules(), settings.getDataPackConfig());
             ((PrimaryLevelDataExtension) primLevelData).setSettings(newSettings);
-            this.addLevel(worldData, access);
+            this.loadDynamicWorldSync0(worldData, access);
         } else {
             throw new IllegalStateException("Invalid world data");
         }
     }
 
-    @Override
-    @ApiStatus.Experimental
-    public void addLevel(LevelSettings settings, WorldGenSettings genSettings, LevelStorageSource.LevelStorageAccess access) {
-        this.addLevel(new PrimaryLevelData(settings, genSettings, Lifecycle.stable()), access);
+    @Override @ApiStatus.Experimental
+    public CompletableFuture<Void> loadDynamicWorldAsync(@Nullable String name, LevelStorageSource.LevelStorageAccess access) {
+        RegistryReadOps<Tag> registryReadOps = RegistryReadOps.create(NbtOps.INSTANCE, this.resources.getResourceManager(), registryHolder);
+        WorldData worldData = access.getDataTag(registryReadOps, access.getDataPacks());
+        if (worldData == null) {
+            throw new IllegalStateException("Can't read world data options from directory");
+        }
+        if (worldData instanceof PrimaryLevelData && name != null) {
+            PrimaryLevelData primLevelData = ((PrimaryLevelData) worldData);
+            LevelSettings settings = ((PrimaryLevelDataExtension) primLevelData).getSettings();
+            LevelSettings newSettings = new LevelSettings(name, settings.gameType(), settings.hardcore(), settings.difficulty(), settings.allowCommands(), settings.gameRules(), settings.getDataPackConfig());
+            ((PrimaryLevelDataExtension) primLevelData).setSettings(newSettings);
+            return this.loadDynamicWorldAsync0(worldData, access);
+        } else {
+            throw new IllegalStateException("Invalid world data");
+        }
     }
 
-    @Override
-    @ApiStatus.Experimental
-    public void addLevel(WorldData worldData, LevelStorageSource.LevelStorageAccess access) {
-        String levelName = worldData.getLevelName().toLowerCase(Locale.ROOT);
+    private int worldExecCount = 0;
+    private final ExecutorService worldExec = Executors.newFixedThreadPool(5, runnable -> new Thread(runnable, "DynamicWorldLoader-" + (worldExecCount += 1)));
 
-        StringBuilder newName = new StringBuilder();
-        for (int i = 0; i < levelName.length(); i++) {
-            if (!String.valueOf(levelName.charAt(i)).matches("([a-z]|[0-9]|\\.|-|_)")) {
-                newName.append("_");
-            } else {
-                newName.append(levelName.charAt(i));
-            }
-        }
+    private CompletableFuture<Void> loadDynamicWorldAsync0(WorldData worldData, LevelStorageSource.LevelStorageAccess access) {
+        DimensionType overworldType = this.registryHolder.dimensionTypes().get(DimensionType.OVERWORLD_LOCATION);
+        NoiseBasedChunkGenerator defaultGenerator = WorldGenSettings.makeDefaultOverworld(this.registryHolder.registryOrThrow(Registry.BIOME_REGISTRY), this.registryHolder.registryOrThrow(Registry.NOISE_GENERATOR_SETTINGS_REGISTRY), new Random().nextLong());
 
-        levelName = newName.toString();
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        this.worldExec.submit(() -> {
+            DynamicWorld world = this.loadDynamicWorldFromFile(worldData, access, overworldType, defaultGenerator);
+            FactoryAPI.getInstance().getScheduler().schedule(() -> {
+                this.registerDynamicWorld(world);
+                future.complete(null);
+            }, 0);
+        });
+
+        return future;
+    }
+
+    private void loadDynamicWorldSync0(WorldData worldData, LevelStorageSource.LevelStorageAccess access) {
+        DynamicWorld dynamicWorld = this.loadDynamicWorldFromFile(worldData, access,
+                this.registryHolder.dimensionTypes().get(DimensionType.OVERWORLD_LOCATION),
+                WorldGenSettings.makeDefaultOverworld(this.registryHolder.registryOrThrow(Registry.BIOME_REGISTRY), this.registryHolder.registryOrThrow(Registry.NOISE_GENERATOR_SETTINGS_REGISTRY), new Random().nextLong()));
+        this.registerDynamicWorld(dynamicWorld);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private DynamicWorld loadDynamicWorldFromFile(WorldData worldData, LevelStorageSource.LevelStorageAccess access, DimensionType overworldType, NoiseBasedChunkGenerator defaultGenerator) {
+        String levelName = worldData.getLevelName().toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9.\\-_]", "_");
 
         if (dynamicWorlds.containsKey(levelName)) {
             throw new IllegalArgumentException("Custom world '" + levelName + "' is already registered on this server");
         }
-
         LOGGER.info("Loading custom world '" + levelName + "' dynamically...");
 
         ChunkProgressListener chunkProgressListener = this.progressListenerFactory.create(11);
@@ -226,8 +274,8 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
         DimensionType dimensionType;
 
         if (levelStem == null) {
-            dimensionType = this.registryHolder.dimensionTypes().getOrThrow(DimensionType.OVERWORLD_LOCATION);
-            generator = WorldGenSettings.makeDefaultOverworld(this.registryHolder.registryOrThrow(Registry.BIOME_REGISTRY), this.registryHolder.registryOrThrow(Registry.NOISE_GENERATOR_SETTINGS_REGISTRY), new Random().nextLong());
+            dimensionType = overworldType;
+            generator = defaultGenerator;
         } else {
             dimensionType = levelStem.type();
             generator = levelStem.generator();
@@ -236,11 +284,9 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
         List<ServerLevel> worldDimensions = new ArrayList<>();
         ResourceKey<Level> adaptedOverworldKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(levelName + "." + Level.OVERWORLD.location().getNamespace(), Level.OVERWORLD.location().getPath()));
         ServerLevel overworld = new ServerLevel((MinecraftServer) (Object) this, this.executor, access, serverLevelData, adaptedOverworldKey, dimensionType, chunkProgressListener, generator, false, biomeSeed, customSpawners, true);
-        this.levels.put(adaptedOverworldKey, overworld);
+        ((LevelExtension) overworld).setThread(this.serverThread);
         worldDimensions.add(overworld);
 
-        DimensionDataStorage dimensionDataStorage = overworld.getDataStorage();
-        this.readScoreboard(dimensionDataStorage);
         WorldBorder worldBorder = overworld.getWorldBorder();
         worldBorder.applySettings(serverLevelData.getWorldBorder());
         if (!serverLevelData.isInitialized()) {
@@ -254,30 +300,38 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
 
         for (ResourceLocation location : dimensions.keySet()) {
             LevelStem stem = dimensions.get(location);
-            if (stem != null && stem.type() != this.registryAccess().dimensionTypes().get(DimensionType.OVERWORLD_LOCATION)) {
+            if (stem != null && stem.type() != overworldType) {
                 ResourceLocation adaptedLocation = new ResourceLocation(levelName + "." + location.getNamespace(), location.getPath());
                 ResourceKey<Level> adaptedKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, adaptedLocation);
                 DimensionType dimType = stem.type();
                 ChunkGenerator dimGenerator = stem.generator();
                 DerivedLevelData derivedLevelData = new DerivedLevelData(worldData, serverLevelData);
                 ServerLevel dimension = new ServerLevel((MinecraftServer) (Object) this, this.executor, access, derivedLevelData, adaptedKey, dimType, chunkProgressListener, dimGenerator, false, biomeSeed, ImmutableList.of(), false);
+                ((LevelExtension) dimension).setThread(this.serverThread);
                 worldBorder.addListener(new BorderChangeListener.DelegateBorderChangeListener(dimension.getWorldBorder()));
-                this.levels.put(adaptedKey, dimension);
                 worldDimensions.add(dimension);
             }
         }
-
         worldBorder.addListener(new SelectiveBorderChangeListener(worldDimensions));
-
-        DynamicWorld dynamicWorld = new DynamicWorld(levelName, overworld, worldDimensions, access, worldData);
-        this.dynamicWorlds.put(levelName, dynamicWorld);
-
-        LOGGER.info("Done loading.");
+        LOGGER.info("Done loading '" + levelName + "'.");
+        return new DynamicWorld(levelName, overworld, worldDimensions, access, worldData);
     }
+
+    // IMPORTANT: has to be run in server thread!
+    private void registerDynamicWorld(DynamicWorld world) {
+        if (Thread.currentThread() != this.serverThread) {
+            throw new IllegalThreadStateException("Not run in server thread");
+        }
+        this.dynamicWorlds.put(world.getLevelName(), world);
+        this.levels.putAll(world.getDimensions().stream()
+                .collect(Collectors.<ServerLevel, ResourceKey<Level>, ServerLevel>toMap(Level::dimension, obj -> obj)));
+        LOGGER.info("Registered dynamic world '" + world.getLevelName() + "'.");
+    }
+
 
     @Override
     @ApiStatus.Experimental
-    public void unloadLevel(String name, boolean save) throws IOException {
+    public void unloadDynamicWorld(String name, boolean save) throws IOException {
         if (dynamicWorlds.containsKey(name)) {
             List<ResourceKey<Level>> toBeRemoved = new ArrayList<>();
 
@@ -320,7 +374,7 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
 
     @Override
     @ApiStatus.Experimental
-    public void saveLevel(String name) {
+    public void saveDynamicWorld(String name) {
         if (dynamicWorlds.containsKey(name)) {
             DynamicWorld dynamicWorld = dynamicWorlds.get(name);
             if (dynamicWorld.isLoaded()) {
@@ -346,7 +400,7 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
     }
 
     @Override
-    public boolean hasLevel(String name) {
+    public boolean hasDynamicWorld(String name) {
         return dynamicWorlds.containsKey(name);
     }
 

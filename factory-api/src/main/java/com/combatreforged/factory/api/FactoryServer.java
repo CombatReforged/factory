@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public interface FactoryServer extends CommandSender {
     int getMaxPlayerCount();
@@ -26,6 +27,8 @@ public interface FactoryServer extends CommandSender {
     boolean hasWorld(String name);
     void loadWorld(Path path);
     void loadWorld(Path path, String name);
+    CompletableFuture<Void> loadWorldAsync(Path path);
+    CompletableFuture<Void> loadWorldAsync(Path path, String name);
     void saveWorld(String name);
     void unloadWorld(String name) throws IOException;
     void unloadWorld(String name, boolean save) throws IOException;
