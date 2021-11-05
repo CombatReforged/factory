@@ -27,24 +27,24 @@ public class TaskScheduler {
         return new Pair<>(scheduler, scheduler::tick);
     }
 
-    public TaskPointer<ScheduledTask> schedule(Runnable task, int delay) {
+    public synchronized TaskPointer<ScheduledTask> schedule(Runnable task, int delay) {
         ScheduledTask scheduledTask = new ScheduledTask(this, task, delay);
         return this.registerTask(scheduledTask);
     }
 
-    public TaskPointer<ScheduledRepeatingTask> scheduleRepeating(Runnable task, int delay, int repeatDelay) {
+    public synchronized TaskPointer<ScheduledRepeatingTask> scheduleRepeating(Runnable task, int delay, int repeatDelay) {
         ScheduledRepeatingTask repeatingTask = new ScheduledRepeatingTask(this, task, delay, repeatDelay);
         return this.registerTask(repeatingTask);
     }
 
-    public <T extends Task> TaskPointer<T> registerTask(T task) {
+    public synchronized <T extends Task> TaskPointer<T> registerTask(T task) {
         TaskPointer<T> pointer = new TaskPointer<>(task);
         this.tasks.put(pointer, task);
         task.setPointer(pointer);
         return pointer;
     }
 
-    public <T extends Task> void cancelTask(TaskPointer<T> task) {
+    public synchronized <T extends Task> void cancelTask(TaskPointer<T> task) {
         if (this.ticking) {
             this.cleanup.add(task);
         } else {
@@ -54,7 +54,7 @@ public class TaskScheduler {
     }
 
     @Nullable
-    public <T extends Task> Task getTask(TaskPointer<T> pointer) {
+    public synchronized <T extends Task> Task getTask(TaskPointer<T> pointer) {
         return pointer.get();
     }
 
@@ -67,6 +67,7 @@ public class TaskScheduler {
                 }
             } catch (Exception e) {
                 LOGGER.error("An error occurred while executing task " + task.toString() + ": ", e);
+                task.cancel();
             }
         }
         this.ticking = false;

@@ -9,18 +9,18 @@ public class TaskPointer<T extends Task> {
         this.task = task;
     }
 
-    protected void deleteReference() {
+    protected synchronized void deleteReference() {
         this.task = null;
     }
 
-    public void cancel() {
+    public synchronized void cancel() {
         if (task != null && this.task.isActive()) {
             task.cancel();
         }
     }
 
     @Nullable
-    public T get() {
+    public synchronized T get() {
         if (task != null && task.isActive()) {
             return task;
         } else {
@@ -28,7 +28,7 @@ public class TaskPointer<T extends Task> {
         }
     }
 
-    public boolean isPresent() {
+    public synchronized boolean isPresent() {
         return this.task != null && this.task.isActive();
     }
 }

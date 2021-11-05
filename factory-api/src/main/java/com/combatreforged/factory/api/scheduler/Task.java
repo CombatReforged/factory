@@ -18,21 +18,21 @@ public abstract class Task {
         this.task.run();
     }
 
-    protected void markInactive() {
+    protected synchronized void markInactive() {
         this.inactive = true;
     }
 
-    public boolean isActive() {
+    public synchronized boolean isActive() {
         return !this.inactive;
     }
 
-    protected void setPointer(TaskPointer<?> pointer) {
+    protected synchronized void setPointer(TaskPointer<?> pointer) {
         this.pointer = pointer;
     }
 
     public abstract void tick();
 
-    public void cancel() {
+    public synchronized void cancel() {
         this.scheduler.cancelTask(pointer);
     }
 }
