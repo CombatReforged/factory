@@ -223,7 +223,7 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
     }
 
     private int worldExecCount = 0;
-    private final ExecutorService worldExec = Executors.newFixedThreadPool(5, runnable -> new Thread(runnable, "DynamicWorldLoader-" + (worldExecCount += 1)));
+    private final ExecutorService worldExec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), runnable -> new Thread(runnable, "DynamicWorldLoader-" + (worldExecCount += 1)));
 
     @SuppressWarnings("FutureReturnValueIgnored")
     private CompletableFuture<Void> loadDynamicWorldAsync0(WorldData worldData, LevelStorageSource.LevelStorageAccess access) {
