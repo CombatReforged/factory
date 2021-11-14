@@ -28,6 +28,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
@@ -49,6 +50,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin extends net.minecraft.world.entity.player.Player implements ServerPlayerExtension, LivingEntityExtension {
@@ -79,6 +81,8 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
         this.keepExp = ext.isKeepExp();
         this.keepInv = ext.isKeepInv();
         this.scoreboard = ext.getScoreboard();
+        this.hiddenInTabList.clear();
+        this.hiddenInTabList.addAll(ext.getHiddenInTabList().stream().map(Entity::getUUID).collect(Collectors.toList()));
 
         if (this.deathEventHappened) {
             this.prevInventory = this.inventory;
