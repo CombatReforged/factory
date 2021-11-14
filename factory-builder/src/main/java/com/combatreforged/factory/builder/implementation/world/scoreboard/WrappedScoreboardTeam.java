@@ -10,6 +10,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,12 +104,12 @@ public class WrappedScoreboardTeam extends Wrapped<PlayerTeam> implements Scoreb
     }
 
     @Override
-    public NamedTextColor getNameTagColor() {
+    public @Nullable NamedTextColor getNameTagColor() {
         return convertColor(wrapped.getColor());
     }
 
     @Override
-    public void setNameTagColor(NamedTextColor color) {
+    public void setNameTagColor(@Nullable NamedTextColor color) {
         wrapped.setColor(convertColor(color));
     }
 

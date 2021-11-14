@@ -36,6 +36,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.*;
 import org.apache.logging.log4j.LogManager;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class ObjectMappings {
     public static final BiMap<StatusEffect, MobEffect> EFFECTS = HashBiMap.create();
@@ -2301,11 +2303,11 @@ public abstract class ObjectMappings {
         return net.minecraft.network.chat.Component.Serializer.fromJson(compString);
     }
 
-    public static NamedTextColor convertColor(ChatFormatting color) {
-        return NamedTextColor.ofExact(color.getColor() != null ? color.getColor() : 0);
+    public static @Nullable NamedTextColor convertColor(@NotNull ChatFormatting color) {
+        return color.getColor() != null ? NamedTextColor.ofExact(color.getColor()) : null;
     }
 
-    public static ChatFormatting convertColor(NamedTextColor color) {
-        return ChatFormatting.getByName(color.toString());
+    public static ChatFormatting convertColor(@Nullable NamedTextColor color) {
+        return color != null ? ChatFormatting.getByName(color.toString()) : ChatFormatting.RESET;
     }
 }

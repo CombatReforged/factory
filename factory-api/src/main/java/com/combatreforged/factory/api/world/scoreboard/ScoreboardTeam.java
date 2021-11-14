@@ -2,6 +2,7 @@ package com.combatreforged.factory.api.world.scoreboard;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -20,8 +21,8 @@ public interface ScoreboardTeam {
     boolean canSeeInvisibleMates();
     void setSeeInvisibleMates(boolean seeInvisibleMates);
 
-    NamedTextColor getNameTagColor();
-    void setNameTagColor(NamedTextColor color);
+    @Nullable NamedTextColor getNameTagColor();
+    void setNameTagColor(@Nullable NamedTextColor color);
 
     VisibleFor getDeathMessagesVisibleFor();
     void setDeathMessagesVisibleFor(VisibleFor visibleFor);
