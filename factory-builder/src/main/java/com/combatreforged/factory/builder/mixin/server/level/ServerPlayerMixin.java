@@ -78,6 +78,7 @@ public abstract class ServerPlayerMixin extends net.minecraft.world.entity.playe
         this.deathEventHappened = ext.hasDeathEventHappened();
         this.keepExp = ext.isKeepExp();
         this.keepInv = ext.isKeepInv();
+        this.scoreboard = ext.getScoreboard();
 
         if (this.deathEventHappened) {
             this.prevInventory = this.inventory;
