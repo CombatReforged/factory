@@ -14,6 +14,7 @@ import com.combatreforged.factory.builder.implementation.world.block.WrappedBloc
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -24,7 +25,9 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.DoubleHighBlockItem;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.CrossCollisionBlock;
 import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
@@ -55,11 +58,21 @@ public abstract class ServerPlayerGameModeMixin {
 
         if (breakBlockEvent.isCancelled()) {
             cir.setReturnValue(false);
-            this.player.connection.send(new ClientboundBlockUpdatePacket(blockPos, level.getBlockState(blockPos)));
+            BlockState state = level.getBlockState(blockPos);
+            this.player.connection.send(new ClientboundBlockUpdatePacket(blockPos, state));
             if (level.getBlockEntity(blockPos) != null) {
                 BlockEntity blockEntity = level.getBlockEntity(blockPos);
                 assert blockEntity != null;
                 this.player.connection.send(blockEntity.getUpdatePacket());
+            }
+            if (state.getBlock() instanceof CrossCollisionBlock) {
+                for (Direction direction : Direction.values()) {
+                    BlockPos relPos = blockPos.relative(direction);
+                    BlockState relState = level.getBlockState(relPos);
+                    if (relState.getBlock() instanceof CrossCollisionBlock) {
+                        this.player.connection.send(new ClientboundBlockUpdatePacket(relPos, relState));
+                    }
+                }
             }
         } else {
             ((BlockExtension) this.level.getBlockState(blockPos).getBlock()).currentBreakEvent(breakBlockEvent);
