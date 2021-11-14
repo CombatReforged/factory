@@ -31,8 +31,10 @@ public interface Scoreboard {
 
 
     boolean hasTeam(String name);
-    ScoreboardTeam getTeam(String name);
+    @Nullable ScoreboardTeam getTeam(String name);
     ScoreboardTeam addTeam(String name);
+    void removeTeam(String name);
+    void removeTeam(ScoreboardTeam team);
 
     void setTeam(String name, @Nullable ScoreboardTeam team);
     default void leaveTeam(String name) {

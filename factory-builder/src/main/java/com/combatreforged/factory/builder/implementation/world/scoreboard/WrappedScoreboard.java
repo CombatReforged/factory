@@ -130,13 +130,23 @@ public class WrappedScoreboard extends Wrapped<net.minecraft.world.scores.Scoreb
     }
 
     @Override
-    public ScoreboardTeam getTeam(String name) {
+    @Nullable public ScoreboardTeam getTeam(String name) {
         return Wrapped.wrap(wrapped.getPlayerTeam(name), WrappedScoreboardTeam.class);
     }
 
     @Override
     public ScoreboardTeam addTeam(String name) {
         return Wrapped.wrap(wrapped.addPlayerTeam(name), WrappedScoreboardTeam.class);
+    }
+
+    @Override
+    public void removeTeam(String name) {
+        this.removeTeam(validateTeam(this.getTeam(name)));
+    }
+
+    @Override
+    public void removeTeam(ScoreboardTeam team) {
+        wrapped.removePlayerTeam(((WrappedScoreboardTeam) validateTeam(team)).unwrap());
     }
 
     @Override
