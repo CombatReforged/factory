@@ -31,13 +31,14 @@ configurations {
 }
 
 dependencies {
-    mcProvided 'org.apache.logging.log4j:log4j-api:2.14.1'
-    mcProvided 'org.apache.logging.log4j:log4j-core:2.14.1'
+    // make sure to use the correct versions of mcProvided artifacts for the Minecraft version (look into the version manifest)
+    mcProvided 'org.apache.logging.log4j:log4j-api:2.8.1'
+    mcProvided 'org.apache.logging.log4j:log4j-core:2.8.1'
 
-    apiParts 'net.kyori:adventure-api:4.8.1'
-    apiParts 'net.kyori:adventure-text-serializer-gson:4.8.1'
+    apiParts 'net.kyori:adventure-api:4.9.3'
+    apiParts 'net.kyori:adventure-text-serializer-gson:4.9.3'
 
-    mcProvided 'com.mojang:brigadier:1.0.18'
+    mcProvided 'com.mojang:brigadier:1.0.17'
 
     apiParts 'org.jetbrains:annotations:22.0.0'
 }
