@@ -16,11 +16,11 @@ public class TaskScheduler {
 
     private final AtomicBoolean ticking = new AtomicBoolean(false);
     private final Map<TaskPointer<? extends Task>, Task> tasks;
-    private final List<TaskPointer<? extends Task>> cleanup;
+    private final List<Runnable> updates;
 
     private TaskScheduler() {
         tasks = new HashMap<>();
-        cleanup = new ArrayList<>();
+        updates = new ArrayList<>();
     }
 
     public static Pair<TaskScheduler, TickFunction> create() {
@@ -40,14 +40,18 @@ public class TaskScheduler {
 
     public synchronized <T extends Task> TaskPointer<T> registerTask(T task) {
         TaskPointer<T> pointer = new TaskPointer<>(task);
-        this.tasks.put(pointer, task);
+        if (this.ticking.get()) {
+            this.updates.add(() -> tasks.put(pointer, task));
+        } else {
+            this.tasks.put(pointer, task);
+        }
         task.setPointer(pointer);
         return pointer;
     }
 
     public synchronized <T extends Task> void cancelTask(TaskPointer<T> task) {
         if (this.ticking.get()) {
-            this.cleanup.add(task);
+            this.updates.add(() -> tasks.remove(task));
         } else {
             this.tasks.remove(task);
         }
@@ -73,8 +77,8 @@ public class TaskScheduler {
         }
         this.ticking.set(false);
 
-        for (TaskPointer<? extends Task> taskPointer : this.cleanup) {
-            this.tasks.remove(taskPointer);
+        for (Runnable run : this.updates) {
+            run.run();
         }
     }
 }
