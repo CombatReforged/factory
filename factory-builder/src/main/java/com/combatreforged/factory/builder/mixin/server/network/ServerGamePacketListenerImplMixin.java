@@ -15,11 +15,13 @@ import com.combatreforged.factory.builder.implementation.world.entity.player.Wra
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.suggestion.Suggestions;
 import net.minecraft.Util;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.PacketUtils;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,10 +30,7 @@ import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Inventory;
 import org.objectweb.asm.Opcodes;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -39,8 +38,8 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
+@SuppressWarnings("InvalidBlockTag")
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ServerGamePacketListenerImplMixin {
     @Shadow public ServerPlayer player;
@@ -56,6 +55,7 @@ public abstract class ServerGamePacketListenerImplMixin {
 
     @Shadow public abstract void send(Packet<?> packet);
 
+    @Shadow @Final public Connection connection;
     // BEGIN: DISCONNECT EVENT
     @Unique private PlayerDisconnectEvent disconnectEvent;
     @Redirect(method = "onDisconnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
@@ -197,24 +197,32 @@ public abstract class ServerGamePacketListenerImplMixin {
         }
     }
 
-    // Enable api command suggestion
-    @Inject(method = "lambda$handleCustomCommandSuggestions$1", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;send(Lnet/minecraft/network/protocol/Packet;)V", shift = At.Shift.BEFORE), cancellable = true)
-    public void sendVanillaSuggestions(ServerboundCommandSuggestionPacket serverboundCommandSuggestionPacket, Suggestions suggestions, CallbackInfo ci) {
+    /**
+     * Send API command suggestions
+     * @author rizecookey
+     * @reason The automatic refmap creation doesn't handle lambda targets correctly, so we'll have to overwrite
+     */
+    @Overwrite @SuppressWarnings("FutureReturnValueIgnored")
+    public void handleCustomCommandSuggestions(ServerboundCommandSuggestionPacket serverboundCommandSuggestionPacket) {
+        PacketUtils.ensureRunningOnSameThread(serverboundCommandSuggestionPacket, (ServerGamePacketListenerImpl) (Object) this, this.player.getLevel());
+
         CommandDispatcher<CommandSourceInfo> apiDispatcher = FactoryAPI.getInstance().getServer().getCommandDispatcher();
         StringReader apiReader = new StringReader(serverboundCommandSuggestionPacket.getCommand());
         if (apiReader.canRead() && apiReader.peek() == '/') {
             apiReader.skip();
         }
-        ParseResults<CommandSourceInfo> results = apiDispatcher.parse(apiReader, Wrapped.wrap(this.player, WrappedPlayer.class).createCommandInfo());
-        try {
-            apiDispatcher.getCompletionSuggestions(results).thenAccept(apiSuggestions -> {
-                if (!apiSuggestions.isEmpty()) {
-                    this.player.connection.send(new ClientboundCommandSuggestionsPacket(serverboundCommandSuggestionPacket.getId(), apiSuggestions));
-                    ci.cancel();
-                }
-            }).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+
+        StringReader vanillaReader = new StringReader(serverboundCommandSuggestionPacket.getCommand());
+        if (vanillaReader.canRead() && vanillaReader.peek() == '/') {
+            vanillaReader.skip();
         }
+
+        ParseResults<CommandSourceInfo> apiResults = apiDispatcher.parse(apiReader, Wrapped.wrap(this.player, WrappedPlayer.class).createCommandInfo());
+        ParseResults<CommandSourceStack> vanillaResults = this.server.getCommands().getDispatcher().parse(vanillaReader, this.player.createCommandSourceStack());
+
+        apiDispatcher.getCompletionSuggestions(apiResults)
+                .thenCombine(this.server.getCommands().getDispatcher().getCompletionSuggestions(vanillaResults),
+                        (apiSuggestions, vanillaSuggestions) -> !apiSuggestions.isEmpty() ? apiSuggestions : vanillaSuggestions)
+                .thenAccept(suggestions -> this.player.connection.send(new ClientboundCommandSuggestionsPacket(serverboundCommandSuggestionPacket.getId(), suggestions)));
     }
 }

@@ -8,30 +8,43 @@ import net.minecraft.network.protocol.PacketUtils;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.RunningOnDifferentThreadException;
 import net.minecraft.util.thread.BlockableEventLoop;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.apache.logging.log4j.Logger;
+import org.spongepowered.asm.mixin.*;
 
-// Fixes the stack overflow exception that sometimes happens when stopping the server. Courtesy Spigot (https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/nms-patches/net/minecraft/network/protocol/PlayerConnectionUtils.patch)
+@SuppressWarnings("InvalidBlockTag")
 @Mixin(PacketUtils.class)
 public class PacketUtilsMixin {
+    @Shadow @Final private static Logger LOGGER;
     @Unique private static MinecraftServer SERVER = null;
-    @SuppressWarnings("unused")
-    @Inject(method = "lambda$ensureRunningOnSameThread$0", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/PacketListener;getConnection()Lnet/minecraft/network/Connection;", shift = At.Shift.BEFORE), cancellable = true)
-    private static void preventStackOverflowSchedule(PacketListener packetListener, Packet<?> packet, CallbackInfo ci) {
-        if (getServer().isStopped() || ((ConnectionAccessor) packetListener.getConnection()).getDisconnectionHandled()) {
-            ci.cancel();
-        }
-    }
 
-    @SuppressWarnings("unused")
-    @Inject(method = "ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/util/thread/BlockableEventLoop;)V", at = @At("TAIL"))
-    private static <T extends PacketListener> void preventStackOverflowEnd(Packet<T> packet, T packetListener, BlockableEventLoop<?> blockableEventLoop, CallbackInfo ci) {
-        if (getServer().isStopped() || ((ConnectionAccessor) packetListener.getConnection()).getDisconnectionHandled()) {
+    /**
+     * Fixes the stack overflow exception that sometimes happens when stopping the server.
+     * Courtesy Spigot (https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/nms-patches/net/minecraft/network/protocol/PlayerConnectionUtils.patch)
+     * @author rizecookey
+     * @reason The automatic refmap creation doesn't handle lambda targets correctly, so we'll have to overwrite
+     */
+    @Overwrite
+    public static <T extends PacketListener> void ensureRunningOnSameThread(Packet<T> packet, T packetListener, BlockableEventLoop<?> blockableEventLoop) throws RunningOnDifferentThreadException {
+        if (!blockableEventLoop.isSameThread()) {
+            blockableEventLoop.execute(() -> {
+                // start change
+                if (getServer().isStopped() || ((ConnectionAccessor) packetListener.getConnection()).getDisconnectionHandled()) {
+                    return;
+                } // end change
+                if (packetListener.getConnection().isConnected()) {
+                    packet.handle(packetListener);
+                } else {
+                    LOGGER.debug("Ignoring packet due to disconnection: " + packet);
+                }
+
+            });
             throw RunningOnDifferentThreadException.RUNNING_ON_DIFFERENT_THREAD;
         }
+        // start change
+        else if (getServer().isStopped() || ((ConnectionAccessor) packetListener.getConnection()).getDisconnectionHandled()) {
+            throw RunningOnDifferentThreadException.RUNNING_ON_DIFFERENT_THREAD;
+        }
+        // end change
     }
 
     private static MinecraftServer getServer() {
