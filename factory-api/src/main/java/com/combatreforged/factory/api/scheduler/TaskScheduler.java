@@ -77,8 +77,11 @@ public class TaskScheduler {
         }
         this.ticking.set(false);
 
-        for (Runnable run : this.updates) {
-            run.run();
+        synchronized (this) {
+            for (Runnable run : this.updates) {
+                run.run();
+            }
+            updates.clear();
         }
     }
 }
