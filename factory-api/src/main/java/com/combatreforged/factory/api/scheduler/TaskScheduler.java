@@ -9,11 +9,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TaskScheduler {
     public static final Logger LOGGER = LogManager.getLogger("TaskScheduler");
 
-    private boolean ticking;
+    private final AtomicBoolean ticking = new AtomicBoolean(false);
     private final Map<TaskPointer<? extends Task>, Task> tasks;
     private final List<TaskPointer<? extends Task>> cleanup;
 
@@ -45,7 +46,7 @@ public class TaskScheduler {
     }
 
     public synchronized <T extends Task> void cancelTask(TaskPointer<T> task) {
-        if (this.ticking) {
+        if (this.ticking.get()) {
             this.cleanup.add(task);
         } else {
             this.tasks.remove(task);
@@ -59,7 +60,7 @@ public class TaskScheduler {
     }
 
     private void tick() {
-        this.ticking = true;
+        this.ticking.set(true);
         for (Task task : tasks.values()) {
             try {
                 if (task.isActive()) {
@@ -70,7 +71,7 @@ public class TaskScheduler {
                 task.cancel();
             }
         }
-        this.ticking = false;
+        this.ticking.set(false);
 
         for (TaskPointer<? extends Task> taskPointer : this.cleanup) {
             this.tasks.remove(taskPointer);
