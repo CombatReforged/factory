@@ -1,7 +1,7 @@
 import net.fabricmc.loom.task.RemapJarTask
 
 plugins {
-	id 'fabric-loom' version '0.8-SNAPSHOT'
+	id 'fabric-loom' version '0.10-SNAPSHOT'
 	id 'maven-publish'
 	id 'java'
 	id 'java-library'
@@ -37,10 +37,10 @@ dependencies {
 	includeClasspath "net.java.dev.jna:jna:5.9.0"*/ //TODO
 }
 
-minecraft {
-	customManifest = "https://gist.githubusercontent.com/rizecookey/4c6142baaccc3875f9b227fe22f2ace5/raw/c8ed74b19f7a5315813c9d4b199798b692a8f359/1.16_combat-6.json"
-	intermediaryUrl = (mcVer) -> "https://maven.combatreforged.com/net/fabricmc/intermediary/" + mcVer + "/intermediary-" + mcVer + "-v2.jar"
-	accessWidener = file("src/main/resources/factorybuilder.accesswidener")
+loom {
+	customMinecraftManifest = "https://gist.githubusercontent.com/rizecookey/4c6142baaccc3875f9b227fe22f2ace5/raw/c8ed74b19f7a5315813c9d4b199798b692a8f359/1.16_combat-6.json"
+	intermediaryUrl = "https://maven.combatreforged.com/net/fabricmc/intermediary/%1\$s/intermediary-%1\$s-v2.jar"
+	accessWidenerPath = file("src/main/resources/factorybuilder.accesswidener")
 }
 
 processResources {
@@ -107,12 +107,7 @@ publishing {
 			artifactId = this.archivesBaseName
 			version = this.version
 
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(fullJar) {
-				builtBy fullJar
-			}
+			from components.java
 		}
 	}
 }
