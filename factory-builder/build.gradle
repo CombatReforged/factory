@@ -27,7 +27,7 @@ configurations {
 dependencies {
 	minecraft "com.mojang:minecraft:${minecraftVersion}"
 	mappings loom.officialMojangMappings()
-	modImplementation "net.fabricmc:fabric-loader:0.11.6"
+	modImplementation "net.fabricmc:fabric-loader:0.12.12"
 
 	api project(":factory-api")
 	include project(":factory-api")

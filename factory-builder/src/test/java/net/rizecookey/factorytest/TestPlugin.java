@@ -57,6 +57,7 @@ public class TestPlugin implements FactoryPlugin {
     long averageTickTime = -1;
 
     @Override
+    @SuppressWarnings("FutureReturnValueIgnored")
     public void onFactoryLoad(FactoryAPI api, FactoryServer server) {
         logger.info("Hello! I was loaded within Factory!");
 
