@@ -26,15 +26,15 @@ configurations {
 
 dependencies {
 	minecraft "com.mojang:minecraft:${minecraftVersion}"
-	mappings minecraft.officialMojangMappings()
+	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:0.11.6"
 
 	api project(":factory-api")
 	include project(":factory-api")
 
-	/*includeClasspath "net.minecrell:terminalconsoleappender:1.2.0"
+	includeClasspath "net.minecrell:terminalconsoleappender:1.3.0"
 	includeClasspath "org.jline:jline-terminal-jna:3.20.0"
-	includeClasspath "net.java.dev.jna:jna:5.9.0"*/ //TODO
+	includeClasspath "net.java.dev.jna:jna:5.9.0"
 }
 
 loom {

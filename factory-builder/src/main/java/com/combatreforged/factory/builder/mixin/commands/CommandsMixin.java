@@ -75,7 +75,7 @@ public abstract class CommandsMixin {
         }
     }
 
-    @Inject(method = "sendCommands", at = @At(value = "INVOKE", target = "Lnet/minecraft/commands/Commands;fillUsableCommands(Lcom/mojang/brigadier/tree/CommandNode;Lcom/mojang/brigadier/tree/CommandNode;Lnet/minecraft/commands/CommandSourceStack;Ljava/util/Map;)V", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
+    @Inject(method = "sendCommands", at = @At(value = "INVOKE", target = "Lnet/minecraft/commands/Commands;fillUsableCommands(Lcom/mojang/brigadier/tree/CommandNode;Lcom/mojang/brigadier/tree/CommandNode;Lnet/minecraft/commands/CommandSourceStack;Ljava/util/Map;)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
     public void injectAPICommands(ServerPlayer serverPlayer, CallbackInfo ci, Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map, RootCommandNode<SharedSuggestionProvider> rootCommandNode) {
         CommandDispatcher<CommandSourceInfo> apiDispatcher = FactoryAPI.getInstance().getServer().getCommandDispatcher();
 
