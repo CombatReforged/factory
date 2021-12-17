@@ -20,6 +20,9 @@
   "entrypoints": {
     "main": [
       "com.combatreforged.factory.builder.FactoryBuilder"
+    ],
+    "preLaunch": [
+      "com.combatreforged.factory.builder.prelaunch.FactoryBuilderPreLaunch"
     ]
   },
   "mixins": [

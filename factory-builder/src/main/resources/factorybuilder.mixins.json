@@ -4,7 +4,6 @@
   "package": "com.combatreforged.factory.builder.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MainMixin",
     "_bugfixes.ConnectionAccessor",
     "_bugfixes.PacketUtilsMixin",
     "_bugfixes.ServerPlayerMixin",

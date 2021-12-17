@@ -2,16 +2,14 @@ package com.combatreforged.factory.builder.mixin.server.network;
 
 import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.command.CommandSourceInfo;
-import com.combatreforged.factory.api.event.player.PlayerChangeMovementStateEvent;
-import com.combatreforged.factory.api.event.player.PlayerDisconnectEvent;
-import com.combatreforged.factory.api.event.player.PlayerMoveEvent;
-import com.combatreforged.factory.api.event.player.PlayerSwitchActiveSlotEvent;
+import com.combatreforged.factory.api.event.player.*;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.util.Location;
 import com.combatreforged.factory.builder.extension.server.level.ServerPlayerExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
+import com.combatreforged.factory.builder.implementation.world.item.container.menu.WrappedContainerMenu;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
@@ -224,5 +222,19 @@ public abstract class ServerGamePacketListenerImplMixin {
                 .thenCombine(this.server.getCommands().getDispatcher().getCompletionSuggestions(vanillaResults),
                         (apiSuggestions, vanillaSuggestions) -> !apiSuggestions.isEmpty() ? apiSuggestions : vanillaSuggestions)
                 .thenAccept(suggestions -> this.player.connection.send(new ClientboundCommandSuggestionsPacket(serverboundCommandSuggestionPacket.getId(), suggestions)));
+    }
+
+    @Inject(method = "handleContainerClose", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V", shift = At.Shift.AFTER), cancellable = true)
+    public void injectContainerCloseEvent(ServerboundContainerClosePacket serverboundContainerClosePacket, CallbackInfo ci) {
+        PlayerCloseContainerEvent event = new PlayerCloseContainerEvent(Wrapped.wrap(this.player, WrappedPlayer.class), Wrapped.wrap(this.player.containerMenu, WrappedContainerMenu.class));
+        PlayerCloseContainerEvent.BACKEND.invoke(event);
+
+        if (event.isCancelled()) {
+            this.send(new ClientboundOpenScreenPacket(this.player.containerMenu.containerId, this.player.containerMenu.getType(), ((ServerPlayerExtension) player).getLastContainerMenuTitle()));
+            this.player.refreshContainer(this.player.containerMenu);
+            ci.cancel();
+        }
+
+        PlayerCloseContainerEvent.BACKEND.invokeEndFunctions(event);
     }
 }

@@ -295,5 +295,17 @@ public class TestPlugin implements FactoryPlugin {
                 event.setNewSlot(4);
             }
         });
+
+        PlayerOpenContainerEvent.BACKEND.register(event -> {
+            if (event.getPlayer().isFlying()) {
+                event.setCancelled(true);
+            }
+        });
+
+        PlayerCloseContainerEvent.BACKEND.register(event -> {
+            if (event.getPlayer().getGameMode().equals(Minecraft.GameMode.SURVIVAL)) {
+                event.setCancelled(true);
+            }
+        });
     }
 }
