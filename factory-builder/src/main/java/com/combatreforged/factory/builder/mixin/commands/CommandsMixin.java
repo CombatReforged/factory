@@ -29,6 +29,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,6 +45,12 @@ import java.util.Map;
 @Mixin(Commands.class)
 public abstract class CommandsMixin {
     @Shadow @Final private CommandDispatcher<CommandSourceStack> dispatcher;
+
+    // Makes non-syntax errors log
+    @Redirect(method = "performCommand", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;isDebugEnabled()Z",remap = false))
+    public boolean activateCommandExecutionErrors(Logger instance) {
+        return true;
+    }
 
     @Redirect(method = "performCommand", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/CommandDispatcher;execute(Lcom/mojang/brigadier/StringReader;Ljava/lang/Object;)I", remap = false))
     public int enableAPICommands(CommandDispatcher<?> commandDispatcher, StringReader input, Object source, CommandSourceStack commandSourceStack, String string) throws CommandSyntaxException {
