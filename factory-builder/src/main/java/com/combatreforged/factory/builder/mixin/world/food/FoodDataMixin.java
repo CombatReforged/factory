@@ -1,5 +1,6 @@
 package com.combatreforged.factory.builder.mixin.world.food;
 
+import com.combatreforged.factory.api.event.entity.LivingEntityHealEvent;
 import com.combatreforged.factory.api.event.player.PlayerFoodLevelsChangeEvent;
 import com.combatreforged.factory.builder.extension.world.food.FoodDataExtension;
 import com.combatreforged.factory.builder.implementation.Wrapped;
@@ -11,7 +12,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(FoodData.class)
 public abstract class FoodDataMixin implements FoodDataExtension {
@@ -73,6 +77,35 @@ public abstract class FoodDataMixin implements FoodDataExtension {
             }
 
             PlayerFoodLevelsChangeEvent.BACKEND.invokeEndFunctions(event);
+        }
+    }
+
+    @Unique private LivingEntityHealEvent healEvent;
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;heal(F)V", shift = At.Shift.BEFORE), cancellable = true)
+    public void injectHealEvent(Player player, CallbackInfo ci) {
+        healEvent = new LivingEntityHealEvent(Wrapped.wrap(player, WrappedPlayer.class), 1.0F,
+                LivingEntityHealEvent.HealCause.NATURAL_REGENERATION);
+        LivingEntityHealEvent.BACKEND.invoke(healEvent);
+        if (healEvent.isCancelled()) {
+            ci.cancel();
+            LivingEntityHealEvent.BACKEND.invokeEndFunctions(healEvent);
+        }
+    }
+
+    @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;heal(F)V"))
+    public float changeHealAmount(float previous) {
+        if (healEvent != null) {
+            return healEvent.getAmount();
+        } else {
+            return previous;
+        }
+    }
+
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;heal(F)V", shift = At.Shift.AFTER))
+    public void nullifyHealEvent(Player player, CallbackInfo ci) {
+        if (healEvent != null) {
+            LivingEntityHealEvent.BACKEND.invokeEndFunctions(healEvent);
+            healEvent = null;
         }
     }
 }

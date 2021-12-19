@@ -7,6 +7,7 @@ import com.combatreforged.factory.api.command.CommandUtils;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.combatreforged.factory.api.event.entity.LivingEntityDamageEvent;
 import com.combatreforged.factory.api.event.entity.LivingEntityDeathEvent;
+import com.combatreforged.factory.api.event.entity.LivingEntityHealEvent;
 import com.combatreforged.factory.api.event.player.*;
 import com.combatreforged.factory.api.event.server.ServerTickEvent;
 import com.combatreforged.factory.api.scheduler.ScheduledRepeatingTask;
@@ -305,6 +306,17 @@ public class TestPlugin implements FactoryPlugin {
         PlayerCloseContainerEvent.BACKEND.register(event -> {
             if (event.getPlayer().getGameMode().equals(Minecraft.GameMode.SURVIVAL)) {
                 event.setCancelled(true);
+            }
+        });
+
+        LivingEntityHealEvent.BACKEND.register(event -> {
+            if (event.getLivingEntity() instanceof Player) {
+                if (event.getCause().equals(LivingEntityHealEvent.HealCause.NATURAL_REGENERATION)) {
+                    event.setCancelled(true);
+                }
+                else {
+                    event.setAmount(20.0F);
+                }
             }
         });
     }
