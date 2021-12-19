@@ -261,9 +261,10 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
 
         ChunkProgressListener chunkProgressListener = this.progressListenerFactory.create(11);
         worldData.setModdedInfo(this.getServerModName(), this.getModdedStatus().isPresent());
+        worldData.setDifficulty(this.overworld().getDifficulty());
 
         ((LevelStorageAccessExtension) access).setCustom(levelName);
-        //TODO fix deadlock when tping to world
+        //TODO fix deadlock when tping to world ???
 
         // INFO copy from MinecraftServer.createLevels with custom world data
         ServerLevelData serverLevelData = worldData.overworldData();
