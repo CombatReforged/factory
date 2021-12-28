@@ -6,11 +6,13 @@ import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
+import net.minecraft.network.protocol.game.ClientboundCooldownPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -32,14 +34,22 @@ public abstract class ItemStackMixin implements Wrap<com.combatreforged.factory.
     public void injectUseItemEvent(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         com.combatreforged.factory.api.world.entity.player.Player apiPlayer = Wrapped.wrap(player, WrappedPlayer.class);
         HandSlot hand = interactionHand == InteractionHand.MAIN_HAND ? HandSlot.MAIN_HAND : HandSlot.OFF_HAND;
-        WrappedItemStack apiStack = Wrapped.wrap(player.getItemInHand(interactionHand), WrappedItemStack.class);
+        ItemStack stack = player.getItemInHand(interactionHand);
+        WrappedItemStack apiStack = Wrapped.wrap(stack, WrappedItemStack.class);
         this.useItemEvent = new PlayerUseItemEvent(apiPlayer, apiStack, hand);
         PlayerUseItemEvent.BACKEND.invoke(useItemEvent);
 
         if (useItemEvent.isCancelled()) {
-            cir.setReturnValue(InteractionResultHolder.fail(apiStack.unwrap()));
+            cir.setReturnValue(InteractionResultHolder.fail(stack));
+            player.stopUsingItem();
             if (player instanceof ServerPlayer) {
-                ((ServerPlayer) player).refreshContainer(player.inventoryMenu);
+                ServerPlayer sPlayer = (ServerPlayer) player;
+                sPlayer.refreshContainer(player.inventoryMenu);
+                if (stack.getItem().equals(Items.ENDER_PEARL)
+                        || stack.getItem().equals(Items.SNOWBALL)
+                        || stack.getItem().equals(Items.EGG)) {
+                    sPlayer.connection.send(new ClientboundCooldownPacket(stack.getItem(), 0));
+                }
             }
         }
     }
