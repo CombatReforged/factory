@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class CompoundTagMixin implements Wrap<NBTObject> {
     private WrappedNBTObject wrapped;
 
-    @Inject(method = "<init>()V", at = @At("TAIL"))
+    @Inject(method = "<init>(Ljava/util/Map;)V", at = @At("TAIL"))
     public void injectWrapped(CallbackInfo ci) {
         this.wrapped = new WrappedNBTObject((CompoundTag) (Object) this);
     }

@@ -6,16 +6,13 @@ import com.combatreforged.factory.builder.extension.wrap.Wrap;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import com.combatreforged.factory.builder.implementation.world.item.WrappedItemStack;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,10 +21,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin implements Wrap<com.combatreforged.factory.api.world.item.ItemStack> {
-    @Shadow @Nullable public abstract CompoundTag getTag();
-
-    @Shadow public abstract boolean hasTag();
-
     private WrappedItemStack wrapped;
     @Inject(method = { "<init>(Lnet/minecraft/world/level/ItemLike;I)V", "<init>(Lnet/minecraft/nbt/CompoundTag;)V" }, at = @At("TAIL"))
     public void injectWrapped(CallbackInfo ci) {
