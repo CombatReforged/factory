@@ -1,6 +1,7 @@
 package com.combatreforged.factory.api.world.nbt;
 
 import com.combatreforged.factory.api.builder.Builder;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Set;
@@ -12,7 +13,7 @@ public interface NBTObject extends NBTValue {
             set(key, values.get(key));
         }
     }
-    NBTValue get(String id);
+    @Nullable NBTValue get(String id);
     boolean has(String id);
 
     int size();

@@ -4,6 +4,7 @@ import com.combatreforged.factory.api.world.nbt.NBTObject;
 import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.builder.implementation.Wrapped;
 import net.minecraft.nbt.CompoundTag;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -21,8 +22,9 @@ public class WrappedNBTObject extends WrappedNBTValue implements NBTObject, NBTV
     }
 
     @Override
+    @Nullable
     public NBTValue get(String id) {
-        return new WrappedNBTValue(wrappedCompound.get(id));
+        return wrappedCompound.contains(id) ? new WrappedNBTValue(wrappedCompound.get(id)) : null;
     }
 
     @Override
