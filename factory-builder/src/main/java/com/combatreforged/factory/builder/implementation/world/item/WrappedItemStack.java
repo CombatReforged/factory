@@ -18,6 +18,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -243,28 +244,30 @@ public class WrappedItemStack extends Wrapped<net.minecraft.world.item.ItemStack
 
     @Deprecated
     @Override
+    @Nullable
     public BinaryTagHolder getItemData() {
-        return BinaryTagHolder.of(wrapped.save(new CompoundTag()).getAsString());
+        return wrapped.getTag() != null ? BinaryTagHolder.of(wrapped.getTag().getAsString()) : null;
     }
 
     @Deprecated
     @Override
-    public void setItemData(BinaryTagHolder tag) {
+    public void setItemData(@Nullable BinaryTagHolder tag) {
         try {
-            wrapped.setTag(TagParser.parseTag(tag.toString()));
+            wrapped.setTag(tag != null ? TagParser.parseTag(tag.toString()) : null);
         } catch (CommandSyntaxException e) {
             throw new UnsupportedOperationException("Tag is invalid");
         }
     }
 
     @Override
+    @Nullable
     public NBTObject getItemNBT() {
-        return Wrapped.wrap(wrapped.save(new CompoundTag()), WrappedNBTObject.class);
+        return Wrapped.wrap(wrapped.getTag() != null ? wrapped.getTag().copy() : null, WrappedNBTObject.class);
     }
 
     @Override
-    public void setItemNBT(NBTObject nbt) {
-        wrapped.setTag(((WrappedNBTObject) nbt).unwrap());
+    public void setItemNBT(@Nullable NBTObject nbt) {
+        wrapped.setTag(nbt != null ? ((WrappedNBTObject) nbt).unwrap() : null);
     }
 
     @Override

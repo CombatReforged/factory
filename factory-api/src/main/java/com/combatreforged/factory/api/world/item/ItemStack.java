@@ -4,8 +4,8 @@ import com.combatreforged.factory.api.builder.Builder;
 import com.combatreforged.factory.api.world.nbt.NBTObject;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public interface ItemStack {
@@ -31,11 +31,11 @@ public interface ItemStack {
     void removeEnchantment(Enchantment enchantment);
     List<Enchantment> getEnchantments();
 
-    @Deprecated BinaryTagHolder getItemData();
-    @Deprecated void setItemData(BinaryTagHolder tag);
+    @Deprecated @Nullable BinaryTagHolder getItemData();
+    @Deprecated void setItemData(@Nullable BinaryTagHolder tag);
 
-    NBTObject getItemNBT();
-    void setItemNBT(NBTObject nbt);
+    @Nullable NBTObject getItemNBT();
+    void setItemNBT(@Nullable NBTObject nbt);
 
     static ItemStack create(ItemType itemType) {
         return create(itemType, 1, 0, (NBTObject) null);
