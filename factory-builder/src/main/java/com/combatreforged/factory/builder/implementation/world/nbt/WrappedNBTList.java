@@ -9,41 +9,38 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 
 public class WrappedNBTList extends WrappedNBTValue implements NBTList {
-    private final ListTag wrappedList;
-
     public WrappedNBTList(ListTag wrappedList) {
         super(wrappedList);
-        this.wrappedList = wrappedList;
     }
 
     @Override
     public ListTag unwrap() {
-        return wrappedList;
+        return wrappedList();
     }
 
     @Override
     public void add(int index, NBTValue value) {
-        wrappedList.add(index, ((WrappedNBTValue) value).unwrap());
+        wrappedList().add(index, ((WrappedNBTValue) value).unwrap());
     }
 
     @Override
     public void set(int index, NBTValue value) {
-        wrappedList.set(index, ((WrappedNBTValue) value).unwrap());
+        wrappedList().set(index, ((WrappedNBTValue) value).unwrap());
     }
 
     @Override
     public void remove(int index) {
-        wrappedList.remove(index);
+        wrappedList().remove(index);
     }
 
     @Override
     public NBTValue get(int index) {
-        return Wrapped.wrap(wrappedList.get(index), WrappedNBTValue.class);
+        return Wrapped.wrap(wrappedList().get(index), WrappedNBTValue.class);
     }
 
     @Override
     public int size() {
-        return wrappedList.size();
+        return wrappedList().size();
     }
 
     @NotNull
@@ -59,7 +56,7 @@ public class WrappedNBTList extends WrappedNBTValue implements NBTList {
 
     @Override
     public String asString() {
-        return wrappedList.getAsString();
+        return wrappedList().getAsString();
     }
 
     @Override
@@ -87,5 +84,9 @@ public class WrappedNBTList extends WrappedNBTValue implements NBTList {
             this.index++;
             return value;
         }
+    }
+
+    private ListTag wrappedList() {
+        return (ListTag) this.wrapped;
     }
 }
