@@ -129,6 +129,8 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
     @Final
     private Thread serverThread;
 
+    @Shadow private PlayerList playerList;
+
     public MinecraftServerMixin(String string) {
         super(string);
     }
@@ -264,7 +266,6 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
         worldData.setDifficulty(this.overworld().getDifficulty());
 
         ((LevelStorageAccessExtension) access).setCustom(levelName);
-        //TODO fix deadlock when tping to world ???
 
         // INFO copy from MinecraftServer.createLevels with custom world data
         ServerLevelData serverLevelData = worldData.overworldData();
@@ -339,31 +340,35 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
     @ApiStatus.Experimental
     public void unloadDynamicWorld(String name, boolean save) throws IOException {
         if (dynamicWorlds.containsKey(name)) {
-            List<ResourceKey<Level>> toBeRemoved = new ArrayList<>();
-
             DynamicWorld dynamicWorld = dynamicWorlds.get(name);
             if (dynamicWorld.isLoaded()) {
                 LOGGER.info("Unloading dynamically loaded custom world '" + name + "'...");
-                for (ServerLevel level : dynamicWorld.getDimensions()) {
-                    for (ServerPlayer player : level.getPlayers(player -> true)) {
-                        ServerLevel defaultOverworld = this.overworld();
-                        BlockPos spawnPos = defaultOverworld.getSharedSpawnPos();
-                        player.teleportTo(this.overworld(), spawnPos.getX() + 0.5, spawnPos.getY() + 0.5, spawnPos.getZ() + 0.5, defaultOverworld.getSharedSpawnAngle(), 0.0F);
+                ServerLevel defaultOverworld = this.overworld();
+                BlockPos spawnPos = defaultOverworld.getSharedSpawnPos();
+                for (ServerLevel level : new ArrayList<>(dynamicWorld.getDimensions())) {
+                    for (ServerPlayer player : playerList.getPlayers()) {
+                        if (player.getLevel().equals(level)) {
+                            player.teleportTo(this.overworld(), spawnPos.getX() + 0.5, spawnPos.getY() + 0.5, spawnPos.getZ() + 0.5, defaultOverworld.getSharedSpawnAngle(), 0.0F);
+                        }
+                        if (player.getRespawnDimension().equals(level.dimension())) {
+                            player.setRespawnPosition(defaultOverworld.dimension(), spawnPos, defaultOverworld.getSharedSpawnAngle(), true, false);
+                        }
                     }
 
                     if (save) {
                         level.save(null, true, false);
                         level.close();
+                    } else {
+                        level.getChunkSource().getLightEngine().close();
+                        level.getChunkSource().chunkMap.close();
                     }
 
-                    toBeRemoved.add(level.dimension());
+                    this.levels.remove(level.dimension());
                 }
 
                 if (save) {
                     this.saveOverworldData(name);
                 }
-
-                toBeRemoved.forEach(this.levels::remove);
 
                 dynamicWorld.getSource().close();
                 dynamicWorld.unloaded();
